@@ -16,6 +16,7 @@ export function Register() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [className, setClassName] = useState('');
+  const [age, setAge] = useState('');
   const [schoolName, setSchoolName] = useState('53-maktab');
   const [district, setDistrict] = useState('Chortoq tumani');
   const [submitting, setSubmitting] = useState(false);
@@ -32,6 +33,7 @@ export function Register() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         className,
+        age: age ? Number(age) : undefined,
         schoolName: schoolName.trim() || undefined,
         district: district.trim() || undefined,
       });
@@ -81,6 +83,18 @@ export function Register() {
               </option>
             ))}
           </select>
+        </label>
+
+        <label className="field">
+          <span>Yoshingiz</span>
+          <input
+            type="number"
+            min={10}
+            max={20}
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            placeholder="Masalan: 15"
+          />
         </label>
 
         <label className="field">

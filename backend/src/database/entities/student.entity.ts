@@ -28,6 +28,9 @@ export class Student {
   @Column({ nullable: true })
   className: string;
 
+  @Column({ type: 'int', nullable: true })
+  age: number | null;
+
   @Column({ nullable: true })
   username: string;
 

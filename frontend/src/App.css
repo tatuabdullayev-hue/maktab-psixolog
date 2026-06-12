@@ -393,22 +393,23 @@ input {
 
 /* Game page */
 .game-page {
-  max-width: 480px;
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   min-height: 100vh;
   box-sizing: border-box;
-  background: linear-gradient(160deg, #4f46e5 0%, #7c3aed 45%, #a855f7 100%);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
+  padding: 24px;
+  background: #f4f5fb;
+  color: #1a1a1a;
 }
 
-.game-header {
+.game-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .game-brand {
@@ -418,95 +419,212 @@ input {
 }
 
 .game-brand__icon {
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .game-brand__title {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.5px;
+  color: #4f46e5;
 }
 
 .game-brand__subtitle {
-  font-size: 11px;
-  opacity: 0.8;
+  font-size: 12px;
+  color: #888;
+}
+
+.game-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .time-chip {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: #fff;
+  border: 1px solid #e4e4f0;
   border-radius: 999px;
-  padding: 6px 14px;
+  padding: 8px 16px;
   font-weight: 600;
   font-size: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.btn-exit {
+  background: #fff;
+  border: 1px solid #e4e4f0;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.btn-exit:hover {
+  background: #f5f5fb;
+}
+
+.welcome-card {
+  background: linear-gradient(160deg, #4f46e5 0%, #7c3aed 45%, #a855f7 100%);
+  color: #fff;
+  border-radius: 20px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.welcome-card__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.welcome-card__subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+
+.info-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.info-chip {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
   backdrop-filter: blur(4px);
 }
 
-.game-page .progress-bar {
-  background: rgba(255, 255, 255, 0.2);
+.welcome-card__hero {
+  font-size: 56px;
+  line-height: 1;
 }
 
-.game-page .progress-bar__fill {
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-section__label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.question-card {
   background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
 }
 
-.game-progress-label {
-  text-align: right;
-  font-size: 12px;
-  opacity: 0.85;
-  margin-bottom: 8px;
+.question-illustration {
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  min-height: 260px;
 }
 
-.game-card {
-  color: #1a1a1a;
-  border-radius: 18px;
-  flex: 1;
+.question-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .game-badge {
   display: inline-block;
+  align-self: flex-start;
   background: #eef2ff;
   color: #4f46e5;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   border-radius: 999px;
-  padding: 4px 12px;
-  margin-bottom: 10px;
+  padding: 5px 14px;
+  margin-bottom: 14px;
 }
 
 .game-question {
-  font-size: 17px;
+  font-size: 20px;
+  font-weight: 600;
   line-height: 1.4;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.game-question__image {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 12px;
+.question-content .options {
+  margin-top: 0;
 }
 
-.game-page .option-btn {
+.question-content .option-btn {
+  padding: 14px 16px;
   font-size: 15px;
+  border-radius: 12px;
+  border: 2px solid #eee;
 }
 
 .option-btn__icon {
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
+}
+
+.game-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .game-hint {
   font-size: 13px;
-  opacity: 0.9;
-  text-align: center;
-  margin: 14px 0;
+  color: #888;
 }
 
-.game-page .btn-primary {
-  background: #fff;
-  color: #4f46e5;
+.game-next-btn {
+  width: auto;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+@media (max-width: 800px) {
+  .question-card {
+    grid-template-columns: 1fr;
+  }
+
+  .question-illustration {
+    min-height: 160px;
+    font-size: 48px;
+  }
+
+  .game-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .game-next-btn {
+    width: 100%;
+  }
 }

@@ -12,6 +12,8 @@ interface Student {
   firstName: string;
   lastName?: string;
   className?: string;
+  age?: number;
+  schoolName?: string;
   currentRiskScore: number;
 }
 
@@ -19,6 +21,7 @@ export interface RegisterStudentData {
   firstName: string;
   lastName: string;
   className: string;
+  age?: number;
   schoolName?: string;
   district?: string;
 }

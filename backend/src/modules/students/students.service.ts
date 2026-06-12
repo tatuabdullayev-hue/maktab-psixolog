@@ -39,6 +39,7 @@ export class StudentsService {
     firstName: string;
     lastName: string;
     className: string;
+    age?: number;
     schoolName?: string;
     district?: string;
   }): Promise<Student> {
@@ -47,6 +48,7 @@ export class StudentsService {
       firstName: data.firstName,
       lastName: data.lastName,
       className: data.className,
+      age: data.age ?? null,
       schoolName: data.schoolName,
       district: data.district,
     });

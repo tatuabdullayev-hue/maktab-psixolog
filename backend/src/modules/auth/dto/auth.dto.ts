@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class TelegramAuthDto {
   @IsString()
@@ -18,6 +18,12 @@ export class RegisterStudentDto {
   @IsString()
   @IsNotEmpty()
   className: string;
+
+  @IsInt()
+  @Min(10)
+  @Max(20)
+  @IsOptional()
+  age?: number;
 
   @IsString()
   @IsOptional()

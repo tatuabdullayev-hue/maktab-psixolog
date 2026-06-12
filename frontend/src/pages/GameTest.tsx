@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 interface TestQuestionOption {
   key: string;
@@ -21,8 +22,18 @@ interface TestData {
   questions: TestQuestion[];
 }
 
+const SELECTED_QUESTION_IDS = ['q1', 'q2', 'q4', 'q6', 'q8'];
+
 const OPTION_ICONS = ['🙂', '🤔', '😠', '🤝'];
 const TOTAL_SECONDS = 15 * 60;
+
+const QUESTION_SCENES: Record<string, { emoji: string; gradient: string }> = {
+  q1: { emoji: '😆👉🧒', gradient: 'linear-gradient(160deg, #fbc2eb 0%, #a6c1ee 100%)' },
+  q2: { emoji: '🧑‍🤝‍🧑😢', gradient: 'linear-gradient(160deg, #fdcbf1 0%, #e6dee9 100%)' },
+  q4: { emoji: '😔🌧️', gradient: 'linear-gradient(160deg, #a1c4fd 0%, #c2e9fb 100%)' },
+  q6: { emoji: '🤗👫', gradient: 'linear-gradient(160deg, #fbc7d4 0%, #96e6a1 100%)' },
+  q8: { emoji: '🚪🙈', gradient: 'linear-gradient(160deg, #ffecd2 0%, #fcb69f 100%)' },
+};
 
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -32,6 +43,7 @@ function formatTime(seconds: number) {
 
 export function GameTest() {
   const navigate = useNavigate();
+  const { student } = useAuth();
   const [test, setTest] = useState<TestData | null>(null);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -52,6 +64,16 @@ export function GameTest() {
     return () => clearInterval(timer);
   }, [test]);
 
+  const handleFinish = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await api.post('/tests/submit', { testId: test!.id, answers });
+    } finally {
+      navigate('/thanks');
+    }
+  };
+
   useEffect(() => {
     if (secondsLeft === 0 && test) {
       handleFinish();
@@ -63,21 +85,15 @@ export function GameTest() {
     return <div className="page page--center">Yuklanmoqda...</div>;
   }
 
-  const question = test.questions[step];
-  const isLast = step === test.questions.length - 1;
+  const questions = test.questions.filter((q) => SELECTED_QUESTION_IDS.includes(q.id));
+  const question = questions[step];
+  const isLast = step === questions.length - 1;
+  const scene =
+    QUESTION_SCENES[question.id] ??
+    { emoji: '🧠✨', gradient: 'linear-gradient(160deg, #4f46e5 0%, #a855f7 100%)' };
 
   const handleSelect = (key: string) => {
     setAnswers((prev) => ({ ...prev, [question.id]: key }));
-  };
-
-  const handleFinish = async () => {
-    if (submitting) return;
-    setSubmitting(true);
-    try {
-      await api.post('/tests/submit', { testId: test.id, answers });
-    } finally {
-      navigate('/thanks');
-    }
   };
 
   const handleNext = () => {
@@ -90,7 +106,7 @@ export function GameTest() {
 
   return (
     <div className="page game-page">
-      <div className="game-header">
+      <div className="game-topbar">
         <div className="game-brand">
           <span className="game-brand__icon">🧠✨</span>
           <div>
@@ -98,58 +114,85 @@ export function GameTest() {
             <div className="game-brand__subtitle">Sizni tushunamiz, sizga yordam beramiz</div>
           </div>
         </div>
-        <div className="time-chip">
-          <span>⏱</span>
-          <span>{formatTime(secondsLeft)}</span>
+        <div className="game-actions">
+          <div className="time-chip">
+            <span>⏱</span>
+            <span>Vaqt: {formatTime(secondsLeft)}</span>
+          </div>
+          <button className="btn-exit" onClick={() => navigate('/')}>
+            Chiqish
+          </button>
         </div>
       </div>
 
-      <div className="progress-bar">
-        <div
-          className="progress-bar__fill"
-          style={{ width: `${((step + 1) / test.questions.length) * 100}%` }}
-        />
+      <div className="welcome-card">
+        <div>
+          <div className="welcome-card__title">Salom, {student?.firstName ?? "Do'stim"}! 👋</div>
+          <div className="welcome-card__subtitle">
+            Bugun siz uchun qiziqarli topshiriq tayyorladik.
+          </div>
+          <div className="info-chips">
+            {student?.className && <span className="info-chip">🎒 Sinf: {student.className}</span>}
+            {student?.age && <span className="info-chip">🎂 Yosh: {student.age}</span>}
+            {student?.schoolName && <span className="info-chip">🏫 {student.schoolName}</span>}
+          </div>
+        </div>
+        <div className="welcome-card__hero">🧒💻</div>
       </div>
-      <div className="game-progress-label">
-        {step + 1} / {test.questions.length}
-      </div>
 
-      <div className="card game-card">
-        <div className="game-badge">Vaziyatli topshiriq</div>
-        <div className="card__title game-question">{question.text}</div>
-
-        {question.imageUrl && (
-          <img className="game-question__image" src={question.imageUrl} alt="" />
-        )}
-
-        <div className="options">
-          {question.options.map((opt, idx) => (
-            <button
-              key={opt.key}
-              className={
-                'option-btn' +
-                (answers[question.id] === opt.key ? ' option-btn--active' : '')
-              }
-              onClick={() => handleSelect(opt.key)}
-            >
-              <span className="option-btn__icon">{OPTION_ICONS[idx % OPTION_ICONS.length]}</span>
-              <span>{opt.text}</span>
-            </button>
-          ))}
+      <div className="progress-section">
+        <div className="progress-section__label">
+          <span>Umumiy progress</span>
+          <span>{Math.round(((step + 1) / questions.length) * 100)}%</span>
+        </div>
+        <div className="progress-bar">
+          <div
+            className="progress-bar__fill"
+            style={{ width: `${((step + 1) / questions.length) * 100}%` }}
+          />
         </div>
       </div>
 
-      <div className="game-hint">
-        💡 To'g'ri yoki noto'g'ri javob yo'q. Muhim narsa - sizning fikringiz!
+      <div className="question-card">
+        <div className="question-illustration" style={{ background: scene.gradient }}>
+          <span>{scene.emoji}</span>
+        </div>
+        <div className="question-content">
+          <div className="game-badge">
+            {step + 1}/{questions.length} &mdash; Vaziyatli topshiriq
+          </div>
+          <div className="game-question">{question.text}</div>
+
+          <div className="options">
+            {question.options.map((opt, idx) => (
+              <button
+                key={opt.key}
+                className={
+                  'option-btn' +
+                  (answers[question.id] === opt.key ? ' option-btn--active' : '')
+                }
+                onClick={() => handleSelect(opt.key)}
+              >
+                <span className="option-btn__icon">{OPTION_ICONS[idx % OPTION_ICONS.length]}</span>
+                <span>{opt.text}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <button
-        className="btn btn-primary"
-        disabled={!answers[question.id] || submitting}
-        onClick={handleNext}
-      >
-        {isLast ? 'Yakunlash' : 'Keyingisi →'}
-      </button>
+      <div className="game-footer">
+        <div className="game-hint">
+          💡 To'g'ri yoki noto'g'ri javob yo'q. Muhim narsa - sizning fikringiz!
+        </div>
+        <button
+          className="btn btn-primary game-next-btn"
+          disabled={!answers[question.id] || submitting}
+          onClick={handleNext}
+        >
+          {isLast ? 'Davom etish →' : 'Keyingisi →'}
+        </button>
+      </div>
     </div>
   );
 }
