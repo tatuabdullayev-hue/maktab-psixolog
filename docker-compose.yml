@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: maktab_psixolog_postgres
+    environment:
+      POSTGRES_USER: psixolog
+      POSTGRES_PASSWORD: psixolog2024
+      POSTGRES_DB: maktab_psixolog_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
