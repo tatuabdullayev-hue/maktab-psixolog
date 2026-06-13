@@ -9,7 +9,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Legend,
   CartesianGrid,
 } from 'recharts';
 import { api } from '../api/client';
@@ -110,6 +109,7 @@ export function Dashboard() {
         { name: 'Yuqori xavf', value: overview.high, level: 'danger' },
       ]
     : [];
+  const pieSlices = pieData.map((entry) => ({ ...entry, value: entry.value > 0 ? entry.value : 0.0001 }));
 
   return (
     <div className="dashboard">
@@ -133,35 +133,47 @@ export function Dashboard() {
               className={`stat-card stat-card--clickable${selectedLevel === 'all' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'all' ? null : 'all')}
             >
-              <div className="stat-card__label">Jami o'quvchilar</div>
-              <div className="stat-card__value">{overview.total}</div>
+              <div className="stat-card__icon stat-card__icon--total">👥</div>
+              <div className="stat-card__body">
+                <div className="stat-card__label">Jami o'quvchilar</div>
+                <div className="stat-card__value">{overview.total}</div>
+              </div>
             </button>
             <button
               type="button"
               className={`stat-card stat-card--normal stat-card--clickable${selectedLevel === 'normal' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'normal' ? null : 'normal')}
             >
-              <div className="stat-card__label">Past xavf</div>
-              <div className="stat-card__value">{overview.low}</div>
-              <div className="stat-card__pct">{overview.lowPct}%</div>
+              <div className="stat-card__icon stat-card__icon--normal">🟢</div>
+              <div className="stat-card__body">
+                <div className="stat-card__label">Past xavf</div>
+                <div className="stat-card__value">{overview.low}</div>
+                <div className="stat-card__pct">jami o'quvchilarning {overview.lowPct}%i</div>
+              </div>
             </button>
             <button
               type="button"
               className={`stat-card stat-card--attention stat-card--clickable${selectedLevel === 'attention' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'attention' ? null : 'attention')}
             >
-              <div className="stat-card__label">O'rta xavf</div>
-              <div className="stat-card__value">{overview.medium}</div>
-              <div className="stat-card__pct">{overview.mediumPct}%</div>
+              <div className="stat-card__icon stat-card__icon--attention">🟡</div>
+              <div className="stat-card__body">
+                <div className="stat-card__label">O'rta xavf</div>
+                <div className="stat-card__value">{overview.medium}</div>
+                <div className="stat-card__pct">jami o'quvchilarning {overview.mediumPct}%i</div>
+              </div>
             </button>
             <button
               type="button"
               className={`stat-card stat-card--danger stat-card--clickable${selectedLevel === 'danger' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'danger' ? null : 'danger')}
             >
-              <div className="stat-card__label">Yuqori xavf</div>
-              <div className="stat-card__value">{overview.high}</div>
-              <div className="stat-card__pct">{overview.highPct}%</div>
+              <div className="stat-card__icon stat-card__icon--danger">🔴</div>
+              <div className="stat-card__body">
+                <div className="stat-card__label">Yuqori xavf</div>
+                <div className="stat-card__value">{overview.high}</div>
+                <div className="stat-card__pct">jami o'quvchilarning {overview.highPct}%i</div>
+              </div>
             </button>
           </div>
 
@@ -205,49 +217,104 @@ export function Dashboard() {
 
           <div className="charts-row">
             <div className="chart-card">
-              <h2>Risk taqsimoti</h2>
+              <div className="chart-card__header">
+                <h2>Risk taqsimoti</h2>
+                <p className="chart-card__subtitle">Barcha o'quvchilar bo'yicha xavf darajalari</p>
+              </div>
               {overview.total === 0 ? (
                 <p className="muted">Ma'lumot yo'q</p>
               ) : (
-                <ResponsiveContainer width="100%" height={260}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={60}
-                      outerRadius={90}
-                      paddingAngle={2}
-                    >
-                      {pieData.map((entry) => (
-                        <Cell key={entry.level} fill={LEVEL_COLORS[entry.level]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="donut-wrap">
+                  <ResponsiveContainer width="100%" height={260}>
+                    <PieChart>
+                      <Pie
+                        data={pieSlices}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={70}
+                        outerRadius={100}
+                        paddingAngle={3}
+                        cornerRadius={6}
+                        stroke="none"
+                        isAnimationActive={false}
+                      >
+                        {pieSlices.map((entry) => (
+                          <Cell key={entry.level} fill={LEVEL_COLORS[entry.level]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value) => (Number(value) < 1 ? 0 : value)}
+                        contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 13 }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="donut-center">
+                    <div className="donut-center__value">{overview.total}</div>
+                    <div className="donut-center__label">jami</div>
+                  </div>
+                </div>
               )}
+              <div className="chart-legend">
+                {pieData.map((entry) => (
+                  <div className="chart-legend__item" key={entry.level}>
+                    <span
+                      className="chart-legend__dot"
+                      style={{ background: LEVEL_COLORS[entry.level] }}
+                    />
+                    <span className="chart-legend__name">{entry.name}</span>
+                    <span className="chart-legend__value">{entry.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="chart-card">
-              <h2>Sinflar kesimida</h2>
+              <div className="chart-card__header">
+                <h2>Sinflar kesimida</h2>
+                <p className="chart-card__subtitle">Har bir sinfdagi xavf darajalari taqsimoti</p>
+              </div>
               {overview.classBreakdown.length === 0 ? (
                 <p className="muted">Ma'lumot yo'q</p>
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={overview.classBreakdown}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="className" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="normal" name="Past" fill={LEVEL_COLORS.normal} stackId="a" />
-                    <Bar dataKey="attention" name="O'rta" fill={LEVEL_COLORS.attention} stackId="a" />
-                    <Bar dataKey="danger" name="Yuqori" fill={LEVEL_COLORS.danger} stackId="a" />
+                  <BarChart data={overview.classBreakdown} barCategoryGap="28%">
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f0f0f5" />
+                    <XAxis
+                      dataKey="className"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#9c99ad' }}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#9c99ad' }}
+                    />
+                    <Tooltip
+                      cursor={{ fill: 'rgba(109, 76, 224, 0.06)' }}
+                      contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 13 }}
+                    />
+                    <Bar dataKey="normal" name="Past" fill={LEVEL_COLORS.normal} stackId="a" radius={[0, 0, 0, 0]} maxBarSize={36} isAnimationActive={false} />
+                    <Bar dataKey="attention" name="O'rta" fill={LEVEL_COLORS.attention} stackId="a" maxBarSize={36} isAnimationActive={false} />
+                    <Bar dataKey="danger" name="Yuqori" fill={LEVEL_COLORS.danger} stackId="a" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
+              <div className="chart-legend">
+                <div className="chart-legend__item">
+                  <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.normal }} />
+                  <span className="chart-legend__name">Past xavf</span>
+                </div>
+                <div className="chart-legend__item">
+                  <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.attention }} />
+                  <span className="chart-legend__name">O'rta xavf</span>
+                </div>
+                <div className="chart-legend__item">
+                  <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.danger }} />
+                  <span className="chart-legend__name">Yuqori xavf</span>
+                </div>
+              </div>
             </div>
           </div>
 
