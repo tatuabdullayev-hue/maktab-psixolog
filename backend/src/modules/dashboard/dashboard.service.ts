@@ -159,6 +159,16 @@ export class DashboardService {
       .map(([className, levels]) => ({ className, ...levels }))
       .sort((a, b) => a.className.localeCompare(b.className));
 
+    const students = results.map((r) => ({
+      id: r.student?.id,
+      fullName: [r.student?.firstName, r.student?.lastName].filter(Boolean).join(' '),
+      className: r.student?.className,
+      level: r.aiRiskLevel ?? RiskLevel.NORMAL,
+      aiInsight: r.aiInsight,
+      aiRecommendation: r.aiRecommendation,
+      completedAt: r.completedAt,
+    }));
+
     return {
       total,
       low: counts.normal,
@@ -169,6 +179,7 @@ export class DashboardService {
       highPct: pct(counts.danger),
       classBreakdown,
       highRiskStudents,
+      students,
     };
   }
 

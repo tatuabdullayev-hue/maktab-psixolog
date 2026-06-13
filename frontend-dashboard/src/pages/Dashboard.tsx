@@ -32,6 +32,16 @@ interface HighRiskStudent {
   completedAt: string;
 }
 
+interface TestStudent {
+  id: string;
+  fullName: string;
+  className: string;
+  level: 'normal' | 'attention' | 'danger';
+  aiInsight: string | null;
+  aiRecommendation: string | null;
+  completedAt: string;
+}
+
 interface Overview {
   total: number;
   low: number;
@@ -42,7 +52,17 @@ interface Overview {
   highPct: number;
   classBreakdown: ClassBreakdown[];
   highRiskStudents: HighRiskStudent[];
+  students: TestStudent[];
 }
+
+type LevelFilter = 'all' | 'normal' | 'attention' | 'danger';
+
+const FILTER_TITLES: Record<LevelFilter, string> = {
+  all: "Test topshirgan o'quvchilar",
+  normal: 'Past xavf guruhi',
+  attention: "O'rta xavf guruhi",
+  danger: 'Yuqori xavf guruhi',
+};
 
 const LEVEL_LABELS: Record<string, string> = {
   normal: 'Past xavf',
@@ -66,6 +86,7 @@ export function Dashboard() {
   const [district, setDistrict] = useState('');
   const [date, setDate] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -105,26 +126,80 @@ export function Dashboard() {
       {overview && (
         <>
           <div className="stat-cards">
-            <div className="stat-card">
+            <button
+              type="button"
+              className={`stat-card stat-card--clickable${selectedLevel === 'all' ? ' stat-card--active' : ''}`}
+              onClick={() => setSelectedLevel(selectedLevel === 'all' ? null : 'all')}
+            >
               <div className="stat-card__label">Jami o'quvchilar</div>
               <div className="stat-card__value">{overview.total}</div>
-            </div>
-            <div className="stat-card stat-card--normal">
+            </button>
+            <button
+              type="button"
+              className={`stat-card stat-card--normal stat-card--clickable${selectedLevel === 'normal' ? ' stat-card--active' : ''}`}
+              onClick={() => setSelectedLevel(selectedLevel === 'normal' ? null : 'normal')}
+            >
               <div className="stat-card__label">Past xavf</div>
               <div className="stat-card__value">{overview.low}</div>
               <div className="stat-card__pct">{overview.lowPct}%</div>
-            </div>
-            <div className="stat-card stat-card--attention">
+            </button>
+            <button
+              type="button"
+              className={`stat-card stat-card--attention stat-card--clickable${selectedLevel === 'attention' ? ' stat-card--active' : ''}`}
+              onClick={() => setSelectedLevel(selectedLevel === 'attention' ? null : 'attention')}
+            >
               <div className="stat-card__label">O'rta xavf</div>
               <div className="stat-card__value">{overview.medium}</div>
               <div className="stat-card__pct">{overview.mediumPct}%</div>
-            </div>
-            <div className="stat-card stat-card--danger">
+            </button>
+            <button
+              type="button"
+              className={`stat-card stat-card--danger stat-card--clickable${selectedLevel === 'danger' ? ' stat-card--active' : ''}`}
+              onClick={() => setSelectedLevel(selectedLevel === 'danger' ? null : 'danger')}
+            >
               <div className="stat-card__label">Yuqori xavf</div>
               <div className="stat-card__value">{overview.high}</div>
               <div className="stat-card__pct">{overview.highPct}%</div>
-            </div>
+            </button>
           </div>
+
+          {selectedLevel && (
+            <div className="card">
+              <h2>{FILTER_TITLES[selectedLevel]}</h2>
+              {(() => {
+                const list =
+                  selectedLevel === 'all'
+                    ? overview.students
+                    : overview.students.filter((s) => s.level === selectedLevel);
+                return list.length === 0 ? (
+                  <p className="muted">Bu guruhda o'quvchi yo'q</p>
+                ) : (
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>O'quvchi</th>
+                        <th>Sinf</th>
+                        <th>Daraja</th>
+                        <th>Sana</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {list.map((s) => (
+                        <tr key={s.id}>
+                          <td>{s.fullName}</td>
+                          <td>{s.className}</td>
+                          <td>
+                            <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
+                          </td>
+                          <td>{formatDate(s.completedAt)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                );
+              })()}
+            </div>
+          )}
 
           <div className="charts-row">
             <div className="chart-card">
