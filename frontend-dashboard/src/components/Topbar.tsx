@@ -21,32 +21,44 @@ export function Topbar({
     <div className="topbar">
       <h1 className="topbar__title">{title}</h1>
       <div className="topbar__filters">
+        <span className="topbar__filters-icon">⚙️</span>
         <label className="topbar__field">
           <span className="topbar__label">Maktab</span>
-          <input
-            className="topbar__input"
-            placeholder="masalan: 53-maktab"
-            value={school}
-            onChange={(e) => onSchoolChange(e.target.value)}
-          />
+          <div className="topbar__input-wrap">
+            <span className="topbar__input-icon">🏫</span>
+            <input
+              className="topbar__input"
+              placeholder="masalan: 53-maktab"
+              value={school}
+              onChange={(e) => onSchoolChange(e.target.value)}
+            />
+          </div>
         </label>
+        <span className="topbar__divider" />
         <label className="topbar__field">
           <span className="topbar__label">Tuman</span>
-          <input
-            className="topbar__input"
-            placeholder="masalan: Chortoq tumani"
-            value={district}
-            onChange={(e) => onDistrictChange(e.target.value)}
-          />
+          <div className="topbar__input-wrap">
+            <span className="topbar__input-icon">📍</span>
+            <input
+              className="topbar__input"
+              placeholder="masalan: Chortoq tumani"
+              value={district}
+              onChange={(e) => onDistrictChange(e.target.value)}
+            />
+          </div>
         </label>
+        <span className="topbar__divider" />
         <label className="topbar__field">
           <span className="topbar__label">Sana</span>
-          <input
-            className="topbar__input"
-            type="date"
-            value={date}
-            onChange={(e) => onDateChange(e.target.value)}
-          />
+          <div className="topbar__input-wrap">
+            <span className="topbar__input-icon">📅</span>
+            <input
+              className="topbar__input topbar__input--date"
+              type="date"
+              value={date}
+              onChange={(e) => onDateChange(e.target.value)}
+            />
+          </div>
         </label>
       </div>
     </div>
