@@ -504,6 +504,24 @@ input {
   font-size: 16px;
 }
 
+.card__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card__header-row h2 {
+  margin: 0;
+}
+
+.search-input {
+  min-width: 220px;
+  background: #f7f7fb;
+}
+
 /* Table */
 .data-table {
   width: 100%;
