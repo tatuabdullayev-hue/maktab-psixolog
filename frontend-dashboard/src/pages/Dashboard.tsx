@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
+import { useAuth } from '../context/AuthContext';
 
 interface ClassBreakdown {
   className: string;
@@ -81,9 +82,10 @@ function formatDate(iso: string) {
 }
 
 export function Dashboard() {
+  const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [school, setSchool] = useState('');
-  const [district, setDistrict] = useState('');
+  const [school, setSchool] = useState(user?.schoolName ?? '');
+  const [district, setDistrict] = useState(user?.district ?? '');
   const [date, setDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);

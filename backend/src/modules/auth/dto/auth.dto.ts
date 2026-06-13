@@ -43,3 +43,25 @@ export class PsychologistLoginDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class RegisterPsychologistDto {
+  @IsString()
+  @IsNotEmpty()
+  fullName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  @IsOptional()
+  schoolName?: string;
+
+  @IsString()
+  @IsOptional()
+  district?: string;
+}

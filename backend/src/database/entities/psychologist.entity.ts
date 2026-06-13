@@ -30,6 +30,12 @@ export class Psychologist {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.PSYCHOLOGIST })
   role: UserRole;
 
+  @Column({ nullable: true })
+  schoolName: string;
+
+  @Column({ nullable: true })
+  district: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }

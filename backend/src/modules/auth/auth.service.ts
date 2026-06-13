@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -7,10 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { Psychologist } from '../../database/entities';
+import { Psychologist, UserRole } from '../../database/entities';
 import { StudentsService } from '../students/students.service';
 import { validateTelegramInitData } from './telegram-init-data.util';
-import { RegisterStudentDto } from './dto/auth.dto';
+import { RegisterStudentDto, RegisterPsychologistDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +71,46 @@ export class AuthService {
     const token = this.jwtService.sign({ sub: user.id, type: user.role });
     return {
       accessToken: token,
-      user: { id: user.id, fullName: user.fullName, role: user.role },
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        role: user.role,
+        schoolName: user.schoolName,
+        district: user.district,
+      },
+    };
+  }
+
+  /** Psixolog o'zi uchun yangi kabinet ochadi (maktab/tuman bilan). */
+  async registerPsychologist(dto: RegisterPsychologistDto) {
+    const existing = await this.psychologistRepo.findOne({
+      where: { username: dto.username },
+    });
+    if (existing) {
+      throw new ConflictException('Bu login allaqachon band');
+    }
+
+    const user = await this.psychologistRepo.save(
+      this.psychologistRepo.create({
+        fullName: dto.fullName,
+        username: dto.username,
+        passwordHash: await bcrypt.hash(dto.password, 10),
+        role: UserRole.PSYCHOLOGIST,
+        schoolName: dto.schoolName,
+        district: dto.district,
+      }),
+    );
+
+    const token = this.jwtService.sign({ sub: user.id, type: user.role });
+    return {
+      accessToken: token,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        role: user.role,
+        schoolName: user.schoolName,
+        district: user.district,
+      },
     };
   }
 }

@@ -21,24 +21,33 @@ export function Topbar({
     <div className="topbar">
       <h1 className="topbar__title">{title}</h1>
       <div className="topbar__filters">
-        <input
-          className="topbar__input"
-          placeholder="Maktab (masalan: 53-maktab)"
-          value={school}
-          onChange={(e) => onSchoolChange(e.target.value)}
-        />
-        <input
-          className="topbar__input"
-          placeholder="Tuman (masalan: Chortoq tumani)"
-          value={district}
-          onChange={(e) => onDistrictChange(e.target.value)}
-        />
-        <input
-          className="topbar__input"
-          type="date"
-          value={date}
-          onChange={(e) => onDateChange(e.target.value)}
-        />
+        <label className="topbar__field">
+          <span className="topbar__label">Maktab</span>
+          <input
+            className="topbar__input"
+            placeholder="masalan: 53-maktab"
+            value={school}
+            onChange={(e) => onSchoolChange(e.target.value)}
+          />
+        </label>
+        <label className="topbar__field">
+          <span className="topbar__label">Tuman</span>
+          <input
+            className="topbar__input"
+            placeholder="masalan: Chortoq tumani"
+            value={district}
+            onChange={(e) => onDistrictChange(e.target.value)}
+          />
+        </label>
+        <label className="topbar__field">
+          <span className="topbar__label">Sana</span>
+          <input
+            className="topbar__input"
+            type="date"
+            value={date}
+            onChange={(e) => onDateChange(e.target.value)}
+          />
+        </label>
       </div>
     </div>
   );

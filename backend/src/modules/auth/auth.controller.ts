@@ -4,6 +4,7 @@ import {
   TelegramAuthDto,
   PsychologistLoginDto,
   RegisterStudentDto,
+  RegisterPsychologistDto,
 } from './dto/auth.dto';
 
 @Controller('auth')
@@ -18,6 +19,12 @@ export class AuthController {
   @Post('login')
   loginPsychologist(@Body() dto: PsychologistLoginDto) {
     return this.authService.loginPsychologist(dto.username, dto.password);
+  }
+
+  /** Psixolog o'zi uchun kabinet ochadi (maktab/tuman bilan). */
+  @Post('register-psychologist')
+  registerPsychologist(@Body() dto: RegisterPsychologistDto) {
+    return this.authService.registerPsychologist(dto);
   }
 
   /** O'quvchi web-sahifa orqali ism/familiya/sinf kiritib boshlaydi (1-qism). */
