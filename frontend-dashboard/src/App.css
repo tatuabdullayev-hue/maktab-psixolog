@@ -242,9 +242,9 @@ input {
 }
 
 .topbar__label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
-  color: #b0aec2;
+  color: #9c99ad;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
@@ -267,9 +267,9 @@ input {
   border: 1.5px solid transparent;
   background: #f7f7fb;
   border-radius: 9px;
-  padding: 8px 12px 8px 32px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 9px 12px 9px 32px;
+  font-size: 14px;
+  font-weight: 600;
   color: #2e2b45;
   font-family: inherit;
   min-width: 170px;
@@ -277,8 +277,8 @@ input {
 }
 
 .topbar__input::placeholder {
-  color: #b0aec2;
-  font-weight: 400;
+  color: #8d8aa3;
+  font-weight: 500;
 }
 
 .topbar__input:hover {
@@ -298,7 +298,7 @@ input {
 
 .topbar__input--readonly {
   cursor: default;
-  color: #6b6880;
+  color: #2e2b45;
 }
 
 .topbar__input--readonly:hover,
