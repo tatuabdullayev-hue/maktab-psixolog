@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const NAV_ITEMS = [
   { to: '/', icon: '🏠', label: 'Bosh sahifa' },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside className="sidebar">
@@ -40,6 +42,10 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar__footer">
+        <button className="sidebar__theme-toggle" onClick={toggleTheme}>
+          <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+          <span>{theme === 'dark' ? 'Yorug\' rejim' : "Qorong'u rejim"}</span>
+        </button>
         <div className="sidebar__user">{user?.fullName ?? 'Psixolog'}</div>
         <button className="sidebar__logout" onClick={logout}>
           Chiqish

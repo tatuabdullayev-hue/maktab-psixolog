@@ -2,6 +2,40 @@
   box-sizing: border-box;
 }
 
+:root {
+  --color-bg: #f4f5fb;
+  --color-card: #ffffff;
+  --color-text: #1e1b3a;
+  --color-text-secondary: #6b6880;
+  --color-text-muted: #888888;
+  --color-text-faint: #aeabc2;
+  --color-border: #f0f0f5;
+  --color-border-strong: #ececf3;
+  --color-input-bg: #f7f7fb;
+  --color-input-bg-hover: #f1edff;
+  --color-hover: #f1edff;
+  --color-accent: #6d4ce0;
+  --color-accent-soft: #f1edff;
+  --color-shadow: rgba(30, 27, 58, 0.05);
+}
+
+[data-theme='dark'] {
+  --color-bg: #15131f;
+  --color-card: #211f30;
+  --color-text: #f1eefb;
+  --color-text-secondary: #aba7c4;
+  --color-text-muted: #8d89a8;
+  --color-text-faint: #74708f;
+  --color-border: #322e45;
+  --color-border-strong: #3a3650;
+  --color-input-bg: #2a2740;
+  --color-input-bg-hover: #332f4d;
+  --color-hover: #332f4d;
+  --color-accent: #8a6cf0;
+  --color-accent-soft: #332f4d;
+  --color-shadow: rgba(0, 0, 0, 0.35);
+}
+
 html,
 body,
 #root {
@@ -9,6 +43,6 @@ body,
   padding: 0;
   min-height: 100vh;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  background: #f4f5fb;
-  color: #1a1a1a;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
