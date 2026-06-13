@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Student, Test, TestResult } from '../../database/entities';
+import { MoodEntry, Student, Test, TestResult } from '../../database/entities';
 import { RiskService } from '../risk/risk.service';
 import { AiAnalysisService } from '../ai-analysis/ai-analysis.service';
 import { SubmitTestDto } from './dto/submit-test.dto';
@@ -16,6 +16,8 @@ export class TestsService implements OnModuleInit {
     private readonly resultRepo: Repository<TestResult>,
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
+    @InjectRepository(MoodEntry)
+    private readonly moodRepo: Repository<MoodEntry>,
     private readonly riskService: RiskService,
     private readonly aiAnalysisService: AiAnalysisService,
   ) {}
@@ -95,9 +97,15 @@ export class TestsService implements OnModuleInit {
       aiInsight: aiResult.insight,
       aiRecommendation: aiResult.recommendation,
     });
+
+    if (dto.mood) {
+      await this.moodRepo.save(this.moodRepo.create({ studentId, mood: dto.mood }));
+    }
+
+    const riskScore = await this.riskService.recalculateFromAi(studentId, aiResult.level, dto.mood);
+    result.aiRiskLevel = riskScore.level;
     await this.resultRepo.save(result);
 
-    await this.riskService.recalculateFromAi(studentId, aiResult.level);
     await this.riskService.createTestResultAlertIfNeeded(studentId, riskPoints);
 
     return result;

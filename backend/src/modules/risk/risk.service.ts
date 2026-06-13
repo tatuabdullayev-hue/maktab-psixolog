@@ -80,25 +80,28 @@ export class RiskService {
     return riskScore;
   }
 
-  /** Web-test oqimi uchun: AI tahlili asosida risk darajasini yangilaydi (mood komponentisiz). */
-  async recalculateFromAi(studentId: string, level: RiskLevel): Promise<RiskScore> {
+  /** Web-test oqimi uchun: AI tahlili va bugungi kayfiyat asosida risk darajasini yangilaydi. */
+  async recalculateFromAi(studentId: string, level: RiskLevel, mood?: MoodLevel): Promise<RiskScore> {
     const LEVEL_SCORES: Record<RiskLevel, number> = {
       [RiskLevel.NORMAL]: 20,
       [RiskLevel.ATTENTION]: 55,
       [RiskLevel.DANGER]: 85,
     };
-    const score = LEVEL_SCORES[level];
+    const aiComponent = LEVEL_SCORES[level];
+    const moodComponent = mood ? MOOD_WEIGHTS[mood] : 0;
+    const score = Math.min(aiComponent + moodComponent, 100);
+    const finalLevel = mood ? this.scoreToLevel(score) : level;
 
     const riskScore = this.riskScoreRepo.create({
       studentId,
       score,
-      level,
-      factors: { aiAnalysis: score },
+      level: finalLevel,
+      factors: { aiAnalysis: aiComponent, mood: moodComponent },
     });
     await this.riskScoreRepo.save(riskScore);
     await this.studentRepo.update(studentId, { currentRiskScore: score });
 
-    await this.maybeCreateRiskAlert(studentId, score, level);
+    await this.maybeCreateRiskAlert(studentId, score, finalLevel);
 
     return riskScore;
   }

@@ -32,6 +32,13 @@ const SELECTED_QUESTION_IDS = ['q1', 'q2', 'q4', 'q6', 'q8'];
 const OPTION_ICONS = ['🙂', '🤔', '😠', '🤝'];
 const TOTAL_SECONDS = 15 * 60;
 
+const MOOD_OPTIONS: { value: string; emoji: string; label: string }[] = [
+  { value: 'great', emoji: '😄', label: "A'lo" },
+  { value: 'normal', emoji: '🙂', label: 'Yaxshi' },
+  { value: 'bad', emoji: '😔', label: 'Yomon' },
+  { value: 'very_bad', emoji: '😢', label: 'Juda yomon' },
+];
+
 const QUESTION_IMAGES: Record<string, string> = {
   q1: q1Image,
   q2: q2Image,
@@ -54,6 +61,8 @@ export function GameTest() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
+  const [mood, setMood] = useState<string | null>(null);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     api.get('/tests').then(({ data }) => {
@@ -69,25 +78,25 @@ export function GameTest() {
   }, []);
 
   useEffect(() => {
-    if (!test) return;
+    if (!test || !started) return;
     const timer = setInterval(() => {
       setSecondsLeft((s) => Math.max(0, s - 1));
     }, 1000);
     return () => clearInterval(timer);
-  }, [test]);
+  }, [test, started]);
 
   const handleFinish = async () => {
     if (submitting) return;
     setSubmitting(true);
     try {
-      await api.post('/tests/submit', { testId: test!.id, answers });
+      await api.post('/tests/submit', { testId: test!.id, answers, mood });
     } finally {
       navigate('/thanks');
     }
   };
 
   useEffect(() => {
-    if (secondsLeft === 0 && test) {
+    if (secondsLeft === 0 && test && started) {
       handleFinish();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,6 +104,70 @@ export function GameTest() {
 
   if (!test) {
     return <div className="page page--center">Yuklanmoqda...</div>;
+  }
+
+  if (!started) {
+    return (
+      <div className="page game-page">
+        <div className="game-topbar">
+          <div className="game-brand">
+            <span className="game-brand__icon">🧠✨</span>
+            <div>
+              <div className="game-brand__title">AI PSIXOLOG</div>
+              <div className="game-brand__subtitle">Sizni tushunamiz, sizga yordam beramiz</div>
+            </div>
+          </div>
+          <div className="game-actions">
+            <button
+              className="btn-exit"
+              onClick={() => {
+                logout();
+                navigate('/');
+              }}
+            >
+              Chiqish
+            </button>
+          </div>
+        </div>
+
+        <div className="welcome-card">
+          <div>
+            <div className="welcome-card__title">Salom, {student?.firstName ?? "Do'stim"}! 👋</div>
+            <div className="welcome-card__subtitle">Boshlashdan oldin, bugungi kayfiyatingiz qanday?</div>
+          </div>
+          <div className="welcome-card__hero">🧒💻</div>
+        </div>
+
+        <div className="question-card">
+          <div className="question-content">
+            <div className="game-badge">Bugungi kayfiyatingizni belgilang</div>
+            <div className="mood-row">
+              {MOOD_OPTIONS.map((m) => (
+                <button
+                  key={m.value}
+                  className={'mood-btn' + (mood === m.value ? ' mood-btn--active' : '')}
+                  onClick={() => setMood(m.value)}
+                >
+                  <span className="mood-btn__emoji">{m.emoji}</span>
+                  <span>{m.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="game-footer">
+          <div className="game-hint">💡 Bu javob ham natijaga ta'sir qiladi, shuning uchun rostini belgilang.</div>
+          <button
+            className="btn btn-primary game-next-btn"
+            disabled={!mood}
+            onClick={() => setStarted(true)}
+          >
+            Davom etish →
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const questions = test.questions.filter((q) => SELECTED_QUESTION_IDS.includes(q.id));
