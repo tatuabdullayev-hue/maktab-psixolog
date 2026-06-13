@@ -53,7 +53,7 @@ interface TrendPoint {
   total: number;
 }
 
-interface Overview {
+export interface Overview {
   total: number;
   low: number;
   medium: number;
@@ -75,7 +75,7 @@ const FILTER_TITLES: Record<LevelFilter, string> = {
   danger: 'Yuqori xavf guruhi',
 };
 
-const LEVEL_LABELS: Record<string, string> = {
+export const LEVEL_LABELS: Record<string, string> = {
   normal: 'Past xavf',
   attention: "O'rta xavf",
   danger: 'Yuqori xavf',
@@ -87,7 +87,7 @@ const LEVEL_COLORS: Record<string, string> = {
   danger: '#ef4444',
 };
 
-function formatDate(iso: string) {
+export function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ');
 }
 
@@ -95,7 +95,7 @@ function formatShortDate(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit' });
 }
 
-function exportOverviewToExcel(overview: Overview, date: string) {
+export function exportOverviewToExcel(overview: Overview, date: string) {
   const rows = overview.students.map((s, i) => ({
     '№': i + 1,
     "O'quvchi": s.fullName,
