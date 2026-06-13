@@ -58,10 +58,10 @@ export class RegisterPsychologistDto {
   password: string;
 
   @IsString()
-  @IsOptional()
-  schoolName?: string;
+  @IsNotEmpty()
+  schoolName: string;
 
   @IsString()
-  @IsOptional()
-  district?: string;
+  @IsNotEmpty()
+  district: string;
 }
