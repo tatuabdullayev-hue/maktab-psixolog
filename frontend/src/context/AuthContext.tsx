@@ -31,6 +31,7 @@ interface AuthContextValue {
   loading: boolean;
   error: string | null;
   registerWeb: (data: RegisterStudentData) => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -38,6 +39,7 @@ const AuthContext = createContext<AuthContextValue>({
   loading: true,
   error: null,
   registerWeb: async () => {},
+  logout: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -77,8 +79,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const logout = () => {
+    setAuthToken(null);
+    setStudent(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ student, loading, error, registerWeb }}>
+    <AuthContext.Provider value={{ student, loading, error, registerWeb, logout }}>
       {children}
     </AuthContext.Provider>
   );

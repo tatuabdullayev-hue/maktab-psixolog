@@ -48,7 +48,7 @@ function formatTime(seconds: number) {
 
 export function GameTest() {
   const navigate = useNavigate();
-  const { student } = useAuth();
+  const { student, logout } = useAuth();
   const [test, setTest] = useState<TestData | null>(null);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -129,7 +129,13 @@ export function GameTest() {
             <span>⏱</span>
             <span>Vaqt: {formatTime(secondsLeft)}</span>
           </div>
-          <button className="btn-exit" onClick={() => navigate('/')}>
+          <button
+            className="btn-exit"
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
+          >
             Chiqish
           </button>
         </div>
