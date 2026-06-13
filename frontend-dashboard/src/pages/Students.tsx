@@ -110,7 +110,7 @@ export function Students() {
                 </thead>
                 <tbody>
                   {paginated.map((s, i) => (
-                    <tr key={s.id}>
+                    <tr key={`${s.id}-${s.completedAt}-${i}`}>
                       <td className="data-table__index">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
                       <td>{s.fullName}</td>
                       <td>{s.className}</td>
