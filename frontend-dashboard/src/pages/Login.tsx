@@ -19,7 +19,10 @@ export function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password) return;
+    if (!username.trim() || !password) {
+      setFormError("Barcha maydonlarni to'ldiring");
+      return;
+    }
     setSubmitting(true);
     setFormError(null);
     try {
@@ -34,7 +37,10 @@ export function Login() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !username.trim() || !password || !schoolName.trim() || !district.trim()) return;
+    if (!fullName.trim() || !username.trim() || !password || !schoolName.trim() || !district.trim()) {
+      setFormError("Barcha maydonlarni to'ldiring");
+      return;
+    }
     setSubmitting(true);
     setFormError(null);
     try {
@@ -101,7 +107,6 @@ export function Login() {
                 value={schoolName}
                 onChange={(e) => setSchoolName(e.target.value)}
                 placeholder="53-maktab"
-                required
               />
             </label>
 
@@ -111,7 +116,6 @@ export function Login() {
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 placeholder="Chortoq tumani"
-                required
               />
             </label>
           </>
