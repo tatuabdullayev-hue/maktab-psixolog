@@ -28,6 +28,8 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ');
 }
 
+const PAGE_SIZE = 10;
+
 export function Students() {
   const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -36,6 +38,7 @@ export function Students() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
@@ -56,6 +59,14 @@ export function Students() {
         s.fullName.toLowerCase().includes(search.trim().toLowerCase()),
       )
     : students;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, school, district, date]);
 
   return (
     <div className="dashboard">
@@ -86,28 +97,56 @@ export function Students() {
           {filtered.length === 0 ? (
             <p className="muted">O'quvchilar topilmadi</p>
           ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>O'quvchi</th>
-                  <th>Sinf</th>
-                  <th>Daraja</th>
-                  <th>Sana</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((s) => (
-                  <tr key={s.id}>
-                    <td>{s.fullName}</td>
-                    <td>{s.className}</td>
-                    <td>
-                      <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
-                    </td>
-                    <td>{formatDate(s.completedAt)}</td>
+            <>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>O'quvchi</th>
+                    <th>Sinf</th>
+                    <th>Daraja</th>
+                    <th>Sana</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginated.map((s, i) => (
+                    <tr key={s.id}>
+                      <td className="data-table__index">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
+                      <td>{s.fullName}</td>
+                      <td>{s.className}</td>
+                      <td>
+                        <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
+                      </td>
+                      <td>{formatDate(s.completedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    type="button"
+                    className="pagination__btn"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    ← Oldingi
+                  </button>
+                  <span className="pagination__info">
+                    {currentPage} / {totalPages} ({filtered.length} ta)
+                  </span>
+                  <button
+                    type="button"
+                    className="pagination__btn"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    Keyingi →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
