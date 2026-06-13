@@ -602,7 +602,8 @@ input {
 
 .game-hint {
   font-size: 15px;
-  color: #888;
+  font-weight: 700;
+  color: #333;
 }
 
 .game-next-btn {
