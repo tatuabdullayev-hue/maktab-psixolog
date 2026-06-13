@@ -62,6 +62,13 @@ export function GameTest() {
   }, []);
 
   useEffect(() => {
+    Object.values(QUESTION_IMAGES).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  useEffect(() => {
     if (!test) return;
     const timer = setInterval(() => {
       setSecondsLeft((s) => Math.max(0, s - 1));
