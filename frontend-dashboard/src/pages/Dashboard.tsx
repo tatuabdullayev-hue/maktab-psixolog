@@ -124,6 +124,27 @@ export function exportOverviewToExcel(overview: Overview, date: string) {
   XLSX.writeFile(workbook, fileName);
 }
 
+function MiniTrend({ data, dataKey, color }: { data: TrendPoint[]; dataKey: keyof TrendPoint; color: string }) {
+  if (!data.length || data.every((d) => d[dataKey] === 0)) return null;
+  return (
+    <div className="stat-card__spark">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data}>
+          <Area
+            type="monotone"
+            dataKey={dataKey}
+            stroke={color}
+            fill={color}
+            fillOpacity={0.18}
+            strokeWidth={2}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 export function Dashboard() {
   const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -165,6 +186,9 @@ export function Dashboard() {
       ]
     : [];
   const pieSlices = pieData.map((entry) => ({ ...entry, value: entry.value > 0 ? entry.value : 0.0001 }));
+  const PCT_MAP: Record<string, number> = overview
+    ? { normal: overview.lowPct, attention: overview.mediumPct, danger: overview.highPct }
+    : {};
 
   return (
     <div className="dashboard">
@@ -188,47 +212,55 @@ export function Dashboard() {
               className={`stat-card stat-card--clickable${selectedLevel === 'all' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'all' ? null : 'all')}
             >
+              <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--total">👥</div>
               <div className="stat-card__body">
                 <div className="stat-card__label">Jami o'quvchilar</div>
                 <div className="stat-card__value">{overview.total}</div>
               </div>
+              <MiniTrend data={trends} dataKey="total" color="#6d4ce0" />
             </button>
             <button
               type="button"
               className={`stat-card stat-card--normal stat-card--clickable${selectedLevel === 'normal' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'normal' ? null : 'normal')}
             >
+              <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--normal">🟢</div>
               <div className="stat-card__body">
                 <div className="stat-card__label">Past xavf</div>
                 <div className="stat-card__value">{overview.low}</div>
                 <div className="stat-card__pct">jami o'quvchilarning {overview.lowPct}%i</div>
               </div>
+              <MiniTrend data={trends} dataKey="normal" color={LEVEL_COLORS.normal} />
             </button>
             <button
               type="button"
               className={`stat-card stat-card--attention stat-card--clickable${selectedLevel === 'attention' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'attention' ? null : 'attention')}
             >
+              <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--attention">🟡</div>
               <div className="stat-card__body">
                 <div className="stat-card__label">O'rta xavf</div>
                 <div className="stat-card__value">{overview.medium}</div>
                 <div className="stat-card__pct">jami o'quvchilarning {overview.mediumPct}%i</div>
               </div>
+              <MiniTrend data={trends} dataKey="attention" color={LEVEL_COLORS.attention} />
             </button>
             <button
               type="button"
               className={`stat-card stat-card--danger stat-card--clickable${selectedLevel === 'danger' ? ' stat-card--active' : ''}`}
               onClick={() => setSelectedLevel(selectedLevel === 'danger' ? null : 'danger')}
             >
+              <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--danger">🔴</div>
               <div className="stat-card__body">
                 <div className="stat-card__label">Yuqori xavf</div>
                 <div className="stat-card__value">{overview.high}</div>
                 <div className="stat-card__pct">jami o'quvchilarning {overview.highPct}%i</div>
               </div>
+              <MiniTrend data={trends} dataKey="danger" color={LEVEL_COLORS.danger} />
             </button>
           </div>
 
@@ -279,48 +311,55 @@ export function Dashboard() {
               {overview.total === 0 ? (
                 <p className="muted">Ma'lumot yo'q</p>
               ) : (
-                <div className="donut-wrap">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <PieChart>
-                      <Pie
-                        data={pieSlices}
-                        dataKey="value"
-                        nameKey="name"
-                        innerRadius={70}
-                        outerRadius={100}
-                        paddingAngle={3}
-                        cornerRadius={6}
-                        stroke="none"
-                        isAnimationActive={false}
-                      >
-                        {pieSlices.map((entry) => (
-                          <Cell key={entry.level} fill={LEVEL_COLORS[entry.level]} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value) => (Number(value) < 1 ? 0 : value)}
-                        contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 13 }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="donut-center">
-                    <div className="donut-center__value">{overview.total}</div>
-                    <div className="donut-center__label">jami</div>
+                <div className="risk-distribution">
+                  <div className="donut-wrap">
+                    <ResponsiveContainer width="100%" height={260}>
+                      <PieChart>
+                        <Pie
+                          data={pieSlices}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={70}
+                          outerRadius={100}
+                          paddingAngle={3}
+                          cornerRadius={6}
+                          stroke="none"
+                          isAnimationActive={false}
+                        >
+                          {pieSlices.map((entry) => (
+                            <Cell key={entry.level} fill={LEVEL_COLORS[entry.level]} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value) => (Number(value) < 1 ? 0 : value)}
+                          contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 13 }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="donut-center">
+                      <div className="donut-center__value">{overview.total}</div>
+                      <div className="donut-center__label">jami</div>
+                    </div>
+                  </div>
+                  <div className="risk-legend-table">
+                    {pieData.map((entry) => (
+                      <div className="risk-legend-row" key={entry.level}>
+                        <div className="risk-legend-row__left">
+                          <span
+                            className="chart-legend__dot"
+                            style={{ background: LEVEL_COLORS[entry.level] }}
+                          />
+                          <span className="chart-legend__name">{entry.name}</span>
+                        </div>
+                        <div className="risk-legend-row__right">
+                          <span className="risk-legend-row__value">{entry.value}</span>
+                          <span className="risk-legend-row__pct">{PCT_MAP[entry.level]}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
-              <div className="chart-legend">
-                {pieData.map((entry) => (
-                  <div className="chart-legend__item" key={entry.level}>
-                    <span
-                      className="chart-legend__dot"
-                      style={{ background: LEVEL_COLORS[entry.level] }}
-                    />
-                    <span className="chart-legend__name">{entry.name}</span>
-                    <span className="chart-legend__value">{entry.value}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="chart-card">

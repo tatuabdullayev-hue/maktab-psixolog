@@ -344,6 +344,24 @@ input {
   display: flex;
   align-items: center;
   gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card__menu {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--color-text-faint);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.stat-card__spark {
+  margin-left: auto;
+  width: 64px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
 .stat-card--clickable {
@@ -508,6 +526,62 @@ input {
 .chart-legend__value {
   font-weight: 700;
   color: var(--color-text);
+}
+
+/* Risk distribution (donut + side legend table) */
+.risk-distribution {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.risk-legend-table {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.risk-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+}
+
+.risk-legend-row__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.risk-legend-row__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.risk-legend-row__value {
+  font-weight: 700;
+  color: var(--color-text);
+  min-width: 18px;
+  text-align: right;
+}
+
+.risk-legend-row__pct {
+  background: var(--color-accent-soft);
+  color: var(--color-text-secondary);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .risk-distribution {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Generic card */
