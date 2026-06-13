@@ -1,13 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Student, Test, TestResult } from '../../database/entities';
 import { RiskService } from '../risk/risk.service';
 import { AiAnalysisService } from '../ai-analysis/ai-analysis.service';
 import { SubmitTestDto } from './dto/submit-test.dto';
+import { QUESTIONS, TEST_TITLE, TEST_DESCRIPTION } from '../../database/seeds/questions.data';
 
 @Injectable()
-export class TestsService {
+export class TestsService implements OnModuleInit {
   constructor(
     @InjectRepository(Test)
     private readonly testRepo: Repository<Test>,
@@ -18,6 +19,24 @@ export class TestsService {
     private readonly riskService: RiskService,
     private readonly aiAnalysisService: AiAnalysisService,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    const test = await this.testRepo.findOne({ where: { title: TEST_TITLE } });
+    if (test) {
+      test.description = TEST_DESCRIPTION;
+      test.questions = QUESTIONS;
+      await this.testRepo.save(test);
+    } else {
+      await this.testRepo.save(
+        this.testRepo.create({
+          title: TEST_TITLE,
+          description: TEST_DESCRIPTION,
+          isActive: true,
+          questions: QUESTIONS,
+        }),
+      );
+    }
+  }
 
   async findActive(): Promise<Test[]> {
     return this.testRepo.find({ where: { isActive: true } });
