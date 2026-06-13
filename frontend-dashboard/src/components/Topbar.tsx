@@ -27,9 +27,10 @@ export function Topbar({
           <div className="topbar__input-wrap">
             <span className="topbar__input-icon">🏫</span>
             <input
-              className="topbar__input"
+              className="topbar__input topbar__input--readonly"
               placeholder="masalan: 53-maktab"
               value={school}
+              readOnly
               onChange={(e) => onSchoolChange(e.target.value)}
             />
           </div>
@@ -40,9 +41,10 @@ export function Topbar({
           <div className="topbar__input-wrap">
             <span className="topbar__input-icon">📍</span>
             <input
-              className="topbar__input"
+              className="topbar__input topbar__input--readonly"
               placeholder="masalan: Chortoq tumani"
               value={district}
+              readOnly
               onChange={(e) => onDistrictChange(e.target.value)}
             />
           </div>

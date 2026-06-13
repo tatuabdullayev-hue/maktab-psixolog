@@ -86,7 +86,7 @@ export function Dashboard() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [school, setSchool] = useState(user?.schoolName ?? '');
   const [district, setDistrict] = useState(user?.district ?? '');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
 

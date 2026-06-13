@@ -296,6 +296,17 @@ input {
   cursor: pointer;
 }
 
+.topbar__input--readonly {
+  cursor: default;
+  color: #6b6880;
+}
+
+.topbar__input--readonly:hover,
+.topbar__input--readonly:focus {
+  background: #f7f7fb;
+  border-color: transparent;
+}
+
 /* Stat cards */
 .stat-cards {
   display: grid;
