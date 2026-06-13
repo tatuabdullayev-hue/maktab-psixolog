@@ -25,6 +25,14 @@ export class DashboardController {
     return this.dashboardService.overviewFull({ school, district, date });
   }
 
+  @Get('trends')
+  trends(
+    @Query('school') school?: string,
+    @Query('district') district?: string,
+  ) {
+    return this.dashboardService.trends({ school, district });
+  }
+
   @Get('students')
   students() {
     return this.dashboardService.studentsList();

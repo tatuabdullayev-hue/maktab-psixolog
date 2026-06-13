@@ -653,3 +653,13 @@ input {
   color: #c8c6d6;
   cursor: not-allowed;
 }
+
+.trend-card {
+  grid-column: span 1;
+}
+
+@media (max-width: 900px) {
+  .bottom-cards {
+    grid-template-columns: 1fr;
+  }
+}

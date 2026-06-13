@@ -11,6 +11,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  AreaChart,
+  Area,
 } from 'recharts';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
@@ -41,6 +43,14 @@ interface TestStudent {
   aiInsight: string | null;
   aiRecommendation: string | null;
   completedAt: string;
+}
+
+interface TrendPoint {
+  date: string;
+  normal: number;
+  attention: number;
+  danger: number;
+  total: number;
 }
 
 interface Overview {
@@ -81,6 +91,10 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ');
 }
 
+function formatShortDate(iso: string) {
+  return new Date(iso).toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit' });
+}
+
 function exportOverviewToExcel(overview: Overview, date: string) {
   const rows = overview.students.map((s, i) => ({
     '№': i + 1,
@@ -118,6 +132,7 @@ export function Dashboard() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
+  const [trends, setTrends] = useState<TrendPoint[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -131,6 +146,16 @@ export function Dashboard() {
       .then(({ data }) => setOverview(data))
       .finally(() => setLoading(false));
   }, [school, district, date]);
+
+  useEffect(() => {
+    const params: Record<string, string> = {};
+    if (school) params.school = school;
+    if (district) params.district = district;
+
+    api
+      .get('/dashboard/trends', { params })
+      .then(({ data }) => setTrends(data));
+  }, [school, district]);
 
   const pieData = overview
     ? [
@@ -400,9 +425,34 @@ export function Dashboard() {
                 ⬇️ Excel formatda yuklab olish
               </button>
             </div>
-            <div className="card placeholder-card">
+            <div className="card placeholder-card trend-card">
               <h3>📈 Trendlar</h3>
-              <p className="muted">Tez orada: vaqt bo'yicha dinamika tahlili.</p>
+              <p className="muted">Oxirgi 14 kunlik dinamika.</p>
+              {trends.every((t) => t.total === 0) ? (
+                <p className="muted">Ma'lumot yo'q</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={160}>
+                  <AreaChart data={trends}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f0f0f5" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatShortDate}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#9c99ad' }}
+                      minTickGap={20}
+                    />
+                    <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9c99ad' }} width={24} />
+                    <Tooltip
+                      labelFormatter={(label) => formatShortDate(String(label))}
+                      contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 12 }}
+                    />
+                    <Area type="monotone" dataKey="normal" name={LEVEL_LABELS.normal} stackId="1" stroke={LEVEL_COLORS.normal} fill={LEVEL_COLORS.normal} fillOpacity={0.25} isAnimationActive={false} />
+                    <Area type="monotone" dataKey="attention" name={LEVEL_LABELS.attention} stackId="1" stroke={LEVEL_COLORS.attention} fill={LEVEL_COLORS.attention} fillOpacity={0.25} isAnimationActive={false} />
+                    <Area type="monotone" dataKey="danger" name={LEVEL_LABELS.danger} stackId="1" stroke={LEVEL_COLORS.danger} fill={LEVEL_COLORS.danger} fillOpacity={0.25} isAnimationActive={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         </>

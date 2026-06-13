@@ -183,6 +183,56 @@ export class DashboardService {
     };
   }
 
+  /**
+   * Pastdagi "Trendlar" kartasi uchun: oxirgi 14 kun bo'yicha har kuni
+   * topshirilgan testlar sonini va risk darajalari taqsimotini qaytaradi.
+   */
+  async trends(filters: { school?: string; district?: string }) {
+    const since = new Date();
+    since.setDate(since.getDate() - 13);
+    since.setHours(0, 0, 0, 0);
+
+    const qb = this.testResultRepo
+      .createQueryBuilder('tr')
+      .leftJoinAndSelect('tr.student', 'student')
+      .where('tr.aiRiskLevel IS NOT NULL')
+      .andWhere('tr.completedAt >= :since', { since });
+
+    if (filters.school) {
+      qb.andWhere('student.schoolName = :school', { school: filters.school });
+    }
+    if (filters.district) {
+      qb.andWhere('student.district = :district', { district: filters.district });
+    }
+
+    const results = await qb.getMany();
+
+    const days: {
+      date: string;
+      normal: number;
+      attention: number;
+      danger: number;
+      total: number;
+    }[] = [];
+    for (let i = 13; i >= 0; i -= 1) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push({ date: d.toISOString().slice(0, 10), normal: 0, attention: 0, danger: 0, total: 0 });
+    }
+    const byDate = new Map(days.map((d) => [d.date, d]));
+
+    for (const r of results) {
+      const key = new Date(r.completedAt).toISOString().slice(0, 10);
+      const entry = byDate.get(key);
+      if (!entry) continue;
+      const level = r.aiRiskLevel ?? RiskLevel.NORMAL;
+      entry[level] += 1;
+      entry.total += 1;
+    }
+
+    return days;
+  }
+
   async alerts(onlyUnresolved = true) {
     return this.alertsService.findAll(onlyUnresolved);
   }
