@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import {
   PieChart,
   Pie,
@@ -78,6 +79,35 @@ const LEVEL_COLORS: Record<string, string> = {
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ');
+}
+
+function exportOverviewToExcel(overview: Overview, date: string) {
+  const rows = overview.students.map((s, i) => ({
+    '№': i + 1,
+    "O'quvchi": s.fullName,
+    Sinf: s.className,
+    Daraja: LEVEL_LABELS[s.level],
+    "AI tahlili": s.aiInsight ?? '',
+    "AI tavsiyasi": s.aiRecommendation ?? '',
+    Sana: formatDate(s.completedAt),
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  worksheet['!cols'] = [
+    { wch: 5 },
+    { wch: 24 },
+    { wch: 10 },
+    { wch: 12 },
+    { wch: 50 },
+    { wch: 50 },
+    { wch: 12 },
+  ];
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Hisobot');
+
+  const fileName = date ? `hisobot_${date}.xlsx` : 'hisobot_barcha_sanalar.xlsx';
+  XLSX.writeFile(workbook, fileName);
 }
 
 export function Dashboard() {
@@ -357,7 +387,18 @@ export function Dashboard() {
             </div>
             <div className="card placeholder-card">
               <h3>📄 Hisobot yaratish</h3>
-              <p className="muted">Tez orada: PDF/Excel hisobot eksporti.</p>
+              <p className="muted">
+                {date ? `${formatDate(date)} sanasi` : 'Barcha sanalar'} bo'yicha
+                natijalarni Excel formatida yuklab oling.
+              </p>
+              <button
+                type="button"
+                className="btn btn-export"
+                disabled={overview.students.length === 0}
+                onClick={() => exportOverviewToExcel(overview, date)}
+              >
+                ⬇️ Excel formatda yuklab olish
+              </button>
             </div>
             <div className="card placeholder-card">
               <h3>📈 Trendlar</h3>

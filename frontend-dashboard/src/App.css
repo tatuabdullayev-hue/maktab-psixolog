@@ -624,3 +624,32 @@ input {
   margin: 0 0 8px;
   font-size: 15px;
 }
+
+.placeholder-card .muted {
+  margin-bottom: 12px;
+}
+
+.btn-export {
+  width: auto;
+  border: 1.5px solid #6d4ce0;
+  background: #fff;
+  color: #6d4ce0;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-export:hover:not(:disabled) {
+  background: #6d4ce0;
+  color: #fff;
+}
+
+.btn-export:disabled {
+  border-color: #e2e2ec;
+  color: #c8c6d6;
+  cursor: not-allowed;
+}
