@@ -1,10 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { CurrentUser } from './current-user.decorator';
+import { AuthUser } from './auth.types';
 import {
   TelegramAuthDto,
   PsychologistLoginDto,
   RegisterStudentDto,
   RegisterPsychologistDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
 } from './dto/auth.dto';
 
 @Controller('auth')
@@ -37,5 +42,17 @@ export class AuthController {
   @Post('dev-login')
   loginDev(@Body() body: { telegramId: string; firstName: string }) {
     return this.authService.loginDev(body.telegramId, body.firstName);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  updateProfile(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto) {
+    return this.authService.updateProfile(user.psychologistId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('change-password')
+  changePassword(@CurrentUser() user: AuthUser, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(user.psychologistId, dto);
   }
 }

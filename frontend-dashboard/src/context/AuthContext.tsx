@@ -30,6 +30,7 @@ interface AuthContextValue {
   login: (username: string, password: string) => Promise<void>;
   register: (data: RegisterPsychologistData) => Promise<void>;
   logout: () => void;
+  updateUser: (user: PsychologistUser) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -39,6 +40,7 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => {},
   register: async () => {},
   logout: () => {},
+  updateUser: () => {},
 });
 
 const STORAGE_KEY = 'psixolog_user';
@@ -90,8 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const updateUser = (updated: PsychologistUser) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setUser(updated);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

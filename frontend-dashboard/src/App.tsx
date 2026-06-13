@@ -7,6 +7,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Students } from './pages/Students';
 import { Reports } from './pages/Reports';
 import { Risks } from './pages/Risks';
+import { Settings } from './pages/Settings';
 import { Placeholder } from './pages/Placeholder';
 import './App.css';
 
@@ -35,7 +36,7 @@ function AppContent() {
           <Route path="/risks" element={<Risks />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/recommendations" element={<Placeholder title="Tavsiyalar" />} />
-          <Route path="/settings" element={<Placeholder title="Sozlamalar" />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Placeholder title="Yordam" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

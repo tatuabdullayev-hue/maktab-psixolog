@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -11,7 +13,12 @@ import * as bcrypt from 'bcryptjs';
 import { Psychologist, UserRole } from '../../database/entities';
 import { StudentsService } from '../students/students.service';
 import { validateTelegramInitData } from './telegram-init-data.util';
-import { RegisterStudentDto, RegisterPsychologistDto } from './dto/auth.dto';
+import {
+  RegisterStudentDto,
+  RegisterPsychologistDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+} from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -112,5 +119,48 @@ export class AuthService {
         district: user.district,
       },
     };
+  }
+
+  /** Profil ma'lumotlarini (ism, maktab, tuman) yangilash. */
+  async updateProfile(psychologistId: string, dto: UpdateProfileDto) {
+    const user = await this.psychologistRepo.findOne({
+      where: { id: psychologistId },
+    });
+    if (!user) {
+      throw new NotFoundException('Foydalanuvchi topilmadi');
+    }
+
+    user.fullName = dto.fullName;
+    user.schoolName = dto.schoolName;
+    user.district = dto.district;
+    await this.psychologistRepo.save(user);
+
+    return {
+      id: user.id,
+      fullName: user.fullName,
+      role: user.role,
+      schoolName: user.schoolName,
+      district: user.district,
+    };
+  }
+
+  /** Parolni almashtirish. */
+  async changePassword(psychologistId: string, dto: ChangePasswordDto) {
+    const user = await this.psychologistRepo.findOne({
+      where: { id: psychologistId },
+    });
+    if (!user || !user.passwordHash) {
+      throw new NotFoundException('Foydalanuvchi topilmadi');
+    }
+
+    const isValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!isValid) {
+      throw new BadRequestException("Joriy parol noto'g'ri");
+    }
+
+    user.passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.psychologistRepo.save(user);
+
+    return { success: true };
   }
 }
