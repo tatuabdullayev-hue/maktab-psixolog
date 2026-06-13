@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Students } from './pages/Students';
 import { Reports } from './pages/Reports';
+import { Risks } from './pages/Risks';
 import { Placeholder } from './pages/Placeholder';
 import './App.css';
 
@@ -31,7 +32,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/students" element={<Students />} />
-          <Route path="/risks" element={<Placeholder title="Risklar" />} />
+          <Route path="/risks" element={<Risks />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/recommendations" element={<Placeholder title="Tavsiyalar" />} />
           <Route path="/settings" element={<Placeholder title="Sozlamalar" />} />

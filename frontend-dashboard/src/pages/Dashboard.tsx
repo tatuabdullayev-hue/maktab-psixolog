@@ -35,7 +35,7 @@ interface HighRiskStudent {
   completedAt: string;
 }
 
-interface TestStudent {
+export interface TestStudent {
   id: string;
   fullName: string;
   className: string;
