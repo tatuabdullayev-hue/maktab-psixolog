@@ -8,7 +8,7 @@ export const QUESTIONS: TestQuestion[] = [
   {
     id: 'q1',
     domain: 'aggression',
-    text: "Sinfdoshing sendan kulib qaradi va hamma oldida masxara qildi. Nima qilasan?",
+    text: "Sinfdoshing senga kulib qaradi va hamma oldida masxara qildi. Nima qilasan?",
     options: [
       { key: 'A', text: "Kulib qo'yib, e'tibor bermayman", riskWeight: 0 },
       { key: 'B', text: 'Unga gapni tushuntiraman, nega bunday qilganini so\'rayman', riskWeight: 0 },
