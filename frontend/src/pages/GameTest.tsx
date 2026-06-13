@@ -138,21 +138,22 @@ export function GameTest() {
           <div className="welcome-card__hero">🧒💻</div>
         </div>
 
-        <div className="question-card">
-          <div className="question-content">
-            <div className="game-badge">Bugungi kayfiyatingizni belgilang</div>
-            <div className="mood-row">
-              {MOOD_OPTIONS.map((m) => (
-                <button
-                  key={m.value}
-                  className={'mood-btn' + (mood === m.value ? ' mood-btn--active' : '')}
-                  onClick={() => setMood(m.value)}
-                >
-                  <span className="mood-btn__emoji">{m.emoji}</span>
-                  <span>{m.label}</span>
-                </button>
-              ))}
-            </div>
+        <div className="mood-select-card">
+          <div className="mood-badge">
+            <span className="mood-badge__icon">🙂</span>
+            <span>Bugungi kayfiyatingizni belgilang</span>
+          </div>
+          <div className="mood-options">
+            {MOOD_OPTIONS.map((m) => (
+              <button
+                key={m.value}
+                className={'mood-option' + (mood === m.value ? ' mood-option--active' : '')}
+                onClick={() => setMood(m.value)}
+              >
+                <span className="mood-option__emoji">{m.emoji}</span>
+                <span>{m.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
