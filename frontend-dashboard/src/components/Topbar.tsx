@@ -28,7 +28,6 @@ export function Topbar({
             <span className="topbar__input-icon">🏫</span>
             <input
               className="topbar__input topbar__input--readonly"
-              placeholder="masalan: 53-maktab"
               value={school}
               readOnly
               onChange={(e) => onSchoolChange(e.target.value)}
@@ -42,7 +41,6 @@ export function Topbar({
             <span className="topbar__input-icon">📍</span>
             <input
               className="topbar__input topbar__input--readonly"
-              placeholder="masalan: Chortoq tumani"
               value={district}
               readOnly
               onChange={(e) => onDistrictChange(e.target.value)}
