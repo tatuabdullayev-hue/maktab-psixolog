@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import q1Image from '../assets/questions/q1.png';
+import q2Image from '../assets/questions/q2.png';
+import q3Image from '../assets/questions/q3.png';
+import q4Image from '../assets/questions/q4.png';
+import q5Image from '../assets/questions/q5.png';
 
 interface TestQuestionOption {
   key: string;
@@ -27,12 +32,12 @@ const SELECTED_QUESTION_IDS = ['q1', 'q2', 'q4', 'q6', 'q8'];
 const OPTION_ICONS = ['🙂', '🤔', '😠', '🤝'];
 const TOTAL_SECONDS = 15 * 60;
 
-const QUESTION_SCENES: Record<string, { emoji: string; gradient: string }> = {
-  q1: { emoji: '😆👉🧒', gradient: 'linear-gradient(160deg, #fbc2eb 0%, #a6c1ee 100%)' },
-  q2: { emoji: '🧑‍🤝‍🧑😢', gradient: 'linear-gradient(160deg, #fdcbf1 0%, #e6dee9 100%)' },
-  q4: { emoji: '😔🌧️', gradient: 'linear-gradient(160deg, #a1c4fd 0%, #c2e9fb 100%)' },
-  q6: { emoji: '🤗👫', gradient: 'linear-gradient(160deg, #fbc7d4 0%, #96e6a1 100%)' },
-  q8: { emoji: '🚪🙈', gradient: 'linear-gradient(160deg, #ffecd2 0%, #fcb69f 100%)' },
+const QUESTION_IMAGES: Record<string, string> = {
+  q1: q1Image,
+  q2: q2Image,
+  q4: q3Image,
+  q6: q4Image,
+  q8: q5Image,
 };
 
 function formatTime(seconds: number) {
@@ -88,9 +93,7 @@ export function GameTest() {
   const questions = test.questions.filter((q) => SELECTED_QUESTION_IDS.includes(q.id));
   const question = questions[step];
   const isLast = step === questions.length - 1;
-  const scene =
-    QUESTION_SCENES[question.id] ??
-    { emoji: '🧠✨', gradient: 'linear-gradient(160deg, #4f46e5 0%, #a855f7 100%)' };
+  const illustration = QUESTION_IMAGES[question.id];
 
   const handleSelect = (key: string) => {
     setAnswers((prev) => ({ ...prev, [question.id]: key }));
@@ -154,8 +157,8 @@ export function GameTest() {
       </div>
 
       <div className="question-card">
-        <div className="question-illustration" style={{ background: scene.gradient }}>
-          <span>{scene.emoji}</span>
+        <div className="question-illustration">
+          <img src={illustration} alt="" />
         </div>
         <div className="question-content">
           <div className="game-badge">
