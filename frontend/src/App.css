@@ -655,7 +655,9 @@ input {
 }
 
 .impulse-stage {
+  position: relative;
   background: #fff;
+  border: 3px solid transparent;
   border-radius: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
@@ -666,11 +668,30 @@ input {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.impulse-stage--hit {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.impulse-stage--miss {
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
 .impulse-stage__emoji {
   font-size: 110px;
   line-height: 1;
+  animation: impulse-pop 0.15s ease-out;
+}
+
+.impulse-stage__feedback {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  font-size: 40px;
   animation: impulse-pop 0.15s ease-out;
 }
 

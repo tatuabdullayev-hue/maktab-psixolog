@@ -77,6 +77,7 @@ export function ImpulseGame() {
   const [trialIndex, setTrialIndex] = useState(0);
   const [stimulusVisible, setStimulusVisible] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [tapFeedback, setTapFeedback] = useState<'hit' | 'miss' | null>(null);
 
   const sequenceRef = useRef<Trial[]>([]);
   const resultsRef = useRef<TrialResult[]>([]);
@@ -116,6 +117,7 @@ export function ImpulseGame() {
     respondedRef.current = false;
     trialStartRef.current = Date.now();
     setStimulusVisible(true);
+    setTapFeedback(null);
 
     const hideTimer = setTimeout(() => setStimulusVisible(false), STIMULUS_MS);
 
@@ -160,6 +162,7 @@ export function ImpulseGame() {
       responded: true,
       reactionTimeMs: Date.now() - trialStartRef.current,
     };
+    setTapFeedback(trial.type === 'go' ? 'hit' : 'miss');
   };
 
   const handleFinishAndNext = () => {
@@ -268,8 +271,14 @@ export function ImpulseGame() {
         </div>
       </div>
 
-      <div className="impulse-stage" onClick={handleStageClick}>
+      <div
+        className={`impulse-stage${tapFeedback ? ` impulse-stage--${tapFeedback}` : ''}`}
+        onClick={handleStageClick}
+      >
         {stimulusVisible && trial && <span className="impulse-stage__emoji">{trial.emoji}</span>}
+        {tapFeedback && (
+          <span className="impulse-stage__feedback">{tapFeedback === 'hit' ? '✅' : '❌'}</span>
+        )}
       </div>
 
       <div className="game-footer">
