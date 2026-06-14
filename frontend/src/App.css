@@ -622,6 +622,69 @@ input {
   margin-bottom: 20px;
 }
 
+/* Tezkor bog'bon (Go/No-Go) */
+.impulse-instructions {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.impulse-instructions__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.impulse-stimulus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  font-size: 32px;
+  background: #f4f5fb;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.impulse-stage {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.impulse-stage__emoji {
+  font-size: 110px;
+  line-height: 1;
+  animation: impulse-pop 0.15s ease-out;
+}
+
+@keyframes impulse-pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .mood-badge {
   display: inline-flex;
   align-items: center;

@@ -7,6 +7,7 @@ import { ChatMessage } from './chat-message.entity';
 import { RiskScore } from './risk-score.entity';
 import { Alert } from './alert.entity';
 import { ClassAccess } from './class-access.entity';
+import { ImpulseGameResult } from './impulse-game-result.entity';
 
 export const ALL_ENTITIES = [
   Student,
@@ -18,4 +19,5 @@ export const ALL_ENTITIES = [
   RiskScore,
   Alert,
   ClassAccess,
+  ImpulseGameResult,
 ];

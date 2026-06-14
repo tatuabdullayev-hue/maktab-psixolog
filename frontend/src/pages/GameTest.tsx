@@ -91,7 +91,7 @@ export function GameTest() {
     try {
       await api.post('/tests/submit', { testId: test!.id, answers, mood });
     } finally {
-      navigate('/thanks');
+      navigate('/impulse-game');
     }
   };
 

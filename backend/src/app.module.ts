@@ -12,6 +12,7 @@ import { AlertsModule } from './modules/alerts/alerts.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 import { ClassAccessModule } from './modules/class-access/class-access.module';
+import { ImpulseGameModule } from './modules/impulse-game/impulse-game.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ClassAccessModule } from './modules/class-access/class-access.module';
     DashboardModule,
     TelegramModule,
     ClassAccessModule,
+    ImpulseGameModule,
   ],
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Register } from './pages/Register';
 import { GameTest } from './pages/GameTest';
+import { ImpulseGame } from './pages/ImpulseGame';
 import { Thanks } from './pages/Thanks';
 import './App.css';
 
@@ -24,6 +25,10 @@ function AppContent() {
     <Routes>
       <Route path="/" element={student ? <Navigate to="/test" replace /> : <Register />} />
       <Route path="/test" element={student ? <GameTest /> : <Navigate to="/" replace />} />
+      <Route
+        path="/impulse-game"
+        element={student ? <ImpulseGame /> : <Navigate to="/" replace />}
+      />
       <Route path="/thanks" element={<Thanks />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
