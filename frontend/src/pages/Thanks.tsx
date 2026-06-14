@@ -7,7 +7,6 @@ export function Thanks() {
         <p className="muted">
           Sarguzashtni muvaffaqiyatli yakunladingiz. Javoblaringiz qabul qilindi.
         </p>
-        <p className="muted">Yana kelganingizdan xursandmiz! 👋</p>
       </div>
     </div>
   );
