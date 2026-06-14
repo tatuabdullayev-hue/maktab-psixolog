@@ -178,6 +178,42 @@ export class RiskService {
     return riskScore;
   }
 
+  /** "Hayot tanlovlari" testi natijasi asosida umumiy risk ballini yangilaydi (jinoyatga moyillik komponenti). */
+  async addLifeChoicesResult(studentId: string, level: RiskLevel): Promise<RiskScore> {
+    const LIFE_CHOICES_SCORES: Record<RiskLevel, number> = {
+      [RiskLevel.NORMAL]: 0,
+      [RiskLevel.ATTENTION]: 10,
+      [RiskLevel.DANGER]: 20,
+    };
+    const lifeChoicesComponent = LIFE_CHOICES_SCORES[level];
+
+    const latest = await this.riskScoreRepo.findOne({
+      where: { studentId },
+      order: { calculatedAt: 'DESC' },
+    });
+
+    const previousFactors = latest?.factors ?? {};
+    const baseComponents = Object.entries(previousFactors)
+      .filter(([key]) => key !== 'lifeChoices')
+      .reduce((sum, [, value]) => sum + value, 0);
+
+    const score = Math.min(baseComponents + lifeChoicesComponent, 100);
+    const finalLevel = this.scoreToLevel(score);
+
+    const riskScore = this.riskScoreRepo.create({
+      studentId,
+      score,
+      level: finalLevel,
+      factors: { ...previousFactors, lifeChoices: lifeChoicesComponent },
+    });
+    await this.riskScoreRepo.save(riskScore);
+    await this.studentRepo.update(studentId, { currentRiskScore: score });
+
+    await this.maybeCreateRiskAlert(studentId, score, finalLevel);
+
+    return riskScore;
+  }
+
   private scoreToLevel(score: number): RiskLevel {
     if (score >= 70) return RiskLevel.DANGER;
     if (score >= 40) return RiskLevel.ATTENTION;

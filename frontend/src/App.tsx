@@ -4,6 +4,7 @@ import { Register } from './pages/Register';
 import { GameTest } from './pages/GameTest';
 import { ImpulseGame } from './pages/ImpulseGame';
 import { ColorTest } from './pages/ColorTest';
+import { LifeChoicesTest } from './pages/LifeChoicesTest';
 import { Thanks } from './pages/Thanks';
 import './App.css';
 
@@ -33,6 +34,10 @@ function AppContent() {
       <Route
         path="/color-test"
         element={student ? <ColorTest /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/life-choices"
+        element={student ? <LifeChoicesTest /> : <Navigate to="/" replace />}
       />
       <Route path="/thanks" element={<Thanks />} />
       <Route path="*" element={<Navigate to="/" replace />} />

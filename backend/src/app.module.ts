@@ -14,6 +14,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
 import { ClassAccessModule } from './modules/class-access/class-access.module';
 import { ImpulseGameModule } from './modules/impulse-game/impulse-game.module';
 import { ColorTestModule } from './modules/color-test/color-test.module';
+import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ColorTestModule } from './modules/color-test/color-test.module';
     ClassAccessModule,
     ImpulseGameModule,
     ColorTestModule,
+    LifeChoicesModule,
   ],
 })
 export class AppModule {}

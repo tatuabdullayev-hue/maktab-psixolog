@@ -44,7 +44,7 @@ export function ColorTest() {
     try {
       await api.post('/color-test/submit', { order });
     } finally {
-      navigate('/thanks');
+      navigate('/life-choices');
     }
   };
 
