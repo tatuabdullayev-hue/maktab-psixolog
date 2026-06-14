@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Psychologist } from '../../database/entities';
 import { StudentsModule } from '../students/students.module';
+import { ClassAccessModule } from '../class-access/class-access.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
@@ -13,6 +14,7 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     TypeOrmModule.forFeature([Psychologist]),
     StudentsModule,
+    ClassAccessModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

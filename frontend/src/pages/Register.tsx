@@ -38,8 +38,12 @@ export function Register() {
         district: district.trim() || undefined,
       });
       navigate('/test');
-    } catch {
-      setFormError("Ro'yxatdan o'tishda xatolik yuz berdi. Qaytadan urinib ko'ring.");
+    } catch (e: any) {
+      if (e?.response?.status === 403) {
+        setFormError('Hozircha mashg\'ulot faol emas. Iltimos, keyinroq urinib ko\'ring.');
+      } else {
+        setFormError("Ro'yxatdan o'tishda xatolik yuz berdi. Qaytadan urinib ko'ring.");
+      }
     } finally {
       setSubmitting(false);
     }

@@ -11,6 +11,7 @@ import { RiskModule } from './modules/risk/risk.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
+import { ClassAccessModule } from './modules/class-access/class-access.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
     AlertsModule,
     DashboardModule,
     TelegramModule,
+    ClassAccessModule,
   ],
 })
 export class AppModule {}

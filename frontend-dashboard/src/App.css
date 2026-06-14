@@ -708,6 +708,65 @@ input {
   color: #b91c1c;
 }
 
+/* Class access */
+.class-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.class-access-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-input-bg);
+}
+
+.class-access-item__name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.class-access-toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-border-strong);
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.class-access-toggle--active {
+  background: #6d4ce0;
+}
+
+.class-access-toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+
+.class-access-toggle--active .class-access-toggle__knob {
+  transform: translateX(18px);
+}
+
+.class-access-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Bottom placeholder cards */
 .bottom-cards {
   display: grid;

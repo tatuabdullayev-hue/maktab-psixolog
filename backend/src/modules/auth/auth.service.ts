@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,6 +13,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Psychologist, UserRole } from '../../database/entities';
 import { StudentsService } from '../students/students.service';
+import { ClassAccessService } from '../class-access/class-access.service';
 import { validateTelegramInitData } from './telegram-init-data.util';
 import {
   RegisterStudentDto,
@@ -24,6 +26,7 @@ import {
 export class AuthService {
   constructor(
     private readonly studentsService: StudentsService,
+    private readonly classAccessService: ClassAccessService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectRepository(Psychologist)
@@ -59,6 +62,11 @@ export class AuthService {
 
   /** Web (Telegram'siz) o'quvchi ro'yxatdan o'tishi - 1-qism kirish formasi. */
   async registerWebStudent(dto: RegisterStudentDto) {
+    const isActive = await this.classAccessService.isClassActive(dto.className);
+    if (!isActive) {
+      throw new ForbiddenException('Hozircha mashg\'ulot faol emas');
+    }
+
     const student = await this.studentsService.createWebStudent(dto);
     const token = this.jwtService.sign({ sub: student.id, type: 'student' });
     return { accessToken: token, student };

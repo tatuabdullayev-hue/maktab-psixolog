@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/', icon: '🏠', label: 'Bosh sahifa' },
   { to: '/students', icon: '🎓', label: "O'quvchilar" },
   { to: '/risks', icon: '⚠️', label: 'Risklar' },
+  { to: '/permissions', icon: '✅', label: "Mashg'ulotga ruhsat berish" },
   { to: '/reports', icon: '📊', label: 'Hisobotlar' },
   { to: '/recommendations', icon: '💡', label: 'Tavsiyalar' },
   { to: '/settings', icon: '⚙️', label: 'Sozlamalar' },

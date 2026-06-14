@@ -6,4 +6,5 @@ export * from './test-result.entity';
 export * from './chat-message.entity';
 export * from './risk-score.entity';
 export * from './alert.entity';
+export * from './class-access.entity';
 export * from './entities.list';
