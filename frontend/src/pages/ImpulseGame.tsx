@@ -31,15 +31,16 @@ function buildSequence(): Trial[] {
     ...Array(NOGO_TOTAL).fill('nogo' as const),
   ];
 
-  // Aralashtirish, lekin ketma-ket 3 tadan ortiq bir xil turdagi stimul chiqmasin
-  let shuffled: TrialType[];
-  do {
+  // Aralashtirish, lekin ketma-ket 2 ta "no-go" stimuli chiqmasin
+  let shuffled: TrialType[] = types;
+  for (let attempt = 0; attempt < 100; attempt += 1) {
     shuffled = [...types];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-  } while (hasLongRun(shuffled, 3));
+    if (!hasLongRun(shuffled, 'nogo', 1)) break;
+  }
 
   return shuffled.map((type) => ({
     type,
@@ -47,15 +48,11 @@ function buildSequence(): Trial[] {
   }));
 }
 
-function hasLongRun(arr: TrialType[], maxRun: number): boolean {
-  let run = 1;
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] === arr[i - 1]) {
-      run += 1;
-      if (run > maxRun) return true;
-    } else {
-      run = 1;
-    }
+function hasLongRun(arr: TrialType[], type: TrialType, maxRun: number): boolean {
+  let run = 0;
+  for (const item of arr) {
+    run = item === type ? run + 1 : 0;
+    if (run > maxRun) return true;
   }
   return false;
 }
