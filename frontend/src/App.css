@@ -684,7 +684,13 @@ input {
 .impulse-stage__emoji {
   font-size: 110px;
   line-height: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
   animation: impulse-pop 0.15s ease-out;
+}
+
+.impulse-stage__emoji--fading {
+  opacity: 0.25;
 }
 
 .impulse-stage__feedback {

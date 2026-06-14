@@ -75,7 +75,7 @@ export function ImpulseGame() {
 
   const [phase, setPhase] = useState<'intro' | 'playing' | 'finished'>('intro');
   const [trialIndex, setTrialIndex] = useState(0);
-  const [stimulusVisible, setStimulusVisible] = useState(true);
+  const [stimulusFading, setStimulusFading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [tapFeedback, setTapFeedback] = useState<'hit' | 'miss' | null>(null);
 
@@ -116,10 +116,10 @@ export function ImpulseGame() {
 
     respondedRef.current = false;
     trialStartRef.current = Date.now();
-    setStimulusVisible(true);
+    setStimulusFading(false);
     setTapFeedback(null);
 
-    const hideTimer = setTimeout(() => setStimulusVisible(false), STIMULUS_MS);
+    const fadeTimer = setTimeout(() => setStimulusFading(true), STIMULUS_MS);
 
     const nextTimer = setTimeout(() => {
       const trial = sequenceRef.current[trialIndex];
@@ -140,7 +140,7 @@ export function ImpulseGame() {
     }, TRIAL_MS);
 
     return () => {
-      clearTimeout(hideTimer);
+      clearTimeout(fadeTimer);
       clearTimeout(nextTimer);
     };
   }, [phase, trialIndex, finishGame]);
@@ -275,7 +275,13 @@ export function ImpulseGame() {
         className={`impulse-stage${tapFeedback ? ` impulse-stage--${tapFeedback}` : ''}`}
         onClick={handleStageClick}
       >
-        {stimulusVisible && trial && <span className="impulse-stage__emoji">{trial.emoji}</span>}
+        {trial && (
+          <span
+            className={`impulse-stage__emoji${stimulusFading ? ' impulse-stage__emoji--fading' : ''}`}
+          >
+            {trial.emoji}
+          </span>
+        )}
         {tapFeedback && (
           <span className="impulse-stage__feedback">{tapFeedback === 'hit' ? '✅' : '❌'}</span>
         )}
