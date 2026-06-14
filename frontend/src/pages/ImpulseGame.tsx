@@ -16,8 +16,8 @@ const GO_ITEMS: GameItem[] = [
 ];
 const NOGO_ITEM: GameItem = { emoji: '📵', label: 'Telefon' };
 
-const GO_TOTAL = 48;
-const NOGO_TOTAL = 12;
+const GO_TOTAL = 32;
+const NOGO_TOTAL = 8;
 const TOTAL_TRIALS = GO_TOTAL + NOGO_TOTAL;
 const STIMULUS_MS = 500;
 const TRIAL_MS = 2000;
