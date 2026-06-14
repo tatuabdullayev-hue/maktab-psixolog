@@ -394,13 +394,17 @@ input {
 /* Game page */
 .game-page {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
   min-height: 100vh;
   box-sizing: border-box;
   padding: 24px;
   background: #f4f5fb;
   color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
 }
 
 .game-topbar {
@@ -626,26 +630,26 @@ input {
 .impulse-instructions {
   background: #fff;
   border-radius: 20px;
-  padding: 28px;
+  padding: 36px 40px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .impulse-instructions__row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  font-size: 16px;
+  gap: 24px;
+  font-size: 19px;
   font-weight: 600;
   color: #333;
 }
 
 .impulse-items {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
@@ -654,20 +658,20 @@ input {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-width: 80px;
+  gap: 8px;
+  min-width: 110px;
   background: #f4f5fb;
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 18px 20px;
 }
 
 .impulse-item__emoji {
-  font-size: 32px;
+  font-size: 44px;
   line-height: 1;
 }
 
 .impulse-item__label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #666;
 }
@@ -679,7 +683,7 @@ input {
   border-radius: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
-  height: 360px;
+  height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -714,21 +718,21 @@ input {
 }
 
 .impulse-stage__emoji {
-  font-size: 110px;
+  font-size: 150px;
   line-height: 1;
 }
 
 .impulse-stage__label {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
   color: #333;
 }
 
 .impulse-stage__feedback {
   position: absolute;
-  bottom: 24px;
-  right: 28px;
-  font-size: 40px;
+  bottom: 28px;
+  right: 32px;
+  font-size: 52px;
   animation: impulse-pop 0.15s ease-out;
 }
 
