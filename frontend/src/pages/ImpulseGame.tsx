@@ -3,8 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-const GO_EMOJIS = ['🍎', '🍌', '🍇', '🍊', '🍓'];
-const NOGO_EMOJI = '🍄';
+interface GameItem {
+  emoji: string;
+  label: string;
+}
+
+const GO_ITEMS: GameItem[] = [
+  { emoji: '📚', label: 'Kitob' },
+  { emoji: '📓', label: 'Daftar' },
+  { emoji: '✏️', label: 'Ruchka' },
+  { emoji: '🎒', label: 'Sumka' },
+];
+const NOGO_ITEM: GameItem = { emoji: '📱', label: 'Telefon' };
 
 const GO_TOTAL = 48;
 const NOGO_TOTAL = 12;
@@ -14,9 +24,8 @@ const TRIAL_MS = 2000;
 
 type TrialType = 'go' | 'nogo';
 
-interface Trial {
+interface Trial extends GameItem {
   type: TrialType;
-  emoji: string;
 }
 
 interface TrialResult {
@@ -42,10 +51,11 @@ function buildSequence(): Trial[] {
     if (!hasLongRun(shuffled, 'nogo', 1)) break;
   }
 
-  return shuffled.map((type) => ({
-    type,
-    emoji: type === 'go' ? GO_EMOJIS[Math.floor(Math.random() * GO_EMOJIS.length)] : NOGO_EMOJI,
-  }));
+  return shuffled.map((type) => {
+    const item =
+      type === 'go' ? GO_ITEMS[Math.floor(Math.random() * GO_ITEMS.length)] : NOGO_ITEM;
+    return { type, ...item };
+  });
 }
 
 function hasLongRun(arr: TrialType[], type: TrialType, maxRun: number): boolean {
@@ -195,21 +205,33 @@ export function ImpulseGame() {
 
         <div className="welcome-card">
           <div>
-            <div className="welcome-card__title">Tezkor bog'bon 🌱</div>
+            <div className="welcome-card__title">Tezkor maktabchi 🎒</div>
             <div className="welcome-card__subtitle">
               Endi yana bitta qiziqarli o'yin bor — diqqatingizni sinab ko'ramiz!
             </div>
           </div>
-          <div className="welcome-card__hero">🧺</div>
+          <div className="welcome-card__hero">🎒</div>
         </div>
 
         <div className="impulse-instructions">
           <div className="impulse-instructions__row">
-            <span className="impulse-stimulus">🍎🍌🍇🍊🍓</span>
+            <span className="impulse-items">
+              {GO_ITEMS.map((item) => (
+                <span className="impulse-item" key={item.label}>
+                  <span className="impulse-item__emoji">{item.emoji}</span>
+                  <span className="impulse-item__label">{item.label}</span>
+                </span>
+              ))}
+            </span>
             <span>chiqsa — tezda ekranga bosing!</span>
           </div>
           <div className="impulse-instructions__row">
-            <span className="impulse-stimulus">{NOGO_EMOJI}</span>
+            <span className="impulse-items">
+              <span className="impulse-item">
+                <span className="impulse-item__emoji">{NOGO_ITEM.emoji}</span>
+                <span className="impulse-item__label">{NOGO_ITEM.label}</span>
+              </span>
+            </span>
             <span>chiqsa — bosmang, qo'lingizni tegmang!</span>
           </div>
           <p className="muted">
@@ -233,7 +255,7 @@ export function ImpulseGame() {
         <div className="card center register-card">
           <div className="result-star">🌟</div>
           <h2>Ajoyib!</h2>
-          <p className="muted">Siz "Tezkor bog'bon" o'yinini muvaffaqiyatli yakunladingiz!</p>
+          <p className="muted">Siz "Tezkor maktabchi" o'yinini muvaffaqiyatli yakunladingiz!</p>
           <button
             className="btn btn-primary"
             disabled={submitting}
@@ -256,7 +278,7 @@ export function ImpulseGame() {
           <span className="game-brand__icon">🧠✨</span>
           <div>
             <div className="game-brand__title">AI PSIXOLOG</div>
-            <div className="game-brand__subtitle">Tezkor bog'bon</div>
+            <div className="game-brand__subtitle">Tezkor maktabchi</div>
           </div>
         </div>
       </div>
@@ -276,11 +298,12 @@ export function ImpulseGame() {
         onClick={handleStageClick}
       >
         {trial && (
-          <span
-            className={`impulse-stage__emoji${stimulusFading ? ' impulse-stage__emoji--fading' : ''}`}
+          <div
+            className={`impulse-stage__item${stimulusFading ? ' impulse-stage__item--fading' : ''}`}
           >
-            {trial.emoji}
-          </span>
+            <span className="impulse-stage__emoji">{trial.emoji}</span>
+            <span className="impulse-stage__label">{trial.label}</span>
+          </div>
         )}
         {tapFeedback && (
           <span className="impulse-stage__feedback">{tapFeedback === 'hit' ? '✅' : '❌'}</span>
@@ -289,7 +312,7 @@ export function ImpulseGame() {
 
       <div className="game-footer">
         <div className="game-hint">
-          🍎🍌🍇🍊🍓 — bos! &nbsp; {NOGO_EMOJI} — bosma!
+          📚📓✏️🎒 — bos! &nbsp; {NOGO_ITEM.emoji} {NOGO_ITEM.label} — bosma!
         </div>
       </div>
     </div>
