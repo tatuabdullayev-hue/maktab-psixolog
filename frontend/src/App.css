@@ -610,16 +610,17 @@ input {
 }
 
 .life-choice-option {
+  position: relative;
   display: flex;
   flex-direction: column;
-  border: 2px solid #eee;
+  border: 3px solid #eee;
   border-radius: 16px;
   background: #fff;
   cursor: pointer;
   overflow: hidden;
   padding: 0;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .life-choice-option:hover {
@@ -628,7 +629,32 @@ input {
 
 .life-choice-option--active {
   border-color: #4f46e5;
-  box-shadow: 0 0 0 3px #eef2ff;
+  box-shadow: 0 0 0 4px #eef2ff;
+  transform: scale(0.98);
+}
+
+.life-choice-option--active .life-choice-option__label {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.life-choice-option--active::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
 }
 
 .life-choice-option__image {
@@ -648,6 +674,7 @@ input {
   padding: 12px 14px;
   font-size: 14px;
   line-height: 1.4;
+  transition: background 0.15s, color 0.15s;
 }
 
 @media (max-width: 992px) {
