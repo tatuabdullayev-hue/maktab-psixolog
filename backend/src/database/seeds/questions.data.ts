@@ -11,7 +11,7 @@ export const QUESTIONS: TestQuestion[] = [
     text: "Sinfdoshing senga kulib qaradi va hamma oldida masxara qildi. Nima qilasan?",
     options: [
       { key: 'A', text: "Kulib qo'yib, e'tibor bermayman", riskWeight: 0 },
-      { key: 'B', text: 'Unga gapni tushuntiraman, nega bunday qilganini so\'rayman', riskWeight: 0 },
+      { key: 'B', text: 'U bilan gaplashaman, nega bunday qilganini so\'rayman', riskWeight: 0 },
       { key: 'C', text: "Jahlim chiqib, unga qarata baqirib tashlayman", riskWeight: 2 },
       { key: 'D', text: "Uni urib, o'chimni olaman", riskWeight: 3 },
     ],
@@ -19,10 +19,10 @@ export const QUESTIONS: TestQuestion[] = [
   {
     id: 'q2',
     domain: 'bullying',
-    text: 'Tanaffusda bir guruh o\'quvchi yangi kelgan o\'quvchini doim masxara qiladi. Sen buni ko\'rib turasan.',
+    text: 'Har kuni tanaffusda bir guruh o\'quvchi yangi kelgan o\'quvchini doim masxara qiladi. Sen buni ko\'rib turasan.',
     options: [
       { key: 'A', text: "Borib to'xtatishga harakat qilaman yoki o'qituvchiga aytaman", riskWeight: 0 },
-      { key: 'B', text: "Yoningdan o'tib ketaman, aralashmayman", riskWeight: 1 },
+      { key: 'B', text: "Yonidan o'tib ketaman, aralashmayman", riskWeight: 1 },
       { key: 'C', text: 'Ularga qo\'shilib kulaman', riskWeight: 2 },
       { key: 'D', text: "Men ham unga shunday munosabatda bo'laman", riskWeight: 3 },
     ],
