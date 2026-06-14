@@ -14,7 +14,7 @@ const GO_ITEMS: GameItem[] = [
   { emoji: '✏️', label: 'Ruchka' },
   { emoji: '🎒', label: 'Sumka' },
 ];
-const NOGO_ITEM: GameItem = { emoji: '📱', label: 'Telefon' };
+const NOGO_ITEM: GameItem = { emoji: '📵', label: 'Telefon' };
 
 const GO_TOTAL = 48;
 const NOGO_TOTAL = 12;
