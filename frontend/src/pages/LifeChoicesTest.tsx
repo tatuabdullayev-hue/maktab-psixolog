@@ -171,7 +171,7 @@ export function LifeChoicesTest() {
 
       <div className="life-choice-card">
         <div className="game-badge">
-          {step + 1}/{QUESTIONS.length} &mdash; Vaziyatli topshiriq
+          {step + 1}/{QUESTIONS.length} &mdash; Hayot tanlovi
         </div>
         <div className="game-question">{question.text}</div>
 
