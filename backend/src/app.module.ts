@@ -13,6 +13,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 import { ClassAccessModule } from './modules/class-access/class-access.module';
 import { ImpulseGameModule } from './modules/impulse-game/impulse-game.module';
+import { ColorTestModule } from './modules/color-test/color-test.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ImpulseGameModule } from './modules/impulse-game/impulse-game.module';
     TelegramModule,
     ClassAccessModule,
     ImpulseGameModule,
+    ColorTestModule,
   ],
 })
 export class AppModule {}

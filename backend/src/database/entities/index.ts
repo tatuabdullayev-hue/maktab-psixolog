@@ -8,4 +8,5 @@ export * from './risk-score.entity';
 export * from './alert.entity';
 export * from './class-access.entity';
 export * from './impulse-game-result.entity';
+export * from './color-test-result.entity';
 export * from './entities.list';

@@ -176,7 +176,7 @@ export function ImpulseGame() {
   };
 
   const handleFinishAndNext = () => {
-    navigate('/thanks');
+    navigate('/color-test');
   };
 
   if (phase === 'intro') {

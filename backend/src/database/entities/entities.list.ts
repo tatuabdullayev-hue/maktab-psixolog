@@ -8,6 +8,7 @@ import { RiskScore } from './risk-score.entity';
 import { Alert } from './alert.entity';
 import { ClassAccess } from './class-access.entity';
 import { ImpulseGameResult } from './impulse-game-result.entity';
+import { ColorTestResult } from './color-test-result.entity';
 
 export const ALL_ENTITIES = [
   Student,
@@ -20,4 +21,5 @@ export const ALL_ENTITIES = [
   Alert,
   ClassAccess,
   ImpulseGameResult,
+  ColorTestResult,
 ];
