@@ -1,13 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-const GRADES = [7, 8, 9, 10, 11];
-const SECTIONS = ['A', 'B', 'C', 'D'];
-
-const CLASS_OPTIONS = GRADES.flatMap((grade) =>
-  SECTIONS.map((section) => `${grade}-${section}`),
-);
+import { api } from '../api/client';
 
 export function Register() {
   const { registerWeb } = useAuth();
@@ -21,6 +15,16 @@ export function Register() {
   const [district, setDistrict] = useState('Chortoq tumani');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [activeClasses, setActiveClasses] = useState<string[]>([]);
+  const [classesLoading, setClassesLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get('/class-access/active')
+      .then(({ data }) => setActiveClasses(data))
+      .catch(() => setActiveClasses([]))
+      .finally(() => setClassesLoading(false));
+  }, []);
 
   const canSubmit = firstName.trim() && lastName.trim() && className;
 
@@ -81,12 +85,15 @@ export function Register() {
           <span>Sinfingiz</span>
           <select value={className} onChange={(e) => setClassName(e.target.value)}>
             <option value="">Sinfni tanlang</option>
-            {CLASS_OPTIONS.map((c) => (
+            {activeClasses.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
             ))}
           </select>
+          {!classesLoading && activeClasses.length === 0 && (
+            <span className="error">Hozircha hech bir sinf uchun mashg'ulot faol emas</span>
+          )}
         </label>
 
         <label className="field">
