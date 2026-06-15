@@ -16,7 +16,6 @@ import {
 } from 'recharts';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { useAuth } from '../context/AuthContext';
 
 interface ClassBreakdown {
   className: string;
@@ -146,17 +145,18 @@ function MiniTrend({ data, dataKey, color }: { data: TrendPoint[]; dataKey: keyo
 }
 
 export function Dashboard() {
-  const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [school, setSchool] = useState(user?.schoolName ?? '');
-  const [district, setDistrict] = useState(user?.district ?? '');
+  const [school, setSchool] = useState('53-maktab');
+  const [district, setDistrict] = useState('Chortoq tumani');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const params: Record<string, string> = {};
     if (school) params.school = school;
     if (district) params.district = district;
@@ -165,6 +165,7 @@ export function Dashboard() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
+      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -203,6 +204,7 @@ export function Dashboard() {
       />
 
       {loading && <p className="muted">Yuklanmoqda...</p>}
+      {error && <p className="error">{error}</p>}
 
       {overview && (
         <>

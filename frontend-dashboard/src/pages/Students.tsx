@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { useAuth } from '../context/AuthContext';
 
 interface TestStudent {
   id: string;
@@ -31,17 +30,18 @@ function formatDate(iso: string) {
 const PAGE_SIZE = 10;
 
 export function Students() {
-  const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [school, setSchool] = useState(user?.schoolName ?? '');
-  const [district, setDistrict] = useState(user?.district ?? '');
+  const [school, setSchool] = useState('53-maktab');
+  const [district, setDistrict] = useState('Chortoq tumani');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const params: Record<string, string> = {};
     if (school) params.school = school;
     if (district) params.district = district;
@@ -50,6 +50,7 @@ export function Students() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
+      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -81,6 +82,7 @@ export function Students() {
       />
 
       {loading && <p className="muted">Yuklanmoqda...</p>}
+      {error && <p className="error">{error}</p>}
 
       {overview && (
         <div className="card">

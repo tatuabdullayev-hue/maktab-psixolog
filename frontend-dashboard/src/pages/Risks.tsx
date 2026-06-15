@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { useAuth } from '../context/AuthContext';
 import { LEVEL_LABELS, formatDate, type Overview } from './Dashboard';
 
 type LevelFilter = 'all' | 'normal' | 'attention' | 'danger';
@@ -9,18 +8,19 @@ type LevelFilter = 'all' | 'normal' | 'attention' | 'danger';
 const PAGE_SIZE = 10;
 
 export function Risks() {
-  const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [school, setSchool] = useState(user?.schoolName ?? '');
-  const [district, setDistrict] = useState(user?.district ?? '');
+  const [school, setSchool] = useState('53-maktab');
+  const [district, setDistrict] = useState('Chortoq tumani');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [search, setSearch] = useState('');
   const [level, setLevel] = useState<LevelFilter>('all');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const params: Record<string, string> = {};
     if (school) params.school = school;
     if (district) params.district = district;
@@ -29,6 +29,7 @@ export function Risks() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
+      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -60,6 +61,7 @@ export function Risks() {
       />
 
       {loading && <p className="muted">Yuklanmoqda...</p>}
+      {error && <p className="error">{error}</p>}
 
       {overview && (
         <div className="card">

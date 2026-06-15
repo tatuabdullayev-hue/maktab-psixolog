@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
@@ -41,6 +41,9 @@ export class AuthController {
   /** Dev-only: login without Telegram, for local browser testing of the Mini App. */
   @Post('dev-login')
   loginDev(@Body() body: { telegramId: string; firstName: string }) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException('Not available');
+    }
     return this.authService.loginDev(body.telegramId, body.firstName);
   }
 

@@ -54,8 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem(STORAGE_KEY);
     if (token && storedUser) {
-      setAuthToken(token);
-      setUser(JSON.parse(storedUser));
+      try {
+        setAuthToken(token);
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setAuthToken(null);
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
     setLoading(false);
   }, []);

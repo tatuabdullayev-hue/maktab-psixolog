@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -53,22 +53,48 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+const PROGRESS_KEY = 'gametest_progress';
+
+interface SavedProgress {
+  step: number;
+  answers: Record<string, string>;
+  secondsLeft: number;
+  mood: string | null;
+  started: boolean;
+}
+
+function loadProgress(): SavedProgress | null {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function GameTest() {
   const navigate = useNavigate();
   const { student, logout } = useAuth();
   const [test, setTest] = useState<TestData | null>(null);
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const saved = useRef(loadProgress()).current;
+  const [step, setStep] = useState(saved?.step ?? 0);
+  const [answers, setAnswers] = useState<Record<string, string>>(saved?.answers ?? {});
   const [submitting, setSubmitting] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
-  const [mood, setMood] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
+  const submittingRef = useRef(false);
+  const [secondsLeft, setSecondsLeft] = useState(saved?.secondsLeft ?? TOTAL_SECONDS);
+  const [mood, setMood] = useState<string | null>(saved?.mood ?? null);
+  const [started, setStarted] = useState(saved?.started ?? false);
 
   useEffect(() => {
     api.get('/tests').then(({ data }) => {
       if (data.length) setTest(data[0]);
     });
   }, []);
+
+  useEffect(() => {
+    const progress: SavedProgress = { step, answers, secondsLeft, mood, started };
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  }, [step, answers, secondsLeft, mood, started]);
 
   useEffect(() => {
     Object.values(QUESTION_IMAGES).forEach((src) => {
@@ -86,11 +112,13 @@ export function GameTest() {
   }, [test, started]);
 
   const handleFinish = async () => {
-    if (submitting) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       await api.post('/tests/submit', { testId: test!.id, answers, mood });
     } finally {
+      sessionStorage.removeItem(PROGRESS_KEY);
       navigate('/impulse-game');
     }
   };
@@ -173,6 +201,9 @@ export function GameTest() {
 
   const questions = test.questions.filter((q) => SELECTED_QUESTION_IDS.includes(q.id));
   const question = questions[step];
+  if (!question) {
+    return <div className="page page--center">Yuklanmoqda...</div>;
+  }
   const isLast = step === questions.length - 1;
   const illustration = QUESTION_IMAGES[question.id];
 

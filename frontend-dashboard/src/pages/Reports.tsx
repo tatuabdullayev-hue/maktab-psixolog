@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { useAuth } from '../context/AuthContext';
 import { exportOverviewToExcel, formatDate, type Overview } from './Dashboard';
 
 export function Reports() {
-  const { user } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [school, setSchool] = useState(user?.schoolName ?? '');
-  const [district, setDistrict] = useState(user?.district ?? '');
+  const [school, setSchool] = useState('53-maktab');
+  const [district, setDistrict] = useState('Chortoq tumani');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const params: Record<string, string> = {};
     if (school) params.school = school;
     if (district) params.district = district;
@@ -22,6 +22,7 @@ export function Reports() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
+      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -38,6 +39,7 @@ export function Reports() {
       />
 
       {loading && <p className="muted">Yuklanmoqda...</p>}
+      {error && <p className="error">{error}</p>}
 
       {overview && (
         <div className="card placeholder-card">
