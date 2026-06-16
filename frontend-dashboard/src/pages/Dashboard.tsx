@@ -437,12 +437,15 @@ export function Dashboard() {
                     <th>Sinf</th>
                     <th>Daraja</th>
                     <th>AI tahlili</th>
+                    <th>Qilingan ish</th>
                     <th>Sana</th>
                     <th>Ish</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {overview.highRiskStudents.map((s) => (
+                  {overview.highRiskStudents.map((s) => {
+                    const lastNote = allNotes.find((n) => n.studentId === s.id);
+                    return (
                     <tr key={s.id}>
                       <td>{s.fullName}</td>
                       <td>{s.className}</td>
@@ -450,6 +453,16 @@ export function Dashboard() {
                         <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
                       </td>
                       <td>{s.aiInsight}</td>
+                      <td>
+                        {lastNote ? (
+                          <span className="note-inline">
+                            <span className="note-inline__type">{TYPE_LABELS[lastNote.type]}</span>
+                            <span className="note-inline__text">{lastNote.note}</span>
+                          </span>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                      </td>
                       <td>{formatDate(s.completedAt)}</td>
                       <td>
                         <button
@@ -461,7 +474,8 @@ export function Dashboard() {
                         </button>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             )}
