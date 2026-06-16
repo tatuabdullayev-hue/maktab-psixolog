@@ -144,7 +144,7 @@ export class DashboardService {
     const pct = (n: number) => (total ? Math.round((n / total) * 100) : 0);
 
     const highRiskStudents = results
-      .filter((r) => r.aiRiskLevel !== RiskLevel.NORMAL)
+      .filter((r) => r.aiRiskLevel === RiskLevel.DANGER)
       .map((r) => ({
         id: r.student?.id,
         fullName: [r.student?.firstName, r.student?.lastName].filter(Boolean).join(' '),
