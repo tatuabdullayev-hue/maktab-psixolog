@@ -38,7 +38,6 @@ interface CardDef {
 const CARDS: CardDef[] = [
   { key: "unattended", icon: "⚠️",  ghost: "⚠️",  label: "Kiritilmagan ishlar",       color: "#dc2626", bg: "#fee2e2" },
   { key: "inspector",  icon: "📤",  ghost: "📤",  label: "Inspektora yuborildi",       color: "#0369a1", bg: "#e0f2fe" },
-  { key: "all",        icon: "✏️",  ghost: "✏️",  label: "Jami yozuvlar",             color: "#6d4ce0", bg: "#ede9fe" },
   { key: "student_talk", icon: "💬", ghost: "💬", label: "O'quvchi bilan suhbat",     color: "#6d4ce0", bg: "#ede9fe" },
   { key: "parent_talk",  icon: "👨‍👩‍👧", ghost: "👥", label: "Ota-ona bilan suhbat",     color: "#d97706", bg: "#fef3c7" },
   { key: "teacher_talk", icon: "🏫", ghost: "🏫", label: "Sinf rahbari bilan suhbat", color: "#16a34a", bg: "#dcfce7" },
