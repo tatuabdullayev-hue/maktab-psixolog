@@ -40,7 +40,7 @@ export function Students() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [noteTarget, setNoteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
   const [allNotes, setAllNotes] = useState<Note[]>([]);
 
   useEffect(() => {
@@ -137,7 +137,7 @@ export function Students() {
                           <button
                             type="button"
                             className="btn-note"
-                            onClick={() => setNoteTarget({ id: s.id, name: s.fullName })}
+                            onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
                           >
                             📝 Ish qo'shish
                           </button>
@@ -217,6 +217,7 @@ export function Students() {
         <NoteModal
           studentId={noteTarget.id}
           studentName={noteTarget.name}
+          studentClass={noteTarget.className}
           onClose={() => setNoteTarget(null)}
           onSaved={loadNotes}
         />

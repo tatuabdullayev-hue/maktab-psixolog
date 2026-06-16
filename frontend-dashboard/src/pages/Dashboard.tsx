@@ -155,7 +155,7 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
-  const [noteTarget, setNoteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
   const [allNotes, setAllNotes] = useState<Note[]>([]);
 
   useEffect(() => {
@@ -468,7 +468,7 @@ export function Dashboard() {
                         <button
                           type="button"
                           className="btn-note"
-                          onClick={() => setNoteTarget({ id: s.id, name: s.fullName })}
+                          onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
                         >
                           📝 Ish qo'shish
                         </button>
@@ -575,6 +575,7 @@ export function Dashboard() {
         <NoteModal
           studentId={noteTarget.id}
           studentName={noteTarget.name}
+          studentClass={noteTarget.className}
           onClose={() => setNoteTarget(null)}
           onSaved={loadNotes}
         />
