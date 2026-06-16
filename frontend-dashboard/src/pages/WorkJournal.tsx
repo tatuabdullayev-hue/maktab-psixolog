@@ -77,6 +77,18 @@ export function WorkJournal() {
   const [unattendedLoading, setUnattendedLoading] = useState(true);
   const [activePanel, setActivePanel]             = useState<string>("all");
 
+  const [viewStudent, setViewStudent] = useState<{ id: string; name: string; className?: string } | null>(null);
+  const [viewNotes, setViewNotes]     = useState<Note[]>([]);
+  const [viewLoading, setViewLoading] = useState(false);
+
+  const openHistory = (id: string, name: string, className?: string) => {
+    setViewStudent({ id, name, className });
+    setViewLoading(true);
+    api.get("/notes", { params: { school, district } })
+      .then(({ data }: { data: Note[] }) => setViewNotes(data.filter((n: Note) => n.studentId === id)))
+      .finally(() => setViewLoading(false));
+  };
+
   const { unattended: cachedCount, refresh: refreshBadge } = useNotifications();
 
   const load = () => {
@@ -213,10 +225,14 @@ export function WorkJournal() {
                 <div className="wj-unattended-item" key={s.studentId}>
                   <div className="wj-unattended-item__num">{idx + 1}</div>
                   <div className="wj-unattended-item__avatar">{getInitials(s.fullName)}</div>
-                  <div className="wj-unattended-item__info">
+                  <button
+                    type="button"
+                    className="wj-unattended-item__info wj-unattended-item__info--link"
+                    onClick={() => openHistory(s.studentId, s.fullName, s.className)}
+                  >
                     <span className="wj-unattended-item__name">{s.fullName}</span>
                     {s.className && <span className="wj-unattended-item__class">{s.className}</span>}
-                  </div>
+                  </button>
                   <span className="wj-unattended-item__risk">Yuqori xavf</span>
                   <button
                     type="button"
@@ -377,6 +393,61 @@ export function WorkJournal() {
           onClose={() => setNoteTarget(null)}
           onSaved={handleSaved}
         />
+      )}
+
+      {/* ── O'quvchi ish tarixi drawer ── */}
+      {viewStudent && (
+        <div className="wj-drawer-overlay" onClick={() => setViewStudent(null)}>
+          <div className="wj-drawer" onClick={e => e.stopPropagation()}>
+            <div className="wj-drawer__header">
+              <div className="wj-drawer__avatar">{getInitials(viewStudent.name)}</div>
+              <div>
+                <div className="wj-drawer__name">{viewStudent.name}</div>
+                {viewStudent.className && <div className="wj-drawer__class">{viewStudent.className}-sinf</div>}
+              </div>
+              <button type="button" className="wj-drawer__close" onClick={() => setViewStudent(null)}>✕</button>
+            </div>
+            <div className="wj-drawer__actions">
+              <button
+                type="button"
+                className="wj-unattended-item__btn"
+                style={{ fontSize: 13 }}
+                onClick={() => { setViewStudent(null); setNoteTarget({ id: viewStudent.id, name: viewStudent.name, className: viewStudent.className }); }}
+              >+ Ish qo'shish</button>
+            </div>
+            <div className="wj-drawer__body">
+              {viewLoading ? (
+                <p className="wj-drawer__empty">Yuklanmoqda...</p>
+              ) : viewNotes.length === 0 ? (
+                <div className="wj-drawer__empty">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <p>Bu o'quvchi uchun hali hech qanday ish kiritilmagan</p>
+                </div>
+              ) : (
+                <div className="wj-drawer__timeline">
+                  {viewNotes.map(n => {
+                    const c = TYPE_COLORS[n.type] ?? TYPE_COLORS.other;
+                    return (
+                      <div className="wj-drawer__item" key={n.id}>
+                        <div className="wj-drawer__item-dot" style={{ background: c.text }} />
+                        <div className="wj-drawer__item-body">
+                          <div className="wj-drawer__item-top">
+                            <span className="wj-item__chip" style={{ background: c.bg, color: c.text, fontSize: 11 }}>
+                              {TYPE_ICONS[n.type]} {TYPE_LABELS[n.type]}
+                            </span>
+                            <span className="wj-drawer__item-date">{fmtDate(n.createdAt)}</span>
+                          </div>
+                          <p className="wj-drawer__item-note">{n.note}</p>
+                          {n.nextStep && <p className="wj-drawer__item-next">→ {n.nextStep}</p>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
