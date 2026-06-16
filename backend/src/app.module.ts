@@ -12,6 +12,7 @@ import { AlertsModule } from './modules/alerts/alerts.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 import { ClassAccessModule } from './modules/class-access/class-access.module';
+import { NotesModule } from './modules/notes/notes.module';
 import { ImpulseGameModule } from './modules/impulse-game/impulse-game.module';
 import { ColorTestModule } from './modules/color-test/color-test.module';
 import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
@@ -43,6 +44,7 @@ import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
     DashboardModule,
     TelegramModule,
     ClassAccessModule,
+    NotesModule,
     ImpulseGameModule,
     ColorTestModule,
     LifeChoicesModule,

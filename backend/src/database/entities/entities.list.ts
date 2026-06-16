@@ -10,6 +10,7 @@ import { ClassAccess } from './class-access.entity';
 import { ImpulseGameResult } from './impulse-game-result.entity';
 import { ColorTestResult } from './color-test-result.entity';
 import { LifeChoicesResult } from './life-choices-result.entity';
+import { PsychologistNote } from './psychologist-note.entity';
 
 export const ALL_ENTITIES = [
   Student,
@@ -24,4 +25,5 @@ export const ALL_ENTITIES = [
   ImpulseGameResult,
   ColorTestResult,
   LifeChoicesResult,
+  PsychologistNote,
 ];

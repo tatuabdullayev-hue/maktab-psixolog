@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
+import { NoteModal, Note, TYPE_LABELS } from '../components/NoteModal';
 import {
   PieChart,
   Pie,
@@ -153,6 +154,8 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<LevelFilter | null>(null);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
+  const [noteTarget, setNoteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [allNotes, setAllNotes] = useState<Note[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -174,10 +177,17 @@ export function Dashboard() {
     if (school) params.school = school;
     if (district) params.district = district;
 
-    api
-      .get('/dashboard/trends', { params })
-      .then(({ data }) => setTrends(data));
+    api.get('/dashboard/trends', { params }).then(({ data }) => setTrends(data));
   }, [school, district]);
+
+  const loadNotes = () => {
+    const params: Record<string, string> = {};
+    if (school) params.school = school;
+    if (district) params.district = district;
+    api.get('/notes', { params }).then(({ data }) => setAllNotes(data));
+  };
+
+  useEffect(() => { loadNotes(); }, [school, district]);
 
   const pieData = overview
     ? [
@@ -427,6 +437,7 @@ export function Dashboard() {
                     <th>Daraja</th>
                     <th>AI tahlili</th>
                     <th>Sana</th>
+                    <th>Ish</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -439,12 +450,58 @@ export function Dashboard() {
                       </td>
                       <td>{s.aiInsight}</td>
                       <td>{formatDate(s.completedAt)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn-note"
+                          onClick={() => setNoteTarget({ id: s.id, name: s.fullName })}
+                        >
+                          📝 Ish qo'shish
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             )}
           </div>}
+
+          <div className="card">
+            <h2>Psixolog ishi jurnali</h2>
+            <p className="chart-card__subtitle">Barcha sanalar bo'yicha qilingan ishlar</p>
+            {allNotes.length === 0 ? (
+              <p className="muted">Hali hech qanday ish kiritilmagan</p>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Sana</th>
+                    <th>O'quvchi</th>
+                    <th>Sinf</th>
+                    <th>Ish turi</th>
+                    <th>Tavsif</th>
+                    <th>Keyingi qadam</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allNotes.map((n) => (
+                    <tr key={n.id}>
+                      <td>{new Date(n.createdAt).toLocaleDateString('uz-UZ')}</td>
+                      <td>
+                        {n.student
+                          ? `${n.student.firstName} ${n.student.lastName ?? ''}`
+                          : '—'}
+                      </td>
+                      <td>{n.student?.className ?? '—'}</td>
+                      <td>{TYPE_LABELS[n.type] ?? n.type}</td>
+                      <td>{n.note}</td>
+                      <td>{n.nextStep ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
 
           <div className="bottom-cards">
             <div className="card placeholder-card">
@@ -497,6 +554,15 @@ export function Dashboard() {
             </div>
           </div>
         </>
+      )}
+
+      {noteTarget && (
+        <NoteModal
+          studentId={noteTarget.id}
+          studentName={noteTarget.name}
+          onClose={() => setNoteTarget(null)}
+          onSaved={loadNotes}
+        />
       )}
     </div>
   );
