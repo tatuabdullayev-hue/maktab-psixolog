@@ -121,6 +121,7 @@ export function Students() {
                       <th>O'quvchi</th>
                       <th>Sinf</th>
                       <th>Daraja</th>
+                      <th>AI tahlili</th>
                       <th>Sana</th>
                       <th>Ish</th>
                     </tr>
@@ -133,6 +134,9 @@ export function Students() {
                         <td>{s.className}</td>
                         <td>
                           <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
+                        </td>
+                        <td style={{ fontSize: 13, color: 'var(--color-text-muted)', maxWidth: 320 }}>
+                          {s.aiInsight ?? '—'}
                         </td>
                         <td>{formatDate(s.completedAt)}</td>
                         <td>
