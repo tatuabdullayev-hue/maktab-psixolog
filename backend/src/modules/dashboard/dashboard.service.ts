@@ -274,9 +274,10 @@ export class DashboardService {
     // Qo'lda qo'shilgan o'quvchilar ([NAZORAT_QOSHISH] note bor)
     const manualRaw = await this.noteRepo
       .createQueryBuilder('n')
-      .select(['DISTINCT n.studentId AS studentId', 'n.note AS note', 'n.createdAt AS createdAt'])
+      .select('n.studentId', 'studentId')
+      .addSelect('MAX(n.createdAt)', 'createdAt')
       .where("n.note LIKE '[NAZORAT_QOSHISH]%'")
-      .orderBy('n.createdAt', 'DESC')
+      .groupBy('n.studentId')
       .getRawMany();
     const manualIds = new Set(manualRaw.map((r: any) => r.studentId));
 

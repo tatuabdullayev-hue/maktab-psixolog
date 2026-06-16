@@ -13,6 +13,7 @@ interface MonitoredStudent {
   fullName: string;
   className: string;
   dangerCount: number;
+  manuallyAdded?: boolean;
   lastDetected: string;
   lastInsight: string | null;
   lastRecommendation: string | null;
@@ -33,7 +34,8 @@ function initials(name: string) {
   return name.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
 }
 
-function riskMeta(count: number): { label: string; cls: string } {
+function riskMeta(count: number, manual?: boolean): { label: string; cls: string } {
+  if (manual && count === 0) return { label: "QO'SHILDI", cls: 'manual' };
   if (count >= 3) return { label: 'YUQORI XAVF', cls: 'high' };
   if (count >= 2) return { label: "O'RTA XAVF", cls: 'mid' };
   return { label: 'PAST XAVF', cls: 'low' };
@@ -97,7 +99,7 @@ export function Monitored() {
 
   function handleExport() {
     const rows = filtered.map((s, idx) => {
-      const risk = riskMeta(s.dangerCount);
+      const risk = riskMeta(s.dangerCount, s.manuallyAdded);
       const daysIn = daysSince(s.allInsights.length > 0
         ? s.allInsights[s.allInsights.length - 1].date
         : s.lastDetected);
@@ -256,7 +258,7 @@ export function Monitored() {
       {!loading && pageItems.length > 0 && (
         <div className="mon2-list">
           {pageItems.map((s, idx) => {
-            const risk = riskMeta(s.dangerCount);
+            const risk = riskMeta(s.dangerCount, s.manuallyAdded);
             const daysIn = daysSince(s.allInsights.length > 0
               ? s.allInsights[s.allInsights.length - 1].date
               : s.lastDetected);
@@ -268,7 +270,9 @@ export function Monitored() {
               <div className="mon2-row" onClick={() => setExpanded(isOpen ? null : s.id)} style={{ cursor: 'pointer' }}>
                 {/* Badge */}
                 <div className={`mon2-badge mon2-badge--${risk.cls}`}>
-                  <div className="mon2-badge__num">{s.dangerCount}X</div>
+                  <div className="mon2-badge__num">
+                    {s.manuallyAdded && s.dangerCount === 0 ? '📌' : `${s.dangerCount}X`}
+                  </div>
                   <div className="mon2-badge__lbl">{risk.label}</div>
                 </div>
 
@@ -300,7 +304,9 @@ export function Monitored() {
                     AI tavsiyasi
                   </div>
                   <div className="mon2-ai__text">
-                    {s.lastRecommendation || s.lastInsight || 'AI tahlili mavjud emas'}
+                    {s.manuallyAdded && !s.lastInsight
+                      ? "Psixolog tomonidan qo'lda nazoratga olingan. Hali test topshirilmagan."
+                      : (s.lastRecommendation || s.lastInsight || 'AI tahlili mavjud emas')}
                   </div>
                 </div>
 

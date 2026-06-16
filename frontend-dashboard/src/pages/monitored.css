@@ -229,9 +229,10 @@
   padding: 8px 6px;
   text-align: center;
 }
-.mon2-badge--high { background: #fef2f2; border: 1.5px solid #fecaca; }
-.mon2-badge--mid  { background: #fff7ed; border: 1.5px solid #fed7aa; }
-.mon2-badge--low  { background: #fefce8; border: 1.5px solid #fde68a; }
+.mon2-badge--high   { background: #fef2f2; border: 1.5px solid #fecaca; }
+.mon2-badge--mid    { background: #fff7ed; border: 1.5px solid #fed7aa; }
+.mon2-badge--low    { background: #fefce8; border: 1.5px solid #fde68a; }
+.mon2-badge--manual { background: #f5f3ff; border: 1.5px solid #c4b5fd; }
 
 .mon2-badge__num {
   font-size: 20px;
@@ -239,18 +240,20 @@
   line-height: 1;
   margin-bottom: 2px;
 }
-.mon2-badge--high .mon2-badge__num { color: #dc2626; }
-.mon2-badge--mid  .mon2-badge__num { color: #ea580c; }
-.mon2-badge--low  .mon2-badge__num { color: #ca8a04; }
+.mon2-badge--high   .mon2-badge__num { color: #dc2626; }
+.mon2-badge--mid    .mon2-badge__num { color: #ea580c; }
+.mon2-badge--low    .mon2-badge__num { color: #ca8a04; }
+.mon2-badge--manual .mon2-badge__num { color: #6d4ce0; font-size: 22px; }
 
 .mon2-badge__lbl {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.3px;
 }
-.mon2-badge--high .mon2-badge__lbl { color: #dc2626; }
-.mon2-badge--mid  .mon2-badge__lbl { color: #ea580c; }
-.mon2-badge--low  .mon2-badge__lbl { color: #ca8a04; }
+.mon2-badge--high   .mon2-badge__lbl { color: #dc2626; }
+.mon2-badge--mid    .mon2-badge__lbl { color: #ea580c; }
+.mon2-badge--low    .mon2-badge__lbl { color: #ca8a04; }
+.mon2-badge--manual .mon2-badge__lbl { color: #6d4ce0; }
 
 /* Avatar */
 .mon2-avatar {
@@ -322,9 +325,10 @@
   padding: 2px 8px;
   border-radius: 20px;
 }
-.mon2-days--high { background: #fef2f2; color: #dc2626; }
-.mon2-days--mid  { background: #fff7ed; color: #ea580c; }
-.mon2-days--low  { background: #fefce8; color: #ca8a04; }
+.mon2-days--high   { background: #fef2f2; color: #dc2626; }
+.mon2-days--mid    { background: #fff7ed; color: #ea580c; }
+.mon2-days--low    { background: #fefce8; color: #ca8a04; }
+.mon2-days--manual { background: #f5f3ff; color: #6d4ce0; }
 
 /* AI */
 .mon2-ai {
