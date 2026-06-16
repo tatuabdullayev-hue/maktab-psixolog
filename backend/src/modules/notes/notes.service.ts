@@ -71,6 +71,39 @@ export class NotesService {
     return studentIds.filter(id => !attendedIds.has(id)).length;
   }
 
+  async unattendedStudents(school?: string, district?: string) {
+    const dangerStudents = await this.testResultRepo
+      .createQueryBuilder('tr')
+      .select('DISTINCT tr.studentId', 'studentId')
+      .addSelect('student.firstName', 'firstName')
+      .addSelect('student.lastName', 'lastName')
+      .addSelect('student.className', 'className')
+      .innerJoin('tr.student', 'student')
+      .where('tr.aiRiskLevel = :level', { level: RiskLevel.DANGER })
+      .andWhere(school ? 'student.schoolName = :school' : '1=1', { school })
+      .andWhere(district ? 'student.district = :district' : '1=1', { district })
+      .getRawMany();
+
+    if (dangerStudents.length === 0) return [];
+
+    const studentIds: string[] = dangerStudents.map((r: { studentId: string }) => r.studentId);
+
+    const withNotes = await this.repo
+      .createQueryBuilder('n')
+      .select('DISTINCT n.studentId', 'studentId')
+      .where('n.studentId IN (:...ids)', { ids: studentIds })
+      .getRawMany();
+
+    const attendedIds = new Set(withNotes.map((r: { studentId: string }) => r.studentId));
+    return dangerStudents
+      .filter((r: { studentId: string }) => !attendedIds.has(r.studentId))
+      .map((r: { studentId: string; firstName: string; lastName: string; className: string }) => ({
+        studentId: r.studentId,
+        fullName: `${r.firstName} ${r.lastName ?? ''}`.trim(),
+        className: r.className ?? '',
+      }));
+  }
+
   delete(id: string) {
     return this.repo.delete(id);
   }

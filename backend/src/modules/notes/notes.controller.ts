@@ -50,6 +50,14 @@ export class NotesController {
     return this.notesService.unattendedCount(school, district).then(count => ({ count }));
   }
 
+  @Get('unattended-students')
+  unattendedStudents(
+    @Query('school') school?: string,
+    @Query('district') district?: string,
+  ) {
+    return this.notesService.unattendedStudents(school, district);
+  }
+
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.notesService.delete(id);
