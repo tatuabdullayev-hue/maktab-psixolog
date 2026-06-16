@@ -73,9 +73,9 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
       note: noteText.trim(),
       nextStep: nextStep.trim() || undefined,
     });
-    setNoteText(''); setNextStep('');
     setSaving(false);
-    load(); onSaved();
+    onSaved();
+    onClose();
   };
 
   const handleDel = async (id: string) => {
