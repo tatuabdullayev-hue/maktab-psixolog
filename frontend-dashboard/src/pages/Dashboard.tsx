@@ -160,7 +160,7 @@ export function Dashboard() {
   const [allNotes, setAllNotes] = useState<Note[]>([]);
   const { refresh: refreshBadge } = useNotifications();
 
-  useEffect(() => {
+  const loadOverview = () => {
     setLoading(true);
     setError(null);
     const params: Record<string, string> = {};
@@ -173,7 +173,9 @@ export function Dashboard() {
       .then(({ data }) => setOverview(data))
       .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
-  }, [school, district, date]);
+  };
+
+  useEffect(() => { loadOverview(); }, [school, district, date]);
 
   useEffect(() => {
     const params: Record<string, string> = {};
@@ -470,13 +472,30 @@ export function Dashboard() {
                         )}
                       </td>
                       <td>{formatDate(s.completedAt)}</td>
-                      <td>
+                      <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <button
                           type="button"
                           className="btn-note"
                           onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
                         >
                           📝 Ish qo'shish
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-note btn-note--finish"
+                          onClick={async () => {
+                            if (!window.confirm(`${s.fullName} bilan ish yakunlandimi?`)) return;
+                            await api.post('/notes', {
+                              studentId: s.id,
+                              type: 'other',
+                              note: "[NAZORAT_CHIQISH] Psixolog tomonidan ish yakunlandi",
+                              nextStep: "Kuzatuv yakunlandi",
+                            });
+                            loadOverview();
+                            loadNotes();
+                          }}
+                        >
+                          ✅ Yakunlash
                         </button>
                       </td>
                     </tr>

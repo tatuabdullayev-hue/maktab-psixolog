@@ -58,6 +58,7 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
   const [saving, setSaving]   = useState(false);
   const [delId, setDelId]     = useState<string | null>(null);
   const [sent, setSent]       = useState(false);
+  const [savedMsg, setSavedMsg] = useState(false);
   const backdropRef = useRef<HTMLDivElement>(null);
 
   const handleSendToInspector = async () => {
@@ -87,8 +88,14 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
       nextStep: nextStep.trim() || undefined,
     });
     setSaving(false);
+    // Formani tozalaymiz, modal ochiq qoladi — yana ish qo'shish mumkin
+    setNoteText('');
+    setNextStep('');
+    setType('student_talk');
+    setSavedMsg(true);
+    setTimeout(() => setSavedMsg(false), 3000);
+    load();
     onSaved();
-    onClose();
   };
 
   const handleDel = async (id: string) => {
@@ -190,17 +197,25 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
               </div>
             </div>
 
-            {/* save btn */}
-            <button type="submit" className="nm2-savebtn" disabled={saving || !noteText.trim()}>
-              {saving ? (
-                'Saqlanmoqda...'
-              ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  Saqlash
-                </>
+            {/* save btn + success msg */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button type="submit" className="nm2-savebtn" disabled={saving || !noteText.trim()}>
+                {saving ? (
+                  'Saqlanmoqda...'
+                ) : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    Saqlash
+                  </>
+                )}
+              </button>
+              {savedMsg && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#16a34a', fontSize: 13, fontWeight: 600 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Saqlandi! Yana ish qo'shishingiz mumkin.
+                </span>
               )}
-            </button>
+            </div>
           </form>
 
           {/* illustration */}

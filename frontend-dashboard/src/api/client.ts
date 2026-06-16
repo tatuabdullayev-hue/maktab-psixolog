@@ -19,13 +19,18 @@ if (stored) {
   setAuthToken(stored);
 }
 
+let _redirectingToLogin = false;
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !_redirectingToLogin) {
+      _redirectingToLogin = true;
       setAuthToken(null);
       localStorage.removeItem('psixolog_user');
-      window.location.reload();
+      // HashRouter ishlatilgani uchun hash'ni o'zgartiramiz (reload yo'q)
+      window.location.hash = '#/';
+      setTimeout(() => { _redirectingToLogin = false; }, 3000);
     }
     return Promise.reject(error);
   },

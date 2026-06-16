@@ -1267,6 +1267,17 @@ input {
   color: #fff;
 }
 
+.btn-note--finish {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+.btn-note--finish:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
 .card__header-row {
   display: flex;
   align-items: center;

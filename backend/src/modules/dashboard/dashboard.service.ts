@@ -146,17 +146,44 @@ export class DashboardService {
 
     const pct = (n: number) => (total ? Math.round((n / total) * 100) : 0);
 
-    const highRiskStudents = results
-      .filter((r) => r.aiRiskLevel === RiskLevel.DANGER)
-      .map((r) => ({
-        id: r.student?.id,
-        fullName: [r.student?.firstName, r.student?.lastName].filter(Boolean).join(' '),
-        className: r.student?.className,
-        level: r.aiRiskLevel,
-        aiInsight: r.aiInsight,
-        aiRecommendation: r.aiRecommendation,
-        completedAt: r.completedAt,
-      }));
+    // Yakunlangan (NAZORAT_CHIQISH) o'quvchilarni highRisk jadvalidan chiqaramiz
+    const releasedRaw = await this.noteRepo
+      .createQueryBuilder('n')
+      .select('n.studentId', 'studentId')
+      .addSelect('MAX(n.createdAt)', 'releasedAt')
+      .where("n.note LIKE '[NAZORAT_CHIQISH]%'")
+      .groupBy('n.studentId')
+      .getRawMany();
+
+    const releasedSet = new Set<string>();
+    for (const r of releasedRaw) {
+      // Chiqarilgan sanadan keyin yangi DANGER bo'lmasa — haqiqatan yakunlangan
+      const newDanger = results.find(
+        tr => tr.student?.id === r.studentId &&
+        tr.aiRiskLevel === RiskLevel.DANGER &&
+        new Date(tr.completedAt) > new Date(r.releasedAt)
+      );
+      if (!newDanger) releasedSet.add(r.studentId);
+    }
+
+    // Har o'quvchidan eng so'nggi DANGER natijasini olamiz (deduplicate)
+    const dangerMap = new Map<string, typeof results[0]>();
+    for (const r of results) {
+      if (r.aiRiskLevel !== RiskLevel.DANGER) continue;
+      const sid = r.student?.id;
+      if (!sid || releasedSet.has(sid)) continue;
+      if (!dangerMap.has(sid)) dangerMap.set(sid, r);
+    }
+
+    const highRiskStudents = Array.from(dangerMap.values()).map((r) => ({
+      id: r.student?.id,
+      fullName: [r.student?.firstName, r.student?.lastName].filter(Boolean).join(' '),
+      className: r.student?.className,
+      level: r.aiRiskLevel,
+      aiInsight: r.aiInsight,
+      aiRecommendation: r.aiRecommendation,
+      completedAt: r.completedAt,
+    }));
 
     const classBreakdown = Array.from(classMap.entries())
       .map(([className, levels]) => ({ className, ...levels }))

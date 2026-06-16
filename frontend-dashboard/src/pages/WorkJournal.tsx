@@ -1,31 +1,48 @@
-import { useEffect, useState } from 'react';
-import '../wj.css';
-import { api } from '../api/client';
-import { Topbar } from '../components/Topbar';
-import { NoteModal } from '../components/NoteModal';
-import type { Note } from '../components/NoteModal';
-import { useNotifications } from '../context/NotificationContext';
+﻿import { useEffect, useState } from "react";
+import "../wj.css";
+import { api } from "../api/client";
+import { NoteModal } from "../components/NoteModal";
+import type { Note } from "../components/NoteModal";
+import { useNotifications } from "../context/NotificationContext";
 
 const TYPE_LABELS: Record<string, string> = {
   student_talk: "O'quvchi bilan suhbat",
-  parent_talk: 'Ota-ona bilan suhbat',
-  teacher_talk: 'Sinf rahbari bilan suhbat',
-  other: 'Boshqa kuzatuv',
+  parent_talk: "Ota-ona bilan suhbat",
+  teacher_talk: "Sinf rahbari bilan suhbat",
+  other: "Boshqa kuzatuv",
 };
 
 const TYPE_ICONS: Record<string, string> = {
-  student_talk: '💬',
-  parent_talk: '👨‍👩‍👧',
-  teacher_talk: '🏫',
-  other: '📋',
+  student_talk: "💬",
+  parent_talk: "👨‍👩‍👧",
+  teacher_talk: "🏫",
+  other: "📋",
 };
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  student_talk: { bg: '#ede9fe', text: '#6d4ce0' },
-  parent_talk:  { bg: '#fef3c7', text: '#d97706' },
-  teacher_talk: { bg: '#dcfce7', text: '#16a34a' },
-  other:        { bg: '#e0f2fe', text: '#0369a1' },
+  student_talk: { bg: "#ede9fe", text: "#6d4ce0" },
+  parent_talk:  { bg: "#fef3c7", text: "#d97706" },
+  teacher_talk: { bg: "#dcfce7", text: "#16a34a" },
+  other:        { bg: "#e0f2fe", text: "#0369a1" },
 };
+
+interface CardDef {
+  key: string;
+  icon: string;
+  ghost: string;
+  label: string;
+  color: string;
+  bg: string;
+}
+
+const CARDS: CardDef[] = [
+  { key: "unattended", icon: "⚠️",  ghost: "⚠️",  label: "Kiritilmagan ishlar",       color: "#dc2626", bg: "#fee2e2" },
+  { key: "inspector",  icon: "📤",  ghost: "📤",  label: "Inspektora yuborildi",       color: "#0369a1", bg: "#e0f2fe" },
+  { key: "all",        icon: "✏️",  ghost: "✏️",  label: "Jami yozuvlar",             color: "#6d4ce0", bg: "#ede9fe" },
+  { key: "student_talk", icon: "💬", ghost: "💬", label: "O'quvchi bilan suhbat",     color: "#6d4ce0", bg: "#ede9fe" },
+  { key: "parent_talk",  icon: "👨‍👩‍👧", ghost: "👥", label: "Ota-ona bilan suhbat",     color: "#d97706", bg: "#fef3c7" },
+  { key: "teacher_talk", icon: "🏫", ghost: "🏫", label: "Sinf rahbari bilan suhbat", color: "#16a34a", bg: "#dcfce7" },
+];
 
 interface UnattendedStudent {
   studentId: string;
@@ -34,13 +51,13 @@ interface UnattendedStudent {
 }
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('uz-UZ', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
+  return new Date(iso).toLocaleDateString("uz-UZ", {
+    day: "2-digit", month: "2-digit", year: "numeric",
   });
 }
 
 function getInitials(name: string) {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 }
 
 const PAGE_SIZE = 15;
@@ -49,24 +66,23 @@ export function WorkJournal() {
   const [notes, setNotes]           = useState<Note[]>([]);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState<string | null>(null);
-  const [school]                    = useState('53-maktab');
-  const [district]                  = useState('Chortoq tumani');
-  const [filterType, setFilterType] = useState('all');
-  const [search, setSearch]         = useState('');
+  const school                      = "53-maktab";
+  const district                    = "Chortoq tumani";
+  const [filterType, setFilterType] = useState("all");
+  const [search, setSearch]         = useState("");
   const [page, setPage]             = useState(1);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
 
-  const [unattended, setUnattended]           = useState<UnattendedStudent[]>([]);
+  const [unattended, setUnattended]               = useState<UnattendedStudent[]>([]);
   const [unattendedLoading, setUnattendedLoading] = useState(true);
-  const [showUnattended, setShowUnattended]   = useState(false);
-  const [showInspector, setShowInspector]     = useState(false);
+  const [activePanel, setActivePanel]             = useState<string>("all");
 
   const { unattended: cachedCount, refresh: refreshBadge } = useNotifications();
 
   const load = () => {
     setLoading(true);
     setError(null);
-    api.get('/notes', { params: { school, district } })
+    api.get("/notes", { params: { school, district } })
       .then(({ data }) => setNotes(data))
       .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
@@ -74,7 +90,7 @@ export function WorkJournal() {
 
   const loadUnattended = () => {
     setUnattendedLoading(true);
-    api.get('/notes/unattended-students', { params: { school, district } })
+    api.get("/notes/unattended-students", { params: { school, district } })
       .then(({ data }) => setUnattended(data))
       .catch(() => {})
       .finally(() => setUnattendedLoading(false));
@@ -82,29 +98,35 @@ export function WorkJournal() {
 
   useEffect(() => { load(); loadUnattended(); }, []);
 
-  const handleSaved = () => {
-    load();
-    loadUnattended();
-    refreshBadge();
-  };
+  const handleSaved = () => { load(); loadUnattended(); refreshBadge(); };
 
-  /* ── inspektora yuborilganlar ── */
-  const inspectorNotes = notes.filter(n =>
-    n.note.includes('Inspektor-psixologga yuborildi')
-  );
-  // har bir o'quvchidan bitta (oxirgi) yozuv
-  const inspectorMap = new Map<string, Note>();
-  for (const n of [...inspectorNotes].reverse()) {
-    inspectorMap.set(n.studentId, n);
-  }
+  /* inspector students */
+  const inspectorNotes = notes.filter(n => n.note.includes("Inspektor-psixologga yuborildi"));
+  const inspectorMap   = new Map<string, Note>();
+  for (const n of [...inspectorNotes].reverse()) inspectorMap.set(n.studentId, n);
   const inspectorStudents = Array.from(inspectorMap.values());
 
-  /* ── filterlash ── */
+  /* counts per card */
+  const countFor = (key: string): number => {
+    if (key === "unattended") return unattendedLoading ? cachedCount : unattended.length;
+    if (key === "inspector")  return loading ? 0 : inspectorStudents.length;
+    if (key === "all")        return loading ? 0 : notes.length;
+    return loading ? 0 : notes.filter(n => n.type === key).length;
+  };
+
+  /* handle card click */
+  const handleCard = (key: string) => {
+    setActivePanel(key);
+    if (!["unattended", "inspector"].includes(key)) {
+      setFilterType(key);
+    }
+    setPage(1);
+  };
+
+  /* filtered list (only when panel is not unattended/inspector) */
   const filtered = notes.filter(n => {
-    const typeOk = filterType === 'all' || n.type === filterType;
-    const name = n.student
-      ? `${n.student.firstName} ${n.student.lastName ?? ''}`
-      : '';
+    const typeOk = filterType === "all" || n.type === filterType;
+    const name = n.student ? `${n.student.firstName} ${n.student.lastName ?? ""}` : "";
     const searchOk = !search.trim() ||
       name.toLowerCase().includes(search.trim().toLowerCase()) ||
       n.note.toLowerCase().includes(search.trim().toLowerCase());
@@ -117,90 +139,61 @@ export function WorkJournal() {
 
   useEffect(() => { setPage(1); }, [filterType, search]);
 
-  /* ── stats ── */
-  const stats = Object.keys(TYPE_LABELS).map(t => ({
-    type: t,
-    count: notes.filter(n => n.type === t).length,
-  }));
+  const showList       = !["unattended", "inspector"].includes(activePanel);
+  const showUnattended = activePanel === "unattended";
+  const showInspector  = activePanel === "inspector";
 
   return (
-    <div className="dashboard">
-      <Topbar
-        title="Psixolog ish jurnali"
-        school={school}
-        district={district}
-        date=""
-        onSchoolChange={() => {}}
-        onDistrictChange={() => {}}
-        onDateChange={() => {}}
-        hideDateFilter
-      />
+    <div className="wj-page">
+      {/* ── header ── */}
+      <div className="wj-header">
+        <div className="wj-header__left">
+          <h1 className="wj-header__title">Psixolog ish jurnali</h1>
+          <p className="wj-header__sub">Umumiy holat va faoliyat statistikasi</p>
+        </div>
+        <div className="wj-topbar">
+          <div className="wj-topbar__item">
+            <span className="wj-topbar__label">Maktab</span>
+            <span className="wj-topbar__val">{school}</span>
+          </div>
+          <div className="wj-topbar__sep" />
+          <div className="wj-topbar__item">
+            <span className="wj-topbar__label">Tuman</span>
+            <span className="wj-topbar__val">{district}</span>
+          </div>
+        </div>
+      </div>
 
-      {loading && <p className="muted">Yuklanmoqda...</p>}
-      {error   && <p className="error">{error}</p>}
+      {error && <p style={{ color: "#dc2626", marginBottom: 16 }}>{error}</p>}
 
       {/* ── stat cards ── */}
-      <div className="wj-stat-row">
-        {/* Kiritilmagan ishlar — qizil karta */}
-        <div
-          className={`wj-stat wj-stat--danger${showUnattended ? ' wj-stat--danger-active' : ''}`}
-          onClick={() => setShowUnattended(v => !v)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => e.key === 'Enter' && setShowUnattended(v => !v)}
-        >
-          <span className="wj-stat__icon">⚠️</span>
-          <span className="wj-stat__num wj-stat__num--red">
-            {unattendedLoading ? cachedCount : unattended.length}
-          </span>
-          <span className="wj-stat__label">Kiritilmagan ishlar</span>
-        </div>
-
-        {/* Inspektora yuborilganlar — ko'k karta */}
-        <div
-          className={`wj-stat wj-stat--inspector${showInspector ? ' wj-stat--inspector-active' : ''}`}
-          onClick={() => { setShowInspector(v => !v); setShowUnattended(false); setFilterType('all'); }}
-          role="button" tabIndex={0}
-          onKeyDown={e => e.key === 'Enter' && setShowInspector(v => !v)}
-        >
-          <span className="wj-stat__icon">📤</span>
-          <span className="wj-stat__num wj-stat__num--blue">{loading ? '—' : inspectorStudents.length}</span>
-          <span className="wj-stat__label">Inspektora yuborildi</span>
-        </div>
-
-        <div className={`wj-stat${filterType === 'all' && !showUnattended && !showInspector ? ' wj-stat--active' : ''}`}
-          onClick={() => { setFilterType('all'); setShowUnattended(false); setShowInspector(false); }}
-          role="button" tabIndex={0}
-          onKeyDown={e => e.key === 'Enter' && setFilterType('all')}
-        >
-          <span className="wj-stat__num">{loading ? '—' : notes.length}</span>
-          <span className="wj-stat__label">Jami yozuvlar</span>
-        </div>
-
-        {stats.map(s => {
-          const c = TYPE_COLORS[s.type];
+      <div className="wj-cards">
+        {CARDS.map(c => {
+          const isActive = activePanel === c.key;
           return (
             <div
-              key={s.type}
-              className={`wj-stat${filterType === s.type ? ' wj-stat--active' : ''}`}
-              style={filterType === s.type ? { borderColor: c.text, background: c.bg } : {}}
-              onClick={() => { setFilterType(filterType === s.type ? 'all' : s.type); setShowUnattended(false); setShowInspector(false); }}
-              role="button" tabIndex={0}
-              onKeyDown={e => e.key === 'Enter' && setFilterType(s.type)}
+              key={c.key}
+              className={`wj-card${isActive ? " wj-card--active" : ""}`}
+              style={{ "--wj-card-color": c.color, "--wj-card-bg": c.bg } as React.CSSProperties}
+              onClick={() => handleCard(c.key)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => e.key === "Enter" && handleCard(c.key)}
             >
-              <span className="wj-stat__icon">{TYPE_ICONS[s.type]}</span>
-              <span className="wj-stat__num" style={filterType === s.type ? { color: c.text } : {}}>{loading ? '—' : s.count}</span>
-              <span className="wj-stat__label">{TYPE_LABELS[s.type]}</span>
+              <div className="wj-card__icon">{c.icon}</div>
+              <div className="wj-card__num">{countFor(c.key)}</div>
+              <div className="wj-card__label">{c.label}</div>
+              <div className="wj-card__ghost">{c.ghost}</div>
             </div>
           );
         })}
       </div>
 
-      {/* ── Kiritilmagan ishlar ro'yxati ── */}
+      {/* ── Kiritilmagan ishlar panel ── */}
       {showUnattended && (
-        <div className="card wj-unattended-card">
-          <div className="card__header-row">
-            <h2 className="wj-unattended-title">
+        <div className="wj-section wj-section--danger">
+          <div className="wj-section__header">
+            <h2 className="wj-section__title wj-section__title--danger">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -209,7 +202,6 @@ export function WorkJournal() {
               <span className="wj-unattended-badge">{unattended.length} ta</span>
             </h2>
           </div>
-
           {unattended.length === 0 ? (
             <div className="wj-unattended-empty">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -220,23 +212,17 @@ export function WorkJournal() {
               {unattended.map((s, idx) => (
                 <div className="wj-unattended-item" key={s.studentId}>
                   <div className="wj-unattended-item__num">{idx + 1}</div>
-                  <div className="wj-unattended-item__avatar">
-                    {getInitials(s.fullName)}
-                  </div>
+                  <div className="wj-unattended-item__avatar">{getInitials(s.fullName)}</div>
                   <div className="wj-unattended-item__info">
                     <span className="wj-unattended-item__name">{s.fullName}</span>
-                    {s.className && (
-                      <span className="wj-unattended-item__class">{s.className}</span>
-                    )}
+                    {s.className && <span className="wj-unattended-item__class">{s.className}</span>}
                   </div>
                   <span className="wj-unattended-item__risk">Yuqori xavf</span>
                   <button
                     type="button"
                     className="wj-unattended-item__btn"
                     onClick={() => setNoteTarget({ id: s.studentId, name: s.fullName, className: s.className })}
-                  >
-                    + Ish qo'shish
-                  </button>
+                  >+ Ish qo'shish</button>
                 </div>
               ))}
             </div>
@@ -244,52 +230,43 @@ export function WorkJournal() {
         </div>
       )}
 
-      {/* ── Inspektora yuborilganlar ro'yxati ── */}
+      {/* ── Inspektora yuborilganlar panel ── */}
       {showInspector && (
-        <div className="card wj-unattended-card">
-          <div className="card__header-row">
-            <h2 className="wj-unattended-title" style={{ color: '#0369a1' }}>
+        <div className="wj-section" style={{ border: "1.5px solid #bae6fd" }}>
+          <div className="wj-section__header">
+            <h2 className="wj-section__title wj-section__title--blue">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
               Inspektor-psixologga yuborilganlar
-              <span className="wj-unattended-badge" style={{ background: '#0369a1' }}>{inspectorStudents.length} ta</span>
+              <span className="wj-unattended-badge" style={{ background: "#0369a1" }}>{inspectorStudents.length} ta</span>
             </h2>
           </div>
-
           {inspectorStudents.length === 0 ? (
-            <div className="wj-unattended-empty">
-              <p className="muted">Hali hech kim inspektora yuborilmagan.</p>
+            <div className="wj-unattended-empty" style={{ color: "#6b7280" }}>
+              <p>Hali hech kim inspektora yuborilmagan.</p>
             </div>
           ) : (
             <div className="wj-unattended-list">
               {inspectorStudents.map((n, idx) => {
-                const name = n.student
-                  ? `${n.student.firstName} ${n.student.lastName ?? ''}`.trim()
-                  : '—';
-                const cls = n.student?.className ?? '';
+                const name = n.student ? `${n.student.firstName} ${n.student.lastName ?? ""}`.trim() : "—";
+                const cls  = n.student?.className ?? "";
                 return (
-                  <div className="wj-unattended-item" key={n.studentId} style={{ borderColor: '#bae6fd' }}>
+                  <div className="wj-unattended-item" key={n.studentId} style={{ borderColor: "#bae6fd", background: "#f0f9ff" }}>
                     <div className="wj-unattended-item__num">{idx + 1}</div>
-                    <div className="wj-unattended-item__avatar" style={{ background: '#e0f2fe', color: '#0369a1' }}>
-                      {getInitials(name)}
-                    </div>
+                    <div className="wj-unattended-item__avatar" style={{ background: "#e0f2fe", color: "#0369a1" }}>{getInitials(name)}</div>
                     <div className="wj-unattended-item__info">
                       <span className="wj-unattended-item__name">{name}</span>
                       {cls && <span className="wj-unattended-item__class">{cls}</span>}
                     </div>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>{fmtDate(n.createdAt)}</span>
-                    <span className="wj-unattended-item__risk" style={{ background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}>
-                      📤 Yuborildi
-                    </span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>{fmtDate(n.createdAt)}</span>
+                    <span className="wj-unattended-item__risk" style={{ background: "#e0f2fe", color: "#0369a1", border: "1px solid #bae6fd" }}>📤 Yuborildi</span>
                     <button
                       type="button"
                       className="wj-unattended-item__btn"
-                      style={{ background: '#0369a1' }}
+                      style={{ background: "#0369a1" }}
                       onClick={() => setNoteTarget({ id: n.studentId, name, className: cls })}
-                    >
-                      Ish jurnali
-                    </button>
+                    >Ish jurnali</button>
                   </div>
                 );
               })}
@@ -298,16 +275,16 @@ export function WorkJournal() {
         </div>
       )}
 
-      {/* ── search + table ── */}
-      {!showUnattended && !showInspector && (
-        <div className="card">
-          <div className="card__header-row">
-            <h2>
-              {filterType === 'all' ? 'Barcha ishlar' : TYPE_LABELS[filterType]}
+      {/* ── Notes list panel ── */}
+      {showList && (
+        <div className="wj-section">
+          <div className="wj-section__header">
+            <h2 className="wj-section__title">
+              {filterType === "all" ? "Barcha ishlar" : TYPE_LABELS[filterType]}
               <span className="wj-count-badge">{filtered.length} ta</span>
             </h2>
             <input
-              className="topbar__input search-input"
+              className="wj-search"
               placeholder="Ism yoki matn bo'yicha..."
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -329,20 +306,16 @@ export function WorkJournal() {
               <div className="wj-list">
                 {paginated.map((n, idx) => {
                   const c    = TYPE_COLORS[n.type] ?? TYPE_COLORS.other;
-                  const name = n.student
-                    ? `${n.student.firstName} ${n.student.lastName ?? ''}`
-                    : '—';
-                  const cls  = n.student?.className ?? '';
+                  const name = n.student ? `${n.student.firstName} ${n.student.lastName ?? ""}` : "—";
+                  const cls  = n.student?.className ?? "";
                   return (
                     <div className="wj-item" key={n.id}>
                       <div className="wj-item__left">
                         <div className="wj-item__num">{(currentPage - 1) * PAGE_SIZE + idx + 1}</div>
                       </div>
-
                       <div className="wj-item__avatar" style={{ background: c.bg, color: c.text }}>
                         {getInitials(name)}
                       </div>
-
                       <div className="wj-item__body">
                         <div className="wj-item__top">
                           <button
@@ -362,9 +335,7 @@ export function WorkJournal() {
                           </span>
                         </div>
                         <p className="wj-item__note">{n.note}</p>
-                        {n.nextStep && (
-                          <p className="wj-item__next">→ {n.nextStep}</p>
-                        )}
+                        {n.nextStep && <p className="wj-item__next">→ {n.nextStep}</p>}
                       </div>
                     </div>
                   );
@@ -372,22 +343,10 @@ export function WorkJournal() {
               </div>
 
               {totalPages > 1 && (
-                <div className="pagination">
-                  <button
-                    type="button"
-                    className="pagination__btn"
-                    disabled={currentPage === 1}
-                    onClick={() => setPage(currentPage - 1)}
-                  >← Oldingi</button>
-                  <span className="pagination__info">
-                    {currentPage} / {totalPages} ({filtered.length} ta)
-                  </span>
-                  <button
-                    type="button"
-                    className="pagination__btn"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setPage(currentPage + 1)}
-                  >Keyingi →</button>
+                <div className="wj-pagination">
+                  <button type="button" className="wj-pagination__btn" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>← Oldingi</button>
+                  <span className="wj-pagination__info">{currentPage} / {totalPages} ({filtered.length} ta)</span>
+                  <button type="button" className="wj-pagination__btn" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>Keyingi →</button>
                 </div>
               )}
             </>
