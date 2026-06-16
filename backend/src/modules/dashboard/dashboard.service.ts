@@ -332,6 +332,19 @@ export class DashboardService {
     return monitored.sort((a, b) => b.dangerCount - a.dangerCount);
   }
 
+  async releasedCount(filters: { school?: string; district?: string }) {
+    const qb = this.noteRepo
+      .createQueryBuilder('n')
+      .leftJoin(Student, 's', 's.id = n.studentId')
+      .where("n.note LIKE '[NAZORAT_CHIQISH]%'");
+
+    if (filters.school) qb.andWhere('s.schoolName = :school', { school: filters.school });
+    if (filters.district) qb.andWhere('s.district = :district', { district: filters.district });
+
+    const count = await qb.getCount();
+    return { count };
+  }
+
   async addToMonitor(dto: { firstName: string; lastName: string; className: string; reason?: string }) {
     // O'quvchini bazadan qidiramiz
     let student = await this.studentRepo.findOne({

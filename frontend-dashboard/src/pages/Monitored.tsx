@@ -60,6 +60,7 @@ export function Monitored() {
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [releasedCount, setReleasedCount] = useState(0);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className: string } | null>(null);
   const [releaseTarget, setReleaseTarget] = useState<MonitoredStudent | null>(null);
   const { refresh: refreshBadge } = useNotifications();
@@ -70,8 +71,11 @@ export function Monitored() {
   function load() {
     setLoading(true);
     setError(null);
-    api.get('/dashboard/monitored', { params: { school, district } })
-      .then(({ data }) => setStudents(data))
+    Promise.all([
+      api.get('/dashboard/monitored', { params: { school, district } }),
+      api.get('/dashboard/released-count', { params: { school, district } }),
+    ])
+      .then(([mon, rel]) => { setStudents(mon.data); setReleasedCount(rel.data.count); })
       .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }
@@ -94,8 +98,8 @@ export function Monitored() {
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // Stats
-  const totalKuzatuvlar = students.reduce((s, st) => s + st.allInsights.length, 0);
   const highCount = students.filter(s => s.dangerCount >= 3).length;
+
 
   function handleExport() {
     const rows = filtered.map((s, idx) => {
@@ -193,21 +197,9 @@ export function Monitored() {
           <div className="mon2-stat__bar mon2-stat__bar--red" />
         </div>
         <div className="mon2-stat">
-          <div className="mon2-stat__icon mon2-stat__icon--orange">📋</div>
-          <div className="mon2-stat__num">{totalKuzatuvlar}</div>
-          <div className="mon2-stat__lbl">Kiritilgan kuzatuvlar</div>
-          <div className="mon2-stat__bar mon2-stat__bar--orange" />
-        </div>
-        <div className="mon2-stat">
-          <div className="mon2-stat__icon mon2-stat__icon--purple">👤</div>
-          <div className="mon2-stat__num">{students.length}</div>
-          <div className="mon2-stat__lbl">Faol ishlar</div>
-          <div className="mon2-stat__bar mon2-stat__bar--purple" />
-        </div>
-        <div className="mon2-stat">
-          <div className="mon2-stat__icon mon2-stat__icon--green">📈</div>
-          <div className="mon2-stat__num">—</div>
-          <div className="mon2-stat__lbl">Holat yaxshilanish ko'rsatkichi</div>
+          <div className="mon2-stat__icon mon2-stat__icon--green">✅</div>
+          <div className="mon2-stat__num mon2-stat__num--green">{releasedCount}</div>
+          <div className="mon2-stat__lbl">Nazoratdan chiqarilganlar</div>
           <div className="mon2-stat__bar mon2-stat__bar--green" />
         </div>
       </div>
