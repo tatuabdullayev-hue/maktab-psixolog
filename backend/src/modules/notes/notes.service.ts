@@ -49,20 +49,16 @@ export class NotesService {
   }
 
   async unattendedCount(school?: string, district?: string): Promise<number> {
-    // Danger darajadagi o'quvchilar (oxirgi test natijasi bo'yicha)
-    const dangerResults = await this.testResultRepo
+    const dangerStudents = await this.testResultRepo
       .createQueryBuilder('tr')
-      .innerJoinAndSelect('tr.student', 'student')
+      .select('DISTINCT tr.studentId', 'studentId')
+      .innerJoin('tr.student', 'student')
       .where('tr.aiRiskLevel = :level', { level: RiskLevel.DANGER })
       .andWhere(school ? 'student.schoolName = :school' : '1=1', { school })
       .andWhere(district ? 'student.district = :district' : '1=1', { district })
-      .distinctOn(['tr.studentId'])
-      .orderBy('tr.studentId')
-      .addOrderBy('tr.completedAt', 'DESC')
-      .getMany();
+      .getRawMany();
 
-    // Ulardan qaysi biri hali hech qanday ish kiritilmagan
-    const studentIds = dangerResults.map(r => r.studentId);
+    const studentIds: string[] = dangerStudents.map((r: { studentId: string }) => r.studentId);
     if (studentIds.length === 0) return 0;
 
     const withNotes = await this.repo
@@ -71,7 +67,7 @@ export class NotesService {
       .where('n.studentId IN (:...ids)', { ids: studentIds })
       .getRawMany();
 
-    const attendedIds = new Set(withNotes.map(r => r.studentId));
+    const attendedIds = new Set(withNotes.map((r: { studentId: string }) => r.studentId));
     return studentIds.filter(id => !attendedIds.has(id)).length;
   }
 
