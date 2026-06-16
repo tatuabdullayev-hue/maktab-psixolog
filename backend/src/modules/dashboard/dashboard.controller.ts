@@ -105,8 +105,9 @@ export class DashboardController {
     const RISK_ORDER: Record<string, number> = { danger: 3, attention: 2, normal: 1 };
     const uniqueMap = new Map<string, typeof overview.students[0]>();
     for (const s of overview.students) {
+      if (!s.id) continue; // id yo'q qatorlarni o'tkazib yuboramiz
       const existing = uniqueMap.get(s.id);
-      if (!existing || (RISK_ORDER[s.level] ?? 0) > (RISK_ORDER[existing.level] ?? 0)) {
+      if (!existing || (RISK_ORDER[String(s.level)] ?? 0) > (RISK_ORDER[String(existing.level)] ?? 0)) {
         uniqueMap.set(s.id, s);
       }
     }
