@@ -154,7 +154,7 @@ export class WordReportService {
           p([run(`NAMANGAN VILOYATI ${data.district.toUpperCase()}`, { bold: true })], { before: 0, after: 60 }, AlignmentType.CENTER),
           p([run(`${data.school.toUpperCase()} MAKTAB PSIXOLOGI`, { bold: true })], { before: 0, after: 200 }, AlignmentType.CENTER),
           p([run('HISOBOT', { bold: true, size: 36 })], { before: 0, after: 60 }, AlignmentType.CENTER),
-          p([run("Jinoyatchilik va deviant xulqni barvaqt oldini olish bo'yicha", { bold: true, size: 24 })], { before: 0, after: 60 }, AlignmentType.CENTER),
+          p([run("O'quvchilarning psixologik holati va xavf guruhlariga oid", { bold: true, size: 24 })], { before: 0, after: 60 }, AlignmentType.CENTER),
           p([run(`Hisobot davri: ${period}`, { italics: true })], { before: 0, after: 400 }, AlignmentType.CENTER),
 
           // ════ 1. UMUMIY MA'LUMOT ════
