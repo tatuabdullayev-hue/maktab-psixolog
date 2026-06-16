@@ -201,23 +201,8 @@ export class WordReportService {
             ]
           ),
 
-          // ════ 4. O'RTA XAVF ════
-          secHeader("4. O'rta xavf guruhi o'quvchilari"),
-          ...(attentionStudents.length === 0
-            ? [p([run("O'rta xavf darajasidagi o'quvchi aniqlanmagan.")])]
-            : [
-              new Table({
-                width: { size: 9000, type: WidthType.DXA },
-                rows: [
-                  new TableRow({ children: [cell('Nr', true, 600), cell('F.I.O.', true, 2200), cell('Sinf', true, 700), cell('AI xulosasi', true, 5500)] }),
-                  ...attentionStudents.map((s, i) => new TableRow({ children: [cell(`${i + 1}`), cell(s.fullName), cell(s.className), cell(s.aiInsight ?? '—')] })),
-                ],
-              }),
-            ]
-          ),
-
-          // ════ 5. ISH JURNALI ════
-          secHeader(`5. Psixolog ishi jurnali (so'nggi 6 oy)`),
+          // ════ 4. ISH JURNALI ════
+          secHeader(`4. Psixolog ishi jurnali (so'nggi 6 oy)`),
           p([run(`Hisobot davri: ${period}`, { italics: true })]),
           p([run(`Jami kiritilgan ish yozuvlari: ${recentNotes.length} ta`, { bold: true })]),
           ...Object.entries(typeStats).map(([type, count]) =>
@@ -240,13 +225,13 @@ export class WordReportService {
             ]
           ),
 
-          // ════ 6. XULOSA ════
-          secHeader('6. Xulosa va tavsiyalar'),
+          // ════ 5. XULOSA ════
+          secHeader('5. Xulosa va tavsiyalar'),
           p([run('Umumiy xulosa:', { bold: true })]),
           p([run(
             `${data.district} ${data.school} maktabida o'tkazilgan AI asosidagi psixologik tahlil natijalari shuni ko'rsatadiki, ` +
-            `${data.total} nafar o'quvchidan ${data.danger} nafari (${pct(data.danger, data.total)}) yuqori xavf guruhiga, ` +
-            `${data.attention} nafari (${pct(data.attention, data.total)}) o'rta xavf guruhiga kiradi.`
+            `${data.total} nafar noyob o'quvchidan ${data.danger} nafari (${pct(data.danger, data.total)}) yuqori xavf guruhiga kiradi. ` +
+            `Ushbu o'quvchilar bilan zudlik bilan ishlash tavsiya etiladi.`
           )]),
           p([run("Tavsiyalar:", { bold: true })], { before: 160, after: 80 }),
           p([run("1. Yuqori xavf guruhidagi o'quvchilar bilan tezkor individual suhbat tashkil etilsin.")], { before: 40, after: 40 }),

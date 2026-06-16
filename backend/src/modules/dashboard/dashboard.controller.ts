@@ -101,18 +101,29 @@ export class DashboardController {
       this.notesService.getAll(school, district),
     ]);
 
-    const dangerStudents = overview.students.filter((s) => s.level === 'danger');
-    const attentionStudents = overview.students.filter((s) => s.level === 'attention');
-    const normalStudents = overview.students.filter((s) => s.level === 'normal');
+    // Har bir o'quvchidan faqat bitta (eng xavfli) natija olamiz
+    const RISK_ORDER: Record<string, number> = { danger: 3, attention: 2, normal: 1 };
+    const uniqueMap = new Map<string, typeof overview.students[0]>();
+    for (const s of overview.students) {
+      const existing = uniqueMap.get(s.id);
+      if (!existing || (RISK_ORDER[s.level] ?? 0) > (RISK_ORDER[existing.level] ?? 0)) {
+        uniqueMap.set(s.id, s);
+      }
+    }
+    const uniqueStudents = Array.from(uniqueMap.values());
+
+    const dangerStudents    = uniqueStudents.filter((s) => s.level === 'danger');
+    const attentionStudents = uniqueStudents.filter((s) => s.level === 'attention');
+    const normalStudents    = uniqueStudents.filter((s) => s.level === 'normal');
 
     const buffer = await this.wordReportService.generate({
       school: school || '53-maktab',
       district: district || 'Chortoq tumani',
-      total: overview.total,
+      total: uniqueStudents.length,
       danger: dangerStudents.length,
       attention: attentionStudents.length,
       normal: normalStudents.length,
-      students: overview.students.map((s) => ({
+      students: dangerStudents.map((s) => ({
         fullName: s.fullName,
         className: s.className,
         level: String(s.level),
