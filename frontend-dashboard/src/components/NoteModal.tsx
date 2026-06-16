@@ -60,9 +60,16 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
   const [sent, setSent]       = useState(false);
   const backdropRef = useRef<HTMLDivElement>(null);
 
-  const handleSendToInspector = () => {
+  const handleSendToInspector = async () => {
     setSent(true);
-    // TODO: haqiqiy yuborish — email / Telegram / tizim xabarnomasi
+    await api.post('/notes', {
+      studentId,
+      type: 'other',
+      note: "Inspektor-psixologga yuborildi — holat nazorat ostiga olindi.",
+      nextStep: 'Inspektor xulosasini kutish',
+    });
+    load();
+    onSaved();
   };
 
   const load = () =>
