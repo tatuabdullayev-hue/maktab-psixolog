@@ -187,6 +187,22 @@
   color: #dc2626 !important;
 }
 
+/* ── inspektora yuborilganlar (blue) karta ── */
+.wj-stat--inspector {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.wj-stat--inspector:hover,
+.wj-stat--inspector-active {
+  border-color: #0369a1 !important;
+  background: #e0f2fe !important;
+}
+.wj-stat__num--blue {
+  color: #0369a1 !important;
+}
+
 /* ── unattended card ── */
 .wj-unattended-card {
   margin-bottom: 20px;

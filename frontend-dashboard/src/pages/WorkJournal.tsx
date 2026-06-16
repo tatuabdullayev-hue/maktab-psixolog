@@ -59,6 +59,7 @@ export function WorkJournal() {
   const [unattended, setUnattended]           = useState<UnattendedStudent[]>([]);
   const [unattendedLoading, setUnattendedLoading] = useState(true);
   const [showUnattended, setShowUnattended]   = useState(false);
+  const [showInspector, setShowInspector]     = useState(false);
 
   const { unattended: cachedCount, refresh: refreshBadge } = useNotifications();
 
@@ -86,6 +87,17 @@ export function WorkJournal() {
     loadUnattended();
     refreshBadge();
   };
+
+  /* ── inspektora yuborilganlar ── */
+  const inspectorNotes = notes.filter(n =>
+    n.note.includes('Inspektor-psixologga yuborildi')
+  );
+  // har bir o'quvchidan bitta (oxirgi) yozuv
+  const inspectorMap = new Map<string, Note>();
+  for (const n of [...inspectorNotes].reverse()) {
+    inspectorMap.set(n.studentId, n);
+  }
+  const inspectorStudents = Array.from(inspectorMap.values());
 
   /* ── filterlash ── */
   const filtered = notes.filter(n => {
@@ -144,8 +156,20 @@ export function WorkJournal() {
           <span className="wj-stat__label">Kiritilmagan ishlar</span>
         </div>
 
-        <div className={`wj-stat${filterType === 'all' ? ' wj-stat--active' : ''}`}
-          onClick={() => { setFilterType('all'); setShowUnattended(false); }}
+        {/* Inspektora yuborilganlar — ko'k karta */}
+        <div
+          className={`wj-stat wj-stat--inspector${showInspector ? ' wj-stat--inspector-active' : ''}`}
+          onClick={() => { setShowInspector(v => !v); setShowUnattended(false); setFilterType('all'); }}
+          role="button" tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && setShowInspector(v => !v)}
+        >
+          <span className="wj-stat__icon">📤</span>
+          <span className="wj-stat__num wj-stat__num--blue">{loading ? '—' : inspectorStudents.length}</span>
+          <span className="wj-stat__label">Inspektora yuborildi</span>
+        </div>
+
+        <div className={`wj-stat${filterType === 'all' && !showUnattended && !showInspector ? ' wj-stat--active' : ''}`}
+          onClick={() => { setFilterType('all'); setShowUnattended(false); setShowInspector(false); }}
           role="button" tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && setFilterType('all')}
         >
@@ -160,7 +184,7 @@ export function WorkJournal() {
               key={s.type}
               className={`wj-stat${filterType === s.type ? ' wj-stat--active' : ''}`}
               style={filterType === s.type ? { borderColor: c.text, background: c.bg } : {}}
-              onClick={() => { setFilterType(filterType === s.type ? 'all' : s.type); setShowUnattended(false); }}
+              onClick={() => { setFilterType(filterType === s.type ? 'all' : s.type); setShowUnattended(false); setShowInspector(false); }}
               role="button" tabIndex={0}
               onKeyDown={e => e.key === 'Enter' && setFilterType(s.type)}
             >
@@ -220,8 +244,62 @@ export function WorkJournal() {
         </div>
       )}
 
+      {/* ── Inspektora yuborilganlar ro'yxati ── */}
+      {showInspector && (
+        <div className="card wj-unattended-card">
+          <div className="card__header-row">
+            <h2 className="wj-unattended-title" style={{ color: '#0369a1' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Inspektor-psixologga yuborilganlar
+              <span className="wj-unattended-badge" style={{ background: '#0369a1' }}>{inspectorStudents.length} ta</span>
+            </h2>
+          </div>
+
+          {inspectorStudents.length === 0 ? (
+            <div className="wj-unattended-empty">
+              <p className="muted">Hali hech kim inspektora yuborilmagan.</p>
+            </div>
+          ) : (
+            <div className="wj-unattended-list">
+              {inspectorStudents.map((n, idx) => {
+                const name = n.student
+                  ? `${n.student.firstName} ${n.student.lastName ?? ''}`.trim()
+                  : '—';
+                const cls = n.student?.className ?? '';
+                return (
+                  <div className="wj-unattended-item" key={n.studentId} style={{ borderColor: '#bae6fd' }}>
+                    <div className="wj-unattended-item__num">{idx + 1}</div>
+                    <div className="wj-unattended-item__avatar" style={{ background: '#e0f2fe', color: '#0369a1' }}>
+                      {getInitials(name)}
+                    </div>
+                    <div className="wj-unattended-item__info">
+                      <span className="wj-unattended-item__name">{name}</span>
+                      {cls && <span className="wj-unattended-item__class">{cls}</span>}
+                    </div>
+                    <span style={{ fontSize: 12, color: '#64748b' }}>{fmtDate(n.createdAt)}</span>
+                    <span className="wj-unattended-item__risk" style={{ background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}>
+                      📤 Yuborildi
+                    </span>
+                    <button
+                      type="button"
+                      className="wj-unattended-item__btn"
+                      style={{ background: '#0369a1' }}
+                      onClick={() => setNoteTarget({ id: n.studentId, name, className: cls })}
+                    >
+                      Ish jurnali
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── search + table ── */}
-      {!showUnattended && (
+      {!showUnattended && !showInspector && (
         <div className="card">
           <div className="card__header-row">
             <h2>
