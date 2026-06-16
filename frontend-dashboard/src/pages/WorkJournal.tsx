@@ -56,10 +56,11 @@ export function WorkJournal() {
   const [page, setPage]             = useState(1);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
 
-  const [unattended, setUnattended]         = useState<UnattendedStudent[]>([]);
-  const [showUnattended, setShowUnattended] = useState(false);
+  const [unattended, setUnattended]           = useState<UnattendedStudent[]>([]);
+  const [unattendedLoading, setUnattendedLoading] = useState(true);
+  const [showUnattended, setShowUnattended]   = useState(false);
 
-  const { refresh: refreshBadge } = useNotifications();
+  const { unattended: cachedCount, refresh: refreshBadge } = useNotifications();
 
   const load = () => {
     setLoading(true);
@@ -71,9 +72,11 @@ export function WorkJournal() {
   };
 
   const loadUnattended = () => {
+    setUnattendedLoading(true);
     api.get('/notes/unattended-students', { params: { school, district } })
       .then(({ data }) => setUnattended(data))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setUnattendedLoading(false));
   };
 
   useEffect(() => { load(); loadUnattended(); }, []);
@@ -135,7 +138,9 @@ export function WorkJournal() {
           onKeyDown={e => e.key === 'Enter' && setShowUnattended(v => !v)}
         >
           <span className="wj-stat__icon">⚠️</span>
-          <span className="wj-stat__num wj-stat__num--red">{unattended.length}</span>
+          <span className="wj-stat__num wj-stat__num--red">
+            {unattendedLoading ? cachedCount : unattended.length}
+          </span>
           <span className="wj-stat__label">Kiritilmagan ishlar</span>
         </div>
 
@@ -144,7 +149,7 @@ export function WorkJournal() {
           role="button" tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && setFilterType('all')}
         >
-          <span className="wj-stat__num">{notes.length}</span>
+          <span className="wj-stat__num">{loading ? '—' : notes.length}</span>
           <span className="wj-stat__label">Jami yozuvlar</span>
         </div>
 
@@ -160,7 +165,7 @@ export function WorkJournal() {
               onKeyDown={e => e.key === 'Enter' && setFilterType(s.type)}
             >
               <span className="wj-stat__icon">{TYPE_ICONS[s.type]}</span>
-              <span className="wj-stat__num" style={filterType === s.type ? { color: c.text } : {}}>{s.count}</span>
+              <span className="wj-stat__num" style={filterType === s.type ? { color: c.text } : {}}>{loading ? '—' : s.count}</span>
               <span className="wj-stat__label">{TYPE_LABELS[s.type]}</span>
             </div>
           );
