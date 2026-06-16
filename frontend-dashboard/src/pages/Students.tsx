@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
 import { NoteModal, TYPE_LABELS } from '../components/NoteModal';
 import type { Note } from '../components/NoteModal';
+import { useNotifications } from '../context/NotificationContext';
 
 interface TestStudent {
   id: string;
@@ -42,6 +43,7 @@ export function Students() {
   const [page, setPage] = useState(1);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
   const [allNotes, setAllNotes] = useState<Note[]>([]);
+  const { refresh: refreshBadge } = useNotifications();
 
   useEffect(() => {
     setLoading(true);
@@ -221,7 +223,7 @@ export function Students() {
           studentName={noteTarget.name}
           studentClass={noteTarget.className}
           onClose={() => setNoteTarget(null)}
-          onSaved={loadNotes}
+          onSaved={() => { loadNotes(); refreshBadge(); }}
         />
       )}
     </div>

@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useNotifications } from '../context/NotificationContext';
 
 function IconDashboard() {
   return (
@@ -116,6 +117,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { unattended } = useNotifications();
 
   return (
     <aside className="sidebar">
@@ -146,6 +148,9 @@ export function Sidebar() {
           >
             <span className="sidebar__icon"><Icon /></span>
             <span className="sidebar__label">{label}</span>
+            {to === '/work-journal' && unattended > 0 && (
+              <span className="sidebar__badge">{unattended}</span>
+            )}
           </NavLink>
         ))}
       </nav>

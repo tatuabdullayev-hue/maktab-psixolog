@@ -126,6 +126,23 @@
   text-overflow: ellipsis;
 }
 
+/* Notification badge */
+.sidebar__badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #f59f00;
+  color: #1a1a2e;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
 /* Footer */
 .sidebar__footer {
   border-top: 1px solid rgba(255,255,255,0.07);

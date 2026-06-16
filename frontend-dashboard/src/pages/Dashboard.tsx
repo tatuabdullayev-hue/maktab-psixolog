@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
+import { useNotifications } from '../context/NotificationContext';
 
 interface ClassBreakdown {
   className: string;
@@ -157,6 +158,7 @@ export function Dashboard() {
   const [trends, setTrends] = useState<TrendPoint[]>([]);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
   const [allNotes, setAllNotes] = useState<Note[]>([]);
+  const { refresh: refreshBadge } = useNotifications();
 
   useEffect(() => {
     setLoading(true);
@@ -577,7 +579,7 @@ export function Dashboard() {
           studentName={noteTarget.name}
           studentClass={noteTarget.className}
           onClose={() => setNoteTarget(null)}
-          onSaved={loadNotes}
+          onSaved={() => { loadNotes(); refreshBadge(); }}
         />
       )}
     </div>
