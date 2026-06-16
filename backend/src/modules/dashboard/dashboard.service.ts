@@ -344,7 +344,11 @@ export class DashboardService {
   }
 
   async deleteStudent(id: string) {
+    // Bog'liq barcha ma'lumotlarni tartib bilan o'chiramiz
     await this.noteRepo.delete({ studentId: id });
+    await this.moodRepo.delete({ studentId: id });
+    await this.testResultRepo.delete({ studentId: id });
+    await this.riskScoreRepo.delete({ studentId: id });
     await this.studentRepo.delete(id);
     return { success: true };
   }

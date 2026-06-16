@@ -23,8 +23,8 @@ import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([
-      { name: 'short', ttl: 60000, limit: 10 },   // 10 ta so'rov / 1 daqiqa (login uchun)
-      { name: 'long',  ttl: 60000, limit: 200 },  // 200 ta so'rov / 1 daqiqa (umumiy)
+      { name: 'short', ttl: 60000, limit: 15 },   // 15 ta / 1 daqiqa (login uchun)
+      { name: 'long',  ttl: 60000, limit: 300 },  // 300 ta / 1 daqiqa (API uchun)
     ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

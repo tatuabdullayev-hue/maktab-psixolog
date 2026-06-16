@@ -110,6 +110,6 @@ export class NotesService {
   }
 
   delete(id: string) {
-    return this.repo.delete(id);
+    return this.repo.softDelete(id);
   }
 }

@@ -2,12 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
-const ALLOWED_ORIGINS = [
+const BASE_ORIGINS = [
   'https://ai-psixolog.uz',
   'https://admin.ai-psixolog.uz',
   'http://localhost:5173',
   'http://localhost:5174',
 ];
+const ALLOWED_ORIGINS = process.env.EXTRA_ORIGINS
+  ? [...BASE_ORIGINS, ...process.env.EXTRA_ORIGINS.split(',').map(o => o.trim())]
+  : BASE_ORIGINS;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
