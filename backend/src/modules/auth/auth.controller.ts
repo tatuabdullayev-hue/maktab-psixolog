@@ -1,4 +1,5 @@
 import { Body, Controller, ForbiddenException, Patch, Post, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
@@ -21,6 +22,7 @@ export class AuthController {
     return this.authService.loginWithTelegram(dto.initData);
   }
 
+  @Throttle({ short: { ttl: 60000, limit: 5 } })
   @Post('login')
   loginPsychologist(@Body() dto: PsychologistLoginDto) {
     return this.authService.loginPsychologist(dto.username, dto.password);

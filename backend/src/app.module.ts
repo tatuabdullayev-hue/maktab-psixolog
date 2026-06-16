@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ALL_ENTITIES } from './database/entities/entities.list';
 import { AuthModule } from './modules/auth/auth.module';
@@ -20,6 +22,10 @@ import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      { name: 'short', ttl: 60000, limit: 10 },   // 10 ta so'rov / 1 daqiqa (login uchun)
+      { name: 'long',  ttl: 60000, limit: 200 },  // 200 ta so'rov / 1 daqiqa (umumiy)
+    ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -48,6 +54,9 @@ import { LifeChoicesModule } from './modules/life-choices/life-choices.module';
     ImpulseGameModule,
     ColorTestModule,
     LifeChoicesModule,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}
