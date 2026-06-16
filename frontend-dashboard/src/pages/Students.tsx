@@ -134,13 +134,15 @@ export function Students() {
                         </td>
                         <td>{formatDate(s.completedAt)}</td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn-note"
-                            onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
-                          >
-                            📝 Ish qo'shish
-                          </button>
+                          {s.level === 'danger' && (
+                            <button
+                              type="button"
+                              className="btn-note"
+                              onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
+                            >
+                              📝 Ish qo'shish
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
