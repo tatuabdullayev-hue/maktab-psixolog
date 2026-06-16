@@ -72,9 +72,10 @@ export class NotesService {
   }
 
   async unattendedStudents(school?: string, district?: string) {
+    // GROUP BY — har o'quvchidan bitta qator olish
     const dangerStudents = await this.testResultRepo
       .createQueryBuilder('tr')
-      .select('DISTINCT tr.studentId', 'studentId')
+      .select('tr.studentId', 'studentId')
       .addSelect('student.firstName', 'firstName')
       .addSelect('student.lastName', 'lastName')
       .addSelect('student.className', 'className')
@@ -82,11 +83,15 @@ export class NotesService {
       .where('tr.aiRiskLevel = :level', { level: RiskLevel.DANGER })
       .andWhere(school ? 'student.schoolName = :school' : '1=1', { school })
       .andWhere(district ? 'student.district = :district' : '1=1', { district })
+      .groupBy('tr.studentId')
+      .addGroupBy('student.firstName')
+      .addGroupBy('student.lastName')
+      .addGroupBy('student.className')
       .getRawMany();
 
     if (dangerStudents.length === 0) return [];
 
-    const studentIds: string[] = dangerStudents.map((r: { studentId: string }) => r.studentId);
+    const studentIds: string[] = dangerStudents.map((r: any) => r.studentId);
 
     const withNotes = await this.repo
       .createQueryBuilder('n')
@@ -94,10 +99,10 @@ export class NotesService {
       .where('n.studentId IN (:...ids)', { ids: studentIds })
       .getRawMany();
 
-    const attendedIds = new Set(withNotes.map((r: { studentId: string }) => r.studentId));
+    const attendedIds = new Set(withNotes.map((r: any) => r.studentId));
     return dangerStudents
-      .filter((r: { studentId: string }) => !attendedIds.has(r.studentId))
-      .map((r: { studentId: string; firstName: string; lastName: string; className: string }) => ({
+      .filter((r: any) => !attendedIds.has(r.studentId))
+      .map((r: any) => ({
         studentId: r.studentId,
         fullName: `${r.firstName} ${r.lastName ?? ''}`.trim(),
         className: r.className ?? '',
