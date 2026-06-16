@@ -50,25 +50,8 @@ export class WordReportService {
     const {
       Document, Packer, Paragraph, Table, TableRow, TableCell,
       TextRun, AlignmentType, WidthType, BorderStyle, ShadingType,
-      Header, Footer, PageNumber, UnderlineType, ImageRun, VerticalAlign,
+      Header, Footer, PageNumber, UnderlineType,
     } = require('docx');
-
-    // O'zbekiston gerbini yuklab olamiz
-    let emblemBuffer: Buffer | null = null;
-    try {
-      const https = require('https');
-      emblemBuffer = await new Promise<Buffer>((resolve, reject) => {
-        https.get(
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Emblem_of_Uzbekistan.svg/100px-Emblem_of_Uzbekistan.svg.png',
-          (res: any) => {
-            const chunks: Buffer[] = [];
-            res.on('data', (c: Buffer) => chunks.push(c));
-            res.on('end', () => resolve(Buffer.concat(chunks)));
-            res.on('error', reject);
-          }
-        ).on('error', reject);
-      });
-    } catch { emblemBuffer = null; }
 
     const today = new Date();
     const sixMonthsAgo = new Date(today);
@@ -166,30 +149,10 @@ export class WordReportService {
           }),
         },
         children: [
-          // ════ SARLAVHA — gerb + vazirlik nomi ════
-          new Table({
-            width: { size: 9000, type: WidthType.DXA },
-            rows: [new TableRow({ children: [
-              new TableCell({
-                width: { size: 1400, type: WidthType.DXA },
-                borders: NO_BORDER,
-                verticalAlign: VerticalAlign.CENTER,
-                children: emblemBuffer ? [new Paragraph({ spacing: { before: 0, after: 0 }, children: [new ImageRun({ data: emblemBuffer, transformation: { width: 85, height: 95 } })] })] : [],
-              }),
-              new TableCell({
-                width: { size: 7600, type: WidthType.DXA },
-                borders: NO_BORDER,
-                verticalAlign: VerticalAlign.CENTER,
-                children: [
-                  p([run("O'ZBEKISTON RESPUBLIKASI MAKTABGACHA", { bold: true, size: 22 })], { before: 0, after: 30 }),
-                  p([run("VA MAKTAB TA'LIMI VAZIRLIGI", { bold: true, size: 22 })], { before: 0, after: 60 }),
-                  p([run(`Namangan viloyati ${data.district}ga qarashli`, { size: 20 })], { before: 0, after: 20 }),
-                  p([run(`${data.school} maktab psixologi`, { bold: true, size: 20 })], { before: 0, after: 0 }),
-                ],
-              }),
-            ]})],
-          }),
-          new Paragraph({ spacing: { before: 240, after: 0 }, children: [] }),
+          // ════ SARLAVHA ════
+          p([run("O'ZBEKISTON RESPUBLIKASI MAKTABGACHA VA MAKTAB TA'LIMI VAZIRLIGI", { bold: true, size: 24 })], { before: 0, after: 60 }, AlignmentType.CENTER),
+          p([run(`Namangan viloyati ${data.district}ga qarashli`, { size: 22 })], { before: 0, after: 40 }, AlignmentType.CENTER),
+          p([run(`${data.school.toUpperCase()} MAKTAB PSIXOLOGI`, { bold: true, size: 24 })], { before: 0, after: 200 }, AlignmentType.CENTER),
           p([run('HISOBOT', { bold: true, size: 36 })], { before: 0, after: 60 }, AlignmentType.CENTER),
           p([run("O'quvchilarning psixologik holati va xavf guruhlariga oid", { bold: true, size: 24 })], { before: 0, after: 60 }, AlignmentType.CENTER),
           p([run(`Hisobot davri: ${period}`, { italics: true })], { before: 0, after: 400 }, AlignmentType.CENTER),
