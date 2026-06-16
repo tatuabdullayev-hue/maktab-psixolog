@@ -2,17 +2,6 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
 import { exportOverviewToExcel, formatDate, type Overview } from './Dashboard';
-import { generateWordReport } from '../utils/generateWordReport';
-
-interface NoteEntry {
-  id: string;
-  studentId: string;
-  type: string;
-  note: string;
-  nextStep?: string | null;
-  createdAt: string;
-  student?: { firstName: string; lastName?: string; className?: string } | null;
-}
 
 export function Reports() {
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -26,44 +15,32 @@ export function Reports() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const params: Record<string, string> = { school, district };
-    if (date) params.date = date;
-
     api
-      .get('/dashboard/overview', { params })
+      .get('/dashboard/overview', { params: { school, district, date } })
       .then(({ data }) => setOverview(data))
       .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
   async function handleWordDownload() {
-    if (!overview) return;
     setWordLoading(true);
     try {
-      const params = { school, district };
-      const { data: notes } = await api.get<NoteEntry[]>('/notes', { params });
-
-      const danger = overview.students.filter(s => s.level === 'danger').length;
-      const attention = overview.students.filter(s => s.level === 'attention').length;
-      const normal = overview.students.filter(s => s.level === 'normal').length;
-
-      await generateWordReport({
-        school,
-        district,
-        total: overview.total,
-        danger,
-        attention,
-        normal,
-        students: overview.students.map(s => ({
-          fullName: s.fullName,
-          className: s.className,
-          level: s.level,
-          aiInsight: s.aiInsight ?? null,
-          aiRecommendation: s.aiRecommendation ?? null,
-          completedAt: s.completedAt,
-        })),
-        notes,
+      const response = await api.get('/dashboard/word-report', {
+        params: { school, district },
+        responseType: 'blob',
       });
+
+      const today = new Date().toISOString().slice(0, 10);
+      const filename = `Hisobot_${school}_${today}.docx`;
+
+      const url = URL.createObjectURL(new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch {
       alert("Word hujjat yaratishda xatolik yuz berdi. Qaytadan urinib ko'ring.");
     } finally {

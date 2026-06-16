@@ -9,5 +9,6 @@ import { NotesController } from './notes.controller';
   imports: [TypeOrmModule.forFeature([PsychologistNote, TestResult])],
   controllers: [NotesController],
   providers: [NotesService],
+  exports: [NotesService],
 })
 export class NotesModule {}
