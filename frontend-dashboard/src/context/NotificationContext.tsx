@@ -3,16 +3,19 @@ import { api } from '../api/client';
 
 interface NotificationContextValue {
   unattended: number;
+  monitored: number;
   refresh: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextValue>({
   unattended: 0,
+  monitored: 0,
   refresh: () => {},
 });
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [unattended, setUnattended] = useState(0);
+  const [monitored, setMonitored] = useState(0);
 
   const refresh = useCallback(() => {
     api
@@ -20,6 +23,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         params: { school: '53-maktab', district: 'Chortoq tumani' },
       })
       .then(({ data }) => setUnattended(data.count ?? 0))
+      .catch(() => {});
+
+    api
+      .get('/dashboard/monitored', {
+        params: { school: '53-maktab', district: 'Chortoq tumani' },
+      })
+      .then(({ data }) => setMonitored(Array.isArray(data) ? data.length : 0))
       .catch(() => {});
   }, []);
 
@@ -30,7 +40,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [refresh]);
 
   return (
-    <NotificationContext.Provider value={{ unattended, refresh }}>
+    <NotificationContext.Provider value={{ unattended, monitored, refresh }}>
       {children}
     </NotificationContext.Provider>
   );

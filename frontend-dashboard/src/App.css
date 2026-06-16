@@ -142,6 +142,10 @@
   flex-shrink: 0;
   line-height: 1;
 }
+.sidebar__badge--red {
+  background: #e53e3e;
+  color: #fff;
+}
 
 /* Footer */
 .sidebar__footer {

@@ -233,6 +233,56 @@ export class DashboardService {
     return days;
   }
 
+  /**
+   * 2 va undan ko'p marta DANGER darajasi aniqlangan o'quvchilar — "Ichki nazorat" guruhi.
+   */
+  async monitoredStudents(filters: { school?: string; district?: string }) {
+    const qb = this.testResultRepo
+      .createQueryBuilder('tr')
+      .leftJoinAndSelect('tr.student', 'student')
+      .where('tr.aiRiskLevel = :level', { level: RiskLevel.DANGER });
+
+    if (filters.school) {
+      qb.andWhere('student.schoolName = :school', { school: filters.school });
+    }
+    if (filters.district) {
+      qb.andWhere('student.district = :district', { district: filters.district });
+    }
+
+    const dangerResults = await qb.orderBy('tr.completedAt', 'DESC').getMany();
+
+    // O'quvchi bo'yicha guruhlaymiz
+    const byStudent = new Map<string, typeof dangerResults>();
+    for (const r of dangerResults) {
+      const sid = r.student?.id;
+      if (!sid) continue;
+      if (!byStudent.has(sid)) byStudent.set(sid, []);
+      byStudent.get(sid)!.push(r);
+    }
+
+    // 2 va undan ko'p marta danger bo'lganlari
+    const monitored = [];
+    for (const [, results] of byStudent) {
+      if (results.length < 2) continue;
+      const latest = results[0];
+      monitored.push({
+        id: latest.student?.id,
+        fullName: [latest.student?.firstName, latest.student?.lastName].filter(Boolean).join(' '),
+        className: latest.student?.className ?? '—',
+        dangerCount: results.length,
+        lastDetected: latest.completedAt,
+        lastInsight: latest.aiInsight ?? null,
+        lastRecommendation: latest.aiRecommendation ?? null,
+        allInsights: results.map(r => ({
+          date: r.completedAt,
+          insight: r.aiInsight ?? null,
+        })),
+      });
+    }
+
+    return monitored.sort((a, b) => b.dangerCount - a.dangerCount);
+  }
+
   async alerts(onlyUnresolved = true) {
     return this.alertsService.findAll(onlyUnresolved);
   }

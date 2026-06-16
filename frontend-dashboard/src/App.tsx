@@ -13,6 +13,7 @@ import { Settings } from './pages/Settings';
 import { Placeholder } from './pages/Placeholder';
 import { WorkJournal } from './pages/WorkJournal';
 import { Recommendations } from './pages/Recommendations';
+import { Monitored } from './pages/Monitored';
 import './App.css';
 
 function AppContent() {
@@ -43,6 +44,7 @@ function AppContent() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/work-journal" element={<WorkJournal />} />
           <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/monitored" element={<Monitored />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Placeholder title="Yordam" />} />
           <Route path="*" element={<Navigate to="/" replace />} />

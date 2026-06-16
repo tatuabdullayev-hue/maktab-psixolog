@@ -61,6 +61,14 @@ export class DashboardController {
     return this.dashboardService.resolveAlert(id);
   }
 
+  @Get('monitored')
+  monitored(
+    @Query('school') school?: string,
+    @Query('district') district?: string,
+  ) {
+    return this.dashboardService.monitoredStudents({ school, district });
+  }
+
   @Get('word-report')
   async wordReport(
     @Query('school') school: string,

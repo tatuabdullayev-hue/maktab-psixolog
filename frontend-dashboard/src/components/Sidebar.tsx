@@ -59,6 +59,14 @@ function IconRecommend() {
     </svg>
   );
 }
+function IconMonitor() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  );
+}
 function IconSettings() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -110,6 +118,7 @@ const NAV_ITEMS = [
   { to: '/reports',       Icon: IconReports,    label: 'Hisobotlar' },
   { to: '/work-journal',  Icon: IconJournal,    label: 'Ish jurnali' },
   { to: '/recommendations', Icon: IconRecommend, label: 'Tavsiyalar' },
+  { to: '/monitored',      Icon: IconMonitor,   label: 'Ichki nazorat' },
   { to: '/settings',      Icon: IconSettings,   label: 'Sozlamalar' },
   { to: '/help',          Icon: IconHelp,       label: 'Yordam' },
 ];
@@ -117,7 +126,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { unattended } = useNotifications();
+  const { unattended, monitored } = useNotifications();
 
   return (
     <aside className="sidebar">
@@ -150,6 +159,9 @@ export function Sidebar() {
             <span className="sidebar__label">{label}</span>
             {to === '/work-journal' && unattended > 0 && (
               <span className="sidebar__badge">{unattended}</span>
+            )}
+            {to === '/monitored' && monitored > 0 && (
+              <span className="sidebar__badge sidebar__badge--red">{monitored}</span>
             )}
           </NavLink>
         ))}
