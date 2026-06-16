@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Res,
   UseGuards,
@@ -59,6 +61,11 @@ export class DashboardController {
   @Patch('alerts/:id/resolve')
   resolveAlert(@Param('id') id: string) {
     return this.dashboardService.resolveAlert(id);
+  }
+
+  @Post('add-to-monitor')
+  addToMonitor(@Body() body: { firstName: string; lastName: string; className: string; reason?: string }) {
+    return this.dashboardService.addToMonitor(body);
   }
 
   @Get('monitored')

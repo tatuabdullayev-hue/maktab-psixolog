@@ -1,12 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import './add-to-monitor-modal.css';
-
-interface Student {
-  id: string;
-  fullName: string;
-  className: string;
-}
 
 interface Props {
   onClose: () => void;
@@ -14,39 +8,43 @@ interface Props {
 }
 
 export function AddToMonitorModal({ onClose, onAdded }: Props) {
-  const [allStudents, setAllStudents] = useState<Student[]>([]);
-  const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Student | null>(null);
+  const [allStudents, setAllStudents] = useState<any[]>([]);
+  const [grade, setGrade] = useState('');
+  const [fullName, setFullName] = useState('');
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/dashboard/students').then(({ data }) => {
-      const list = (data as any[]).map(s => ({
-        id: s.id,
-        fullName: s.fullName,
-        className: s.className,
-      }));
-      setAllStudents(list);
-    });
+    api.get('/dashboard/students').then(({ data }) => setAllStudents(data));
   }, []);
 
-  const filtered = search.length >= 2
-    ? allStudents.filter(s => s.fullName.toLowerCase().includes(search.toLowerCase())).slice(0, 8)
-    : [];
+  const classes = useMemo(() => {
+    const set = new Set((allStudents as any[]).map(s => s.className).filter(Boolean));
+    return [...set].sort((a, b) => {
+      const na = parseInt(a); const nb = parseInt(b);
+      if (na !== nb) return na - nb;
+      return a.localeCompare(b);
+    });
+  }, [allStudents]);
+
+  const canSubmit = grade && fullName.trim().length >= 3 && !saving;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selected) return;
+    if (!canSubmit) return;
     setSaving(true);
     setError('');
     try {
-      await api.post('/notes', {
-        studentId: selected.id,
-        type: 'other',
-        note: `[NAZORAT_QOSHISH] ${reason.trim() || "Psixolog tomonidan ichki nazoratga qo'shildi"}`,
-        nextStep: 'Muntazam kuzatuv va psixologik yordam ko\'rsatish',
+      const parts = fullName.trim().split(' ');
+      const firstName = parts[0] ?? '';
+      const lastName = parts.slice(1).join(' ') || '-';
+
+      await api.post('/dashboard/add-to-monitor', {
+        firstName,
+        lastName,
+        className: grade,
+        reason: reason.trim() || undefined,
       });
       onAdded();
       onClose();
@@ -64,7 +62,7 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
           <div className="atm-header__icon">➕</div>
           <div>
             <div className="atm-header__title">Ichki nazoratga qo'shish</div>
-            <div className="atm-header__sub">O'quvchini qo'lda nazorat ro'yxatiga kiriting</div>
+            <div className="atm-header__sub">Ma'lumotlarni kiriting</div>
           </div>
           <button className="atm-close" type="button" onClick={onClose}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -75,61 +73,41 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
 
         <form onSubmit={handleSubmit} className="atm-form">
 
-          {/* Student search */}
+          {/* Sinf */}
           <div className="atm-field">
-            <label className="atm-label">O'quvchi <span className="atm-req">*</span></label>
-            {selected ? (
-              <div className="atm-selected">
-                <div className="atm-selected__info">
-                  <div className="atm-selected__name">{selected.fullName}</div>
-                  <div className="atm-selected__class">{selected.className} sinf</div>
-                </div>
-                <button type="button" className="atm-selected__clear" onClick={() => { setSelected(null); setSearch(''); }}>
-                  ✕ O'zgartirish
-                </button>
-              </div>
-            ) : (
-              <div className="atm-search-wrap">
-                <svg className="atm-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                </svg>
-                <input
-                  className="atm-search-input"
-                  placeholder="Ism yoki familiya bo'yicha qidiring..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  autoFocus
-                />
-                {filtered.length > 0 && (
-                  <div className="atm-dropdown">
-                    {filtered.map(s => (
-                      <div
-                        key={s.id}
-                        className="atm-dropdown__item"
-                        onClick={() => { setSelected(s); setSearch(''); }}
-                      >
-                        <div className="atm-dropdown__name">{s.fullName}</div>
-                        <div className="atm-dropdown__class">{s.className} sinf</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {search.length >= 2 && filtered.length === 0 && (
-                  <div className="atm-dropdown atm-dropdown--empty">O'quvchi topilmadi</div>
-                )}
-              </div>
-            )}
+            <label className="atm-label">Sinf <span className="atm-req">*</span></label>
+            <select
+              className="atm-select"
+              value={grade}
+              onChange={e => setGrade(e.target.value)}
+            >
+              <option value="">Sinfni tanlang</option>
+              {classes.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Reason */}
+          {/* Ism familiya */}
           <div className="atm-field">
-            <label className="atm-label">Qo'shish sababi</label>
+            <label className="atm-label">Ism va familiya <span className="atm-req">*</span></label>
+            <input
+              className="atm-input"
+              placeholder="Masalan: Akbar Toshmatov"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+            />
+          </div>
+
+          {/* Sabab */}
+          <div className="atm-field">
+            <label className="atm-label">Sabab</label>
             <textarea
               className="atm-textarea"
-              placeholder="Ixtiyoriy: nima uchun bu o'quvchini nazoratga olish kerakligi haqida yozing..."
+              placeholder="Nima uchun nazoratga olinayotganini yozing..."
               value={reason}
               onChange={e => setReason(e.target.value)}
-              rows={4}
+              rows={3}
             />
           </div>
 
@@ -139,8 +117,8 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
             <button type="button" className="atm-btn atm-btn--cancel" onClick={onClose}>
               Bekor qilish
             </button>
-            <button type="submit" className="atm-btn atm-btn--submit" disabled={!selected || saving}>
-              {saving ? 'Qo\'shilmoqda...' : "➕ Nazoratga qo'shish"}
+            <button type="submit" className="atm-btn atm-btn--submit" disabled={!canSubmit}>
+              {saving ? "Qo'shilmoqda..." : "➕ Nazoratga qo'shish"}
             </button>
           </div>
         </form>

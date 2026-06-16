@@ -331,6 +331,38 @@ export class DashboardService {
     return monitored.sort((a, b) => b.dangerCount - a.dangerCount);
   }
 
+  async addToMonitor(dto: { firstName: string; lastName: string; className: string; reason?: string }) {
+    // O'quvchini bazadan qidiramiz
+    let student = await this.studentRepo.findOne({
+      where: { firstName: dto.firstName, lastName: dto.lastName },
+    });
+
+    // Topilmasa yangi yaratamiz (class access tekshiruvisiz)
+    if (!student) {
+      student = this.studentRepo.create({
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        className: dto.className,
+        schoolName: '53-maktab',
+        district: 'Chortoq tumani',
+        currentRiskScore: 0,
+      });
+      await this.studentRepo.save(student);
+    }
+
+    // Nazoratga qo'shish notesi
+    await this.noteRepo.save(
+      this.noteRepo.create({
+        studentId: student.id,
+        type: 'other' as any,
+        note: `[NAZORAT_QOSHISH] ${dto.reason?.trim() || "Psixolog tomonidan ichki nazoratga qo'shildi"}`,
+        nextStep: "Muntazam kuzatuv va psixologik yordam ko'rsatish",
+      }),
+    );
+
+    return { success: true, studentId: student.id };
+  }
+
   async alerts(onlyUnresolved = true) {
     return this.alertsService.findAll(onlyUnresolved);
   }
