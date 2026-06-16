@@ -6,6 +6,7 @@ import {
   TestResult,
   RiskScore,
 } from '../../database/entities';
+import { PsychologistNote } from '../../database/entities/psychologist-note.entity';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
 import { WordReportService } from './word-report.service';
@@ -14,7 +15,7 @@ import { NotesModule } from '../notes/notes.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student, MoodEntry, TestResult, RiskScore]),
+    TypeOrmModule.forFeature([Student, MoodEntry, TestResult, RiskScore, PsychologistNote]),
     AlertsModule,
     NotesModule,
   ],

@@ -6,7 +6,6 @@ import {
   TableRow,
   TableCell,
   TextRun,
-  HeadingLevel,
   AlignmentType,
   WidthType,
   BorderStyle,
@@ -14,6 +13,7 @@ import {
   Header,
   Footer,
   PageNumberElement,
+  UnderlineType,
 } from 'docx';
 import { saveAs } from 'file-saver';
 
@@ -53,30 +53,31 @@ const TYPE_LABELS: Record<string, string> = {
   other: 'Boshqa kuzatuv',
 };
 
+const FONT = 'Times New Roman';
+
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString('uz-UZ', {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }
 
-function bold(text: string, size = 22) {
-  return new TextRun({ text, bold: true, size, font: 'Times New Roman' });
+function pct(num: number, total: number) {
+  return total ? `${Math.round(num / total * 100)}%` : '0%';
 }
 
-function normal(text: string, size = 22) {
-  return new TextRun({ text, size, font: 'Times New Roman' });
+function run(text: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) {
+  return new TextRun({ text, font: FONT, size: opts.size ?? 22, bold: opts.bold, color: opts.color, italics: opts.italics });
 }
 
-function heading(text: string, level: (typeof HeadingLevel)[keyof typeof HeadingLevel]) {
+function p(children: TextRun[], spacing?: { before?: number; after?: number }, align?: (typeof AlignmentType)[keyof typeof AlignmentType]) {
+  return new Paragraph({ children, spacing: { before: spacing?.before ?? 80, after: spacing?.after ?? 80 }, alignment: align });
+}
+
+function sectionHeader(text: string) {
   return new Paragraph({
-    heading: level,
-    spacing: { before: 280, after: 140 },
-    children: [new TextRun({ text, bold: true, size: 26, font: 'Times New Roman' })],
+    children: [new TextRun({ text, font: FONT, size: 28, bold: true, underline: { type: UnderlineType.SINGLE } })],
+    spacing: { before: 320, after: 160 },
   });
-}
-
-function para(children: TextRun[], spacing = { before: 80, after: 80 }) {
-  return new Paragraph({ children, spacing });
 }
 
 const CELL_BORDER = {
@@ -84,6 +85,13 @@ const CELL_BORDER = {
   bottom: { style: BorderStyle.SINGLE, size: 4, color: '1e3a5f' },
   left: { style: BorderStyle.SINGLE, size: 4, color: '1e3a5f' },
   right: { style: BorderStyle.SINGLE, size: 4, color: '1e3a5f' },
+};
+
+const NO_BORDER = {
+  top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+  bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+  left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+  right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
 };
 
 function cell(text: string, isHeader = false, width = 2000) {
@@ -100,7 +108,7 @@ function cell(text: string, isHeader = false, width = 2000) {
           bold: isHeader,
           color: isHeader ? 'FFFFFF' : '000000',
           size: 20,
-          font: 'Times New Roman',
+          font: FONT,
         })],
       }),
     ],
@@ -108,10 +116,9 @@ function cell(text: string, isHeader = false, width = 2000) {
 }
 
 function noBorderCell(children: Paragraph[], width = 4500) {
-  const nb = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
   return new TableCell({
     width: { size: width, type: WidthType.DXA },
-    borders: { top: nb, bottom: nb, left: nb, right: nb },
+    borders: NO_BORDER,
     children,
   });
 }
@@ -143,12 +150,7 @@ export async function generateWordReport(data: ReportData) {
           children: [
             new Paragraph({
               alignment: AlignmentType.RIGHT,
-              children: [new TextRun({
-                text: `${data.district}, ${data.school}`,
-                size: 18,
-                color: '666666',
-                font: 'Times New Roman',
-              })],
+              children: [run(`${data.district}, ${data.school}`, { size: 18, color: '666666' })],
             }),
           ],
         }),
@@ -159,9 +161,9 @@ export async function generateWordReport(data: ReportData) {
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Sahifa ', size: 18, font: 'Times New Roman' }),
+                run('Sahifa ', { size: 18 }),
                 new PageNumberElement(),
-                new TextRun({ text: '  |  Maxfiy — faqat xizmat uchun', size: 18, color: '999999', font: 'Times New Roman' }),
+                run('  |  Maxfiy — faqat xizmat uchun', { size: 18, color: '999999' }),
               ],
             }),
           ],
@@ -169,40 +171,17 @@ export async function generateWordReport(data: ReportData) {
       },
       children: [
 
-        // ═══════ SARLAVHA ═══════
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 80 },
-          children: [new TextRun({ text: "O'ZBEKISTON RESPUBLIKASI", size: 22, bold: true, font: 'Times New Roman' })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 80 },
-          children: [new TextRun({ text: `NAMANGAN VILOYATI ${data.district.toUpperCase()}`, size: 22, bold: true, font: 'Times New Roman' })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 200 },
-          children: [new TextRun({ text: `${data.school.toUpperCase()} MAKTAB PSIXOLOGI`, size: 22, bold: true, font: 'Times New Roman' })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 60 },
-          children: [new TextRun({ text: 'HISOBOT', size: 36, bold: true, font: 'Times New Roman' })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 60 },
-          children: [new TextRun({ text: "Jinoyatchilik va deviant xulqni barvaqt oldini olish bo'yicha", size: 24, bold: true, font: 'Times New Roman' })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 400 },
-          children: [new TextRun({ text: `Hisobot davri: ${period}`, size: 22, italics: true, font: 'Times New Roman' })],
-        }),
+        // ════ SARLAVHA ════
+        p([run("O'ZBEKISTON RESPUBLIKASI", { bold: true })], { before: 0, after: 60 }, AlignmentType.CENTER),
+        p([run(`NAMANGAN VILOYATI ${data.district.toUpperCase()}`, { bold: true })], { before: 0, after: 60 }, AlignmentType.CENTER),
+        p([run(`${data.school.toUpperCase()} MAKTAB PSIXOLOGI`, { bold: true })], { before: 0, after: 200 }, AlignmentType.CENTER),
 
-        // ═══════ 1. UMUMIY MA'LUMOT ═══════
-        heading("1. Umumiy ma'lumot", HeadingLevel.HEADING_1),
+        p([run('HISOBOT', { bold: true, size: 36 })], { before: 0, after: 60 }, AlignmentType.CENTER),
+        p([run("Jinoyatchilik va deviant xulqni barvaqt oldini olish bo'yicha", { bold: true, size: 24 })], { before: 0, after: 60 }, AlignmentType.CENTER),
+        p([run(`Hisobot davri: ${period}`, { italics: true })], { before: 0, after: 400 }, AlignmentType.CENTER),
+
+        // ════ 1. UMUMIY MA'LUMOT ════
+        sectionHeader("1. Umumiy ma'lumot"),
 
         new Table({
           width: { size: 9000, type: WidthType.DXA },
@@ -216,81 +195,70 @@ export async function generateWordReport(data: ReportData) {
           ],
         }),
 
-        // ═══════ 2. RISK TAHLILI ═══════
-        heading("2. Risk darajasi bo'yicha tahlil", HeadingLevel.HEADING_1),
-
-        para([bold('AI tizimi (Claude Sonnet) tomonidan o\'tkazilgan psixologik tahlil natijalari:')]),
+        // ════ 2. RISK TAHLILI ════
+        sectionHeader("2. Risk darajasi bo'yicha tahlil"),
+        p([run('AI tizimi (Claude Sonnet) tomonidan o\'tkazilgan psixologik tahlil natijalari:', { bold: true })]),
 
         new Table({
           width: { size: 9000, type: WidthType.DXA },
           rows: [
             new TableRow({ children: [cell('Risk darajasi', true, 3000), cell("O'quvchilar soni", true, 3000), cell('Ulushi (%)', true, 3000)] }),
-            new TableRow({ children: [cell('Yuqori xavf (DANGER)'), cell(`${data.danger} nafar`), cell(data.total ? `${Math.round(data.danger / data.total * 100)}%` : '0%')] }),
-            new TableRow({ children: [cell("O'rta xavf (ATTENTION)"), cell(`${data.attention} nafar`), cell(data.total ? `${Math.round(data.attention / data.total * 100)}%` : '0%')] }),
-            new TableRow({ children: [cell('Past xavf (NORMAL)'), cell(`${data.normal} nafar`), cell(data.total ? `${Math.round(data.normal / data.total * 100)}%` : '0%')] }),
+            new TableRow({ children: [cell('Yuqori xavf (DANGER)'), cell(`${data.danger} nafar`), cell(pct(data.danger, data.total))] }),
+            new TableRow({ children: [cell("O'rta xavf (ATTENTION)"), cell(`${data.attention} nafar`), cell(pct(data.attention, data.total))] }),
+            new TableRow({ children: [cell('Past xavf (NORMAL)'), cell(`${data.normal} nafar`), cell(pct(data.normal, data.total))] }),
             new TableRow({ children: [cell('JAMI', true), cell(`${data.total} nafar`), cell('100%')] }),
           ],
         }),
 
-        // ═══════ 3. YUQORI XAVF GURUHI ═══════
-        heading("3. Yuqori xavf guruhi o'quvchilari va AI tahlili", HeadingLevel.HEADING_1),
+        // ════ 3. YUQORI XAVF GURUHI ════
+        sectionHeader("3. Yuqori xavf guruhi o'quvchilari va AI tahlili"),
 
         ...(dangerStudents.length === 0
-          ? [para([normal("Yuqori xavf darajasidagi o'quvchi aniqlanmagan.")])]
+          ? [p([run("Yuqori xavf darajasidagi o'quvchi aniqlanmagan.")])]
           : [
-            para([normal(`Quyida yuqori xavf (DANGER) darajasi aniqlangan ${dangerStudents.length} nafar o'quvchi ro'yxati va AI tizimi xulosasi keltirilgan:`)]),
+            p([run(`Quyida yuqori xavf (DANGER) darajasi aniqlangan ${dangerStudents.length} nafar o'quvchi ro'yxati va AI tizimi xulosasi keltirilgan:`)]),
             new Table({
               width: { size: 9000, type: WidthType.DXA },
               rows: [
-                new TableRow({ children: [cell('№', true, 600), cell('F.I.O.', true, 2200), cell('Sinf', true, 700), cell('AI xulosasi', true, 5500)] }),
+                new TableRow({ children: [cell('Nr', true, 600), cell('F.I.O.', true, 2200), cell('Sinf', true, 700), cell('AI xulosasi', true, 5500)] }),
                 ...dangerStudents.map((s, i) =>
-                  new TableRow({ children: [
-                    cell(`${i + 1}`),
-                    cell(s.fullName),
-                    cell(s.className),
-                    cell(s.aiInsight ?? 'Xulosa mavjud emas'),
-                  ] })
+                  new TableRow({ children: [cell(`${i + 1}`), cell(s.fullName), cell(s.className), cell(s.aiInsight ?? 'Xulosa mavjud emas')] })
                 ),
               ],
             }),
           ]
         ),
 
-        // ═══════ 4. O'RTA XAVF GURUHI ═══════
-        heading("4. O'rta xavf guruhi o'quvchilari", HeadingLevel.HEADING_1),
+        // ════ 4. O'RTA XAVF GURUHI ════
+        sectionHeader("4. O'rta xavf guruhi o'quvchilari"),
 
         ...(attentionStudents.length === 0
-          ? [para([normal("O'rta xavf darajasidagi o'quvchi aniqlanmagan.")])]
+          ? [p([run("O'rta xavf darajasidagi o'quvchi aniqlanmagan.")])]
           : [
             new Table({
               width: { size: 9000, type: WidthType.DXA },
               rows: [
-                new TableRow({ children: [cell('№', true, 600), cell('F.I.O.', true, 2200), cell('Sinf', true, 700), cell('AI xulosasi', true, 5500)] }),
+                new TableRow({ children: [cell('Nr', true, 600), cell('F.I.O.', true, 2200), cell('Sinf', true, 700), cell('AI xulosasi', true, 5500)] }),
                 ...attentionStudents.map((s, i) =>
-                  new TableRow({ children: [
-                    cell(`${i + 1}`),
-                    cell(s.fullName),
-                    cell(s.className),
-                    cell(s.aiInsight ?? 'Xulosa mavjud emas'),
-                  ] })
+                  new TableRow({ children: [cell(`${i + 1}`), cell(s.fullName), cell(s.className), cell(s.aiInsight ?? 'Xulosa mavjud emas')] })
                 ),
               ],
             }),
           ]
         ),
 
-        // ═══════ 5. PSIXOLOG ISH JURNALI ═══════
-        heading(`5. Psixolog ishi jurnali (so'nggi 6 oy: ${period})`, HeadingLevel.HEADING_1),
-
-        para([bold(`Jami kiritilgan ish yozuvlari: ${recentNotes.length} ta`)]),
+        // ════ 5. PSIXOLOG ISH JURNALI ════
+        sectionHeader(`5. Psixolog ishi jurnali (so'nggi 6 oy)`),
+        p([run(`Hisobot davri: ${period}`, { italics: true })]),
+        p([run(`Jami kiritilgan ish yozuvlari: ${recentNotes.length} ta`, { bold: true })]),
         ...Object.entries(typeStats).map(([type, count]) =>
-          para([normal(`• ${TYPE_LABELS[type] ?? type}: ${count} ta`)], { before: 40, after: 40 })
+          p([run(`• ${TYPE_LABELS[type] ?? type}: ${count} ta`)], { before: 40, after: 40 })
         ),
 
-        new Paragraph({ spacing: { before: 160 }, children: [] }),
+        new Paragraph({ spacing: { before: 120 }, children: [] }),
 
         ...(recentNotes.length === 0
-          ? [para([normal("So'nggi 6 oy ichida hech qanday ish kiritilmagan.")])]
+          ? [p([run("So'nggi 6 oy ichida hech qanday ish kiritilmagan.")])]
           : [
             new Table({
               width: { size: 9000, type: WidthType.DXA },
@@ -321,36 +289,36 @@ export async function generateWordReport(data: ReportData) {
           ]
         ),
 
-        // ═══════ 6. XULOSA VA TAVSIYALAR ═══════
-        heading('6. Xulosa va tavsiyalar', HeadingLevel.HEADING_1),
+        // ════ 6. XULOSA VA TAVSIYALAR ════
+        sectionHeader('6. Xulosa va tavsiyalar'),
 
-        para([bold('Umumiy xulosa:')]),
-        para([normal(
+        p([run('Umumiy xulosa:', { bold: true })]),
+        p([run(
           `${data.district} ${data.school} maktabida o'tkazilgan AI asosidagi psixologik tahlil natijalari shuni ko'rsatadiki, ` +
-          `${data.total} nafar o'quvchidan ${data.danger} nafari (${data.total ? Math.round(data.danger / data.total * 100) : 0}%) yuqori xavf guruhiga, ` +
-          `${data.attention} nafari (${data.total ? Math.round(data.attention / data.total * 100) : 0}%) o'rta xavf guruhiga kiradi.`
+          `${data.total} nafar o'quvchidan ${data.danger} nafari (${pct(data.danger, data.total)}) yuqori xavf guruhiga, ` +
+          `${data.attention} nafari (${pct(data.attention, data.total)}) o'rta xavf guruhiga kiradi.`
         )]),
 
-        para([bold('Tavsiyalar:')], { before: 160, after: 80 }),
-        para([normal("1. Yuqori xavf guruhidagi o'quvchilar bilan tezkor individual suhbat tashkil etilsin.")]),
-        para([normal('2. Ota-onalar bilan uchrashuv o\'tkazilib, oilaviy muhit muhokama qilinsin.')]),
-        para([normal('3. Sinf rahbarlari xavfli ko\'rsatkich aniqlangan o\'quvchilarni kuzatuvga olsin.')]),
-        para([normal('4. Zarur hollarda tuman/viloyat psixolog-markazi bilan hamkorlik yo\'lga qo\'yilsin.')]),
-        para([normal('5. Keyingi 3 oy ichida qayta baholash o\'tkazilsin.')]),
+        p([run('Tavsiyalar:', { bold: true })], { before: 160, after: 80 }),
+        p([run("1. Yuqori xavf guruhidagi o'quvchilar bilan tezkor individual suhbat tashkil etilsin.")], { before: 40, after: 40 }),
+        p([run("2. Ota-onalar bilan uchrashuv o'tkazilib, oilaviy muhit muhokama qilinsin.")], { before: 40, after: 40 }),
+        p([run("3. Sinf rahbarlari xavfli ko'rsatkich aniqlangan o'quvchilarni kuzatuvga olsin.")], { before: 40, after: 40 }),
+        p([run("4. Zarur hollarda tuman/viloyat psixolog-markazi bilan hamkorlik yo'lga qo'yilsin.")], { before: 40, after: 40 }),
+        p([run("5. Keyingi 3 oy ichida qayta baholash o'tkazilsin.")], { before: 40, after: 40 }),
 
-        // ═══════ IMZO ═══════
+        // ════ IMZO ════
         new Paragraph({ spacing: { before: 600 }, children: [] }),
 
         new Table({
           width: { size: 9000, type: WidthType.DXA },
           rows: [
             new TableRow({ children: [
-              noBorderCell([para([bold('Maktab psixologi:')])]),
-              noBorderCell([para([normal('________________ / ________________')])]),
+              noBorderCell([p([run('Maktab psixologi:', { bold: true })])]),
+              noBorderCell([p([run('________________ / ________________')])]),
             ] }),
             new TableRow({ children: [
-              noBorderCell([para([bold('Sana:')])]),
-              noBorderCell([para([normal(generatedAt)])]),
+              noBorderCell([p([run('Sana:', { bold: true })])]),
+              noBorderCell([p([run(generatedAt)])]),
             ] }),
           ],
         }),

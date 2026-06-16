@@ -8,6 +8,7 @@ import {
   RiskScore,
   RiskLevel,
 } from '../../database/entities';
+import { PsychologistNote } from '../../database/entities/psychologist-note.entity';
 import { AlertsService } from '../alerts/alerts.service';
 
 @Injectable()
@@ -21,6 +22,8 @@ export class DashboardService {
     private readonly testResultRepo: Repository<TestResult>,
     @InjectRepository(RiskScore)
     private readonly riskScoreRepo: Repository<RiskScore>,
+    @InjectRepository(PsychologistNote)
+    private readonly noteRepo: Repository<PsychologistNote>,
     private readonly alertsService: AlertsService,
   ) {}
 
@@ -251,6 +254,14 @@ export class DashboardService {
 
     const dangerResults = await qb.orderBy('tr.completedAt', 'DESC').getMany();
 
+    // Nazoratdan chiqarilgan o'quvchilar (maxsus note bor)
+    const releasedRaw = await this.noteRepo
+      .createQueryBuilder('n')
+      .select('DISTINCT n.studentId', 'studentId')
+      .where("n.note LIKE '[NAZORAT_CHIQISH]%'")
+      .getRawMany();
+    const releasedIds = new Set(releasedRaw.map((r: any) => r.studentId));
+
     // O'quvchi bo'yicha guruhlaymiz
     const byStudent = new Map<string, typeof dangerResults>();
     for (const r of dangerResults) {
@@ -260,16 +271,30 @@ export class DashboardService {
       byStudent.get(sid)!.push(r);
     }
 
-    // 2 va undan ko'p marta danger bo'lganlari
-    const monitored = [];
-    for (const [, results] of byStudent) {
-      if (results.length < 2) continue;
+    // Qo'lda qo'shilgan o'quvchilar ([NAZORAT_QOSHISH] note bor)
+    const manualRaw = await this.noteRepo
+      .createQueryBuilder('n')
+      .select(['DISTINCT n.studentId AS studentId', 'n.note AS note', 'n.createdAt AS createdAt'])
+      .where("n.note LIKE '[NAZORAT_QOSHISH]%'")
+      .orderBy('n.createdAt', 'DESC')
+      .getRawMany();
+    const manualIds = new Set(manualRaw.map((r: any) => r.studentId));
+
+    // 2 va undan ko'p marta danger bo'lganlari YOKI qo'lda qo'shilganlar (chiqarilganlar bundan mustasno)
+    const monitored: any[] = [];
+    const addedSids = new Set<string>();
+
+    for (const [sid, results] of byStudent) {
+      if (releasedIds.has(sid)) continue;
+      if (results.length < 2 && !manualIds.has(sid)) continue;
+      addedSids.add(sid);
       const latest = results[0];
       monitored.push({
         id: latest.student?.id,
         fullName: [latest.student?.firstName, latest.student?.lastName].filter(Boolean).join(' '),
         className: latest.student?.className ?? '—',
         dangerCount: results.length,
+        manuallyAdded: manualIds.has(sid),
         lastDetected: latest.completedAt,
         lastInsight: latest.aiInsight ?? null,
         lastRecommendation: latest.aiRecommendation ?? null,
@@ -278,6 +303,29 @@ export class DashboardService {
           insight: r.aiInsight ?? null,
         })),
       });
+    }
+
+    // Qo'lda qo'shilgan lekin hech qanday test topshirmagan o'quvchilar
+    const manualOnlyIds = [...manualIds].filter(sid => !addedSids.has(sid) && !releasedIds.has(sid));
+    if (manualOnlyIds.length > 0) {
+      const manualStudents = await this.studentRepo
+        .createQueryBuilder('s')
+        .where('s.id IN (:...ids)', { ids: manualOnlyIds })
+        .getMany();
+      for (const st of manualStudents) {
+        const noteEntry = manualRaw.find((r: any) => r.studentId === st.id);
+        monitored.push({
+          id: st.id,
+          fullName: [st.firstName, st.lastName].filter(Boolean).join(' '),
+          className: st.className ?? '—',
+          dangerCount: 0,
+          manuallyAdded: true,
+          lastDetected: noteEntry?.createdAt ?? new Date().toISOString(),
+          lastInsight: null,
+          lastRecommendation: null,
+          allInsights: [],
+        });
+      }
     }
 
     return monitored.sort((a, b) => b.dangerCount - a.dangerCount);
