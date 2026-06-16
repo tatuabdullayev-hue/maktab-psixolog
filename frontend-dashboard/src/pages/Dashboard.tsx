@@ -437,9 +437,9 @@ export function Dashboard() {
                     <th>Sinf</th>
                     <th>Daraja</th>
                     <th>AI tahlili</th>
-                    <th>Qilingan ish</th>
+                    <th>Oxirgi ish</th>
                     <th>Sana</th>
-                    <th>Ish</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -460,7 +460,7 @@ export function Dashboard() {
                             <span className="note-inline__text">{lastNote.note}</span>
                           </span>
                         ) : (
-                          <span className="muted">—</span>
+                          <span className="muted" style={{ fontSize: 12 }}>Ish kiritilmagan</span>
                         )}
                       </td>
                       <td>{formatDate(s.completedAt)}</td>
