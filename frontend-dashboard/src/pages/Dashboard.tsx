@@ -296,6 +296,7 @@ export function Dashboard() {
                         <th>O'quvchi</th>
                         <th>Sinf</th>
                         <th>Daraja</th>
+                        <th>AI tahlili</th>
                         <th>Sana</th>
                       </tr>
                     </thead>
@@ -306,6 +307,9 @@ export function Dashboard() {
                           <td>{s.className}</td>
                           <td>
                             <span className={`badge badge--${s.level}`}>{LEVEL_LABELS[s.level]}</span>
+                          </td>
+                          <td style={{ fontSize: 13, color: 'var(--color-text-muted)', maxWidth: 340 }}>
+                            {s.aiInsight ?? '—'}
                           </td>
                           <td>{formatDate(s.completedAt)}</td>
                         </tr>
