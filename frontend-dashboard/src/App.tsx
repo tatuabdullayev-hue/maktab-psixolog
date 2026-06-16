@@ -10,6 +10,7 @@ import { Risks } from './pages/Risks';
 import { ClassAccess } from './pages/ClassAccess';
 import { Settings } from './pages/Settings';
 import { Placeholder } from './pages/Placeholder';
+import { WorkJournal } from './pages/WorkJournal';
 import './App.css';
 
 function AppContent() {
@@ -37,6 +38,7 @@ function AppContent() {
           <Route path="/risks" element={<Risks />} />
           <Route path="/permissions" element={<ClassAccess />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/work-journal" element={<WorkJournal />} />
           <Route path="/recommendations" element={<Placeholder title="Tavsiyalar" />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Placeholder title="Yordam" />} />

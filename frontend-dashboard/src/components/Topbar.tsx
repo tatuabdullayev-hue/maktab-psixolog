@@ -6,6 +6,7 @@ interface TopbarProps {
   onSchoolChange: (v: string) => void;
   onDistrictChange: (v: string) => void;
   onDateChange: (v: string) => void;
+  hideDateFilter?: boolean;
 }
 
 export function Topbar({
@@ -16,6 +17,7 @@ export function Topbar({
   onSchoolChange,
   onDistrictChange,
   onDateChange,
+  hideDateFilter = false,
 }: TopbarProps) {
   return (
     <div className="topbar">
@@ -47,19 +49,23 @@ export function Topbar({
             />
           </div>
         </label>
-        <span className="topbar__divider" />
-        <label className="topbar__field">
-          <span className="topbar__label">Sana</span>
-          <div className="topbar__input-wrap">
-            <span className="topbar__input-icon">📅</span>
-            <input
-              className="topbar__input topbar__input--date"
-              type="date"
-              value={date}
-              onChange={(e) => onDateChange(e.target.value)}
-            />
-          </div>
-        </label>
+        {!hideDateFilter && (
+          <>
+            <span className="topbar__divider" />
+            <label className="topbar__field">
+              <span className="topbar__label">Sana</span>
+              <div className="topbar__input-wrap">
+                <span className="topbar__input-icon">📅</span>
+                <input
+                  className="topbar__input topbar__input--date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => onDateChange(e.target.value)}
+                />
+              </div>
+            </label>
+          </>
+        )}
       </div>
     </div>
   );

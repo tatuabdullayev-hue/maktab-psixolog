@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/risks', icon: '⚠️', label: 'Risklar' },
   { to: '/permissions', icon: '✅', label: "Mashg'ulotga ruhsat berish" },
   { to: '/reports', icon: '📊', label: 'Hisobotlar' },
+  { to: '/work-journal', icon: '📓', label: 'Ish jurnali' },
   { to: '/recommendations', icon: '💡', label: 'Tavsiyalar' },
   { to: '/settings', icon: '⚙️', label: 'Sozlamalar' },
   { to: '/help', icon: '❓', label: 'Yordam' },
