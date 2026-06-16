@@ -61,18 +61,19 @@ export class NotesService {
     const studentIds: string[] = dangerStudents.map((r: { studentId: string }) => r.studentId);
     if (studentIds.length === 0) return 0;
 
-    const withNotes = await this.repo
+    // Faqat [NAZORAT_CHIQISH] note bor o'quvchilarni chiqaramiz (oddiy ish notalari chiqarmaydi)
+    const finishedNotes = await this.repo
       .createQueryBuilder('n')
       .select('DISTINCT n.studentId', 'studentId')
       .where('n.studentId IN (:...ids)', { ids: studentIds })
+      .andWhere("n.note LIKE '[NAZORAT_CHIQISH]%'")
       .getRawMany();
 
-    const attendedIds = new Set(withNotes.map((r: { studentId: string }) => r.studentId));
-    return studentIds.filter(id => !attendedIds.has(id)).length;
+    const finishedIds = new Set(finishedNotes.map((r: { studentId: string }) => r.studentId));
+    return studentIds.filter(id => !finishedIds.has(id)).length;
   }
 
   async unattendedStudents(school?: string, district?: string) {
-    // GROUP BY — har o'quvchidan bitta qator olish
     const dangerStudents = await this.testResultRepo
       .createQueryBuilder('tr')
       .select('tr.studentId', 'studentId')
@@ -93,15 +94,17 @@ export class NotesService {
 
     const studentIds: string[] = dangerStudents.map((r: any) => r.studentId);
 
-    const withNotes = await this.repo
+    // Faqat [NAZORAT_CHIQISH] note bor o'quvchilarni ro'yxatdan chiqaramiz
+    const finishedNotes = await this.repo
       .createQueryBuilder('n')
       .select('DISTINCT n.studentId', 'studentId')
       .where('n.studentId IN (:...ids)', { ids: studentIds })
+      .andWhere("n.note LIKE '[NAZORAT_CHIQISH]%'")
       .getRawMany();
 
-    const attendedIds = new Set(withNotes.map((r: any) => r.studentId));
+    const finishedIds = new Set(finishedNotes.map((r: any) => r.studentId));
     return dangerStudents
-      .filter((r: any) => !attendedIds.has(r.studentId))
+      .filter((r: any) => !finishedIds.has(r.studentId))
       .map((r: any) => ({
         studentId: r.studentId,
         fullName: `${r.firstName} ${r.lastName ?? ''}`.trim(),
