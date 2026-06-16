@@ -59,6 +59,8 @@
 .wj-unattended-item__risk { font-size:12px; font-weight:600; color:#dc2626; background:#fee2e2; padding:3px 10px; border-radius:20px; flex-shrink:0; }
 .wj-unattended-item__btn { background:#dc2626; color:#fff; border:none; padding:7px 16px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; flex-shrink:0; transition:background 0.15s; }
 .wj-unattended-item__btn:hover { background:#b91c1c; }
+.wj-unattended-item__btn--finish { background:#16a34a; }
+.wj-unattended-item__btn--finish:hover { background:#15803d; }
 .wj-search { padding:8px 14px; border:1.5px solid #ddd8f5; border-radius:10px; font-size:13px; background:#f8f6ff; color:#1e1b3a; outline:none; transition:border-color .15s; min-width:220px; }
 .wj-search:focus { border-color:#6d4ce0; }
 .wj-pagination { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:20px; }

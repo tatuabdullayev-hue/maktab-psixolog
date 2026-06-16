@@ -223,6 +223,21 @@ export function WorkJournal() {
                     className="wj-unattended-item__btn"
                     onClick={() => setNoteTarget({ id: s.studentId, name: s.fullName, className: s.className })}
                   >+ Ish qo'shish</button>
+                  <button
+                    type="button"
+                    className="wj-unattended-item__btn wj-unattended-item__btn--finish"
+                    onClick={async () => {
+                      if (!window.confirm(`${s.fullName} bilan ish yakunlandimi?`)) return;
+                      await api.post('/notes', {
+                        studentId: s.studentId,
+                        type: 'other',
+                        note: "[NAZORAT_CHIQISH] Psixolog tomonidan ish yakunlandi",
+                        nextStep: "Kuzatuv yakunlandi",
+                      });
+                      loadUnattended();
+                      refreshBadge();
+                    }}
+                  >✅ Yakunlash</button>
                 </div>
               ))}
             </div>
