@@ -71,13 +71,13 @@ export function Monitored() {
   function load() {
     setLoading(true);
     setError(null);
-    Promise.all([
-      api.get('/dashboard/monitored', { params: { school, district } }),
-      api.get('/dashboard/released-count', { params: { school, district } }),
-    ])
-      .then(([mon, rel]) => { setStudents(mon.data); setReleasedCount(rel.data.count); })
+    api.get('/dashboard/monitored', { params: { school, district } })
+      .then(({ data }) => setStudents(data))
       .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
       .finally(() => setLoading(false));
+    api.get('/dashboard/released-count', { params: { school, district } })
+      .then(({ data }) => setReleasedCount(data.count ?? 0))
+      .catch(() => setReleasedCount(0));
   }
 
   useEffect(() => { load(); }, []);

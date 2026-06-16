@@ -254,13 +254,24 @@ export class DashboardService {
 
     const dangerResults = await qb.orderBy('tr.completedAt', 'DESC').getMany();
 
-    // Nazoratdan chiqarilgan o'quvchilar (maxsus note bor)
+    // Nazoratdan chiqarilgan o'quvchilar — faqat chiqarilgan sanadan KEYIN yangi DANGER natija
+    // bo'lmagan holda chiqarib tashlanadi
     const releasedRaw = await this.noteRepo
       .createQueryBuilder('n')
-      .select('DISTINCT n.studentId', 'studentId')
+      .select('n.studentId', 'studentId')
+      .addSelect('MAX(n.createdAt)', 'releasedAt')
       .where("n.note LIKE '[NAZORAT_CHIQISH]%'")
+      .groupBy('n.studentId')
       .getRawMany();
-    const releasedIds = new Set(releasedRaw.map((r: any) => r.studentId));
+
+    // Chiqarilgan sanadan keyin yangi DANGER natija bor bo'lsa — qaytadan kiritamiz
+    const releasedIds = new Set<string>();
+    for (const r of releasedRaw) {
+      const newDanger = dangerResults.find(
+        tr => tr.student?.id === r.studentId && new Date(tr.completedAt) > new Date(r.releasedAt)
+      );
+      if (!newDanger) releasedIds.add(r.studentId);
+    }
 
     // O'quvchi bo'yicha guruhlaymiz
     const byStudent = new Map<string, typeof dangerResults>();
