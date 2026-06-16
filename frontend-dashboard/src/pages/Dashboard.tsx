@@ -414,7 +414,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="card">
+          {!selectedLevel && <div className="card">
             <h2>Yuqori xavf guruhi</h2>
             {overview.highRiskStudents.length === 0 ? (
               <p className="muted">Hozircha e'tibor talab qiladigan o'quvchi yo'q</p>
@@ -444,7 +444,7 @@ export function Dashboard() {
                 </tbody>
               </table>
             )}
-          </div>
+          </div>}
 
           <div className="bottom-cards">
             <div className="card placeholder-card">
