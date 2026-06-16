@@ -1,0 +1,211 @@
+/* ═══════════════════════════════════════════
+   Recommendations  –  rec-*
+═══════════════════════════════════════════ */
+
+.rec-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 2px 0 0;
+}
+
+/* ── intro card ── */
+.rec-intro-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--color-card);
+  border: 1.5px solid #c7d2fe;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.rec-intro-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.rec-intro-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 6px;
+}
+.rec-intro-text {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+.rec-intro-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rec-source-chip {
+  font-size: 11px;
+  font-weight: 600;
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── section ── */
+.rec-section {
+  border: 2px solid;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.rec-section__head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.rec-section__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1.5px solid;
+  margin-bottom: 12px;
+}
+.rec-section__intro {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  margin: 0 0 10px;
+  max-width: 820px;
+}
+.rec-warning {
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 3px solid;
+  padding: 8px 14px;
+  border-radius: 0 8px 8px 0;
+  background: rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+
+/* ── body ── */
+.rec-section__body {
+  padding: 20px 24px 24px;
+  background: var(--color-card);
+}
+.rec-group-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 14px;
+}
+
+/* ── action cards grid ── */
+.rec-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.rec-action-card {
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-top: 3px solid;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rec-action-card__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.rec-action-card__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.rec-action-card__detail {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* ── programs list ── */
+.rec-programs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rec-program-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+}
+.rec-program-row__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.rec-program-row__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+.rec-program-row__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.rec-program-row__source {
+  font-size: 11px;
+  color: #6b7280;
+  background: var(--color-border);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.rec-program-row__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  width: 100%;
+  line-height: 1.5;
+}
+
+/* ── conclusion ── */
+.rec-conclusion {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 12px;
+}
+.rec-conclusion__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.rec-conclusion h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #15803d;
+  margin: 0 0 6px;
+}
+.rec-conclusion p {
+  font-size: 13px;
+  color: #166534;
+  line-height: 1.65;
+  margin: 0;
+}
