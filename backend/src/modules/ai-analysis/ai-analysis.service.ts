@@ -112,14 +112,16 @@ export class AiAnalysisService {
     };
   }
 
-  /** AI kaliti bo'lmasa ishlaydigan qoida-asosli tahlil (SDQ-uslubdagi banding). */
+  /** AI kaliti bo'lmasa yoki xato bo'lsa ishlaydigan qoida-asosli tahlil. */
   private analyzeWithRules(domainScores: Record<string, number>): AiAnalysisResult {
     const total = Object.values(domainScores).reduce((sum, v) => sum + v, 0);
+    const maxSingle = Math.max(...Object.values(domainScores), 0);
 
+    // Birorta domain 8+ ball → danger; umumiy 25+ → danger; 14+ → attention
     let level: RiskLevel;
-    if (total >= 25) {
+    if (total >= 25 || maxSingle >= 8) {
       level = RiskLevel.DANGER;
-    } else if (total >= 14) {
+    } else if (total >= 14 || maxSingle >= 5) {
       level = RiskLevel.ATTENTION;
     } else {
       level = RiskLevel.NORMAL;

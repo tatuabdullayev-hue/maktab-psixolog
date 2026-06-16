@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -14,8 +14,17 @@ const SYSTEM_PROMPT = `Sen maktab o'quvchilari uchun do'stona AI mentor san. Vaz
 - Agar o'quvchi o'ziga yoki boshqalarga zarar yetkazish haqida gapirsa, uni darhol kattalar (ota-ona, maktab psixologi)ga murojaat qilishga yo'naltirish va g'amxo'rlik bilan javob berish
 - Javoblar qisqa va qo'llab-quvvatlovchi bo'lsin (2-4 jumla)`;
 
+const FALLBACK_REPLIES = [
+  "Tushundim, bu haqida ko'proq aytib bering. Sizni tinglayapman.",
+  "Sizning his-tuyg'ularingiz juda muhim. Psixolog bilan gaplashishni tavsiya qilaman — u yordam bera oladi.",
+  "Bu vaziyat og'ir bo'lishi mumkin. Maktab psixologiga murojaat qilishingiz yaxshi bo'lardi.",
+  "Siz yolg'iz emasiz. Maktab psixologi yoki ota-onangiz bilan bu haqida gaplashing.",
+  "Tushunaman. Bunday paytlarda yaqinlaringizga suyaning va psixolog bilan maslahatlashing.",
+];
+
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
   private anthropic: Anthropic | null;
 
   constructor(
@@ -75,22 +84,31 @@ export class ChatService {
     const ordered = history.reverse();
 
     if (!this.anthropic) {
-      return 'Hozircha AI mentor sozlanmagan. Iltimos, keyinroq urinib ko\'ring yoki maktab psixologiga murojaat qiling.';
+      return this.fallbackReply();
     }
 
-    const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 300,
-      system: SYSTEM_PROMPT,
-      messages: ordered.map((m) => ({
-        role: m.role === ChatRole.USER ? 'user' : 'assistant',
-        content: m.content,
-      })),
-    });
+    try {
+      const response = await this.anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        system: SYSTEM_PROMPT,
+        messages: ordered.map((m) => ({
+          role: m.role === ChatRole.USER ? 'user' : 'assistant',
+          content: m.content,
+        })),
+      });
 
-    const textBlock = response.content.find((block) => block.type === 'text');
-    return textBlock && 'text' in textBlock
-      ? textBlock.text
-      : 'Kechirasiz, javob bera olmadim. Birozdan keyin qayta urinib ko\'ring.';
+      const textBlock = response.content.find((block) => block.type === 'text');
+      return textBlock && 'text' in textBlock
+        ? textBlock.text
+        : this.fallbackReply();
+    } catch (e) {
+      this.logger.warn(`Claude chat xatosi, fallback ishlatiladi: ${e?.message}`);
+      return this.fallbackReply();
+    }
+  }
+
+  private fallbackReply(): string {
+    return FALLBACK_REPLIES[Math.floor(Math.random() * FALLBACK_REPLIES.length)];
   }
 }
