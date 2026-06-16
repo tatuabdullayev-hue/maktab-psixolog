@@ -34,7 +34,7 @@ const SECTIONS: Section[] = [
     borderColor: '#dc2626',
     headBg: 'linear-gradient(135deg,#fef2f2 0%,#fff5f5 100%)',
     intro:
-      'Jahon tadqiqotlari (WHO, APA, UNODC) ko\'rsatishicha, yuqori xavf guruhidagi o\'quvchilar tezkor, ko\'p qatlamli psixologik yordam olmasa, jinoyatchilik va deviant xulq-atvor ehtimoli 3–5 barobar yuqori bo\'ladi. Quyidagi aralashuvlar ilmiy jihatdan tasdiqlanган (evidence-based).',
+      'Jahon tadqiqotlari (WHO, APA, UNODC) ko\'rsatishicha, yuqori xavf guruhidagi o\'quvchilar tezkor, ko\'p qatlamli psixologik yordam olmasa, jinoyatchilik va deviant xulq-atvor ehtimoli 3–5 barobar yuqori bo\'ladi. Quyidagi aralashuvlar ilmiy jihatdan tasdiqlangan (evidence-based).',
     warning: 'Bu guruhda faqat maslahatlashuv yetarli emas — har bir bolaga individual holda yondashish va muntazam kuzatuv majburiy.',
     actions: [
       {
@@ -78,7 +78,7 @@ const SECTIONS: Section[] = [
       {
         name: 'Multisystemic Therapy (MST)',
         source: 'Henggeler et al., 1998 · APA Division 53',
-        desc: 'Jinoyat recidivizmini 25–70% kamaytiradi. 50+ mamlakатда qo\'llaniladi.',
+        desc: 'Jinoyat recidivizmini 25–70% kamaytiradi. 50+ mamlakatda qo\'llaniladi.',
       },
       {
         name: 'Functional Family Therapy (FFT)',
@@ -88,7 +88,7 @@ const SECTIONS: Section[] = [
       },
       {
         name: 'Aggression Replacement Training (ART)',
-        source: 'Goldstein, 1987 · 30 mamlakatda qo\'llanilaadida',
+        source: 'Goldstein, 1987 · 30 mamlakatda qo\'llaniladi',
         desc:
           'Agressiya, axloqiy muhokama va ijtimoiy ko\'nikmalar — 3 blokli kurs, 10 hafta.',
       },
