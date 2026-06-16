@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -51,6 +52,11 @@ export class DashboardController {
   @Get('students/:id')
   studentDetail(@Param('id') id: string) {
     return this.dashboardService.studentDetail(id);
+  }
+
+  @Delete('students/:id')
+  deleteStudent(@Param('id') id: string) {
+    return this.dashboardService.deleteStudent(id);
   }
 
   @Get('alerts')

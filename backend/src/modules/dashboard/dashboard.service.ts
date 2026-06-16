@@ -343,6 +343,12 @@ export class DashboardService {
     return monitored.sort((a, b) => b.dangerCount - a.dangerCount);
   }
 
+  async deleteStudent(id: string) {
+    await this.noteRepo.delete({ studentId: id });
+    await this.studentRepo.delete(id);
+    return { success: true };
+  }
+
   async releasedCount(filters: { school?: string; district?: string }) {
     const qb = this.noteRepo
       .createQueryBuilder('n')
