@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { NoteModal, TYPE_LABELS } from '../components/NoteModal';
-import type { Note } from '../components/NoteModal';
+import { NoteModal } from '../components/NoteModal';
 import { useNotifications } from '../context/NotificationContext';
 
 interface TestStudent {
@@ -42,7 +41,6 @@ export function Students() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [noteTarget, setNoteTarget] = useState<{ id: string; name: string; className?: string } | null>(null);
-  const [allNotes, setAllNotes] = useState<Note[]>([]);
   const { refresh: refreshBadge } = useNotifications();
 
   useEffect(() => {
@@ -60,14 +58,7 @@ export function Students() {
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
-  const loadNotes = () => {
-    const params: Record<string, string> = {};
-    if (school) params.school = school;
-    if (district) params.district = district;
-    api.get('/notes', { params }).then(({ data }) => setAllNotes(data));
-  };
-
-  useEffect(() => { loadNotes(); }, [school, district]);
+  const loadNotes = () => {};
 
   const students = overview?.students ?? [];
   const filtered = search.trim()
@@ -182,42 +173,6 @@ export function Students() {
             )}
           </div>
 
-          <div className="card">
-            <h2>Psixolog ishi jurnali</h2>
-            <p className="chart-card__subtitle">Barcha sanalar bo'yicha qilingan ishlar</p>
-            {allNotes.length === 0 ? (
-              <p className="muted">Hali hech qanday ish kiritilmagan</p>
-            ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Sana</th>
-                    <th>O'quvchi</th>
-                    <th>Sinf</th>
-                    <th>Ish turi</th>
-                    <th>Tavsif</th>
-                    <th>Keyingi qadam</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allNotes.map((n) => (
-                    <tr key={n.id}>
-                      <td>{new Date(n.createdAt).toLocaleDateString('uz-UZ')}</td>
-                      <td>
-                        {n.student
-                          ? `${n.student.firstName} ${n.student.lastName ?? ''}`
-                          : '—'}
-                      </td>
-                      <td>{n.student?.className ?? '—'}</td>
-                      <td>{TYPE_LABELS[n.type] ?? n.type}</td>
-                      <td>{n.note}</td>
-                      <td>{n.nextStep ?? '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
         </>
       )}
 
