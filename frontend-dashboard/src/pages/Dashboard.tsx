@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
-import { NoteModal, Note, TYPE_LABELS } from '../components/NoteModal';
+import { NoteModal, TYPE_LABELS } from '../components/NoteModal';
+import type { Note } from '../components/NoteModal';
 import {
   PieChart,
   Pie,

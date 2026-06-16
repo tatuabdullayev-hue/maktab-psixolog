@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Topbar } from '../components/Topbar';
-import { NoteModal, Note, TYPE_LABELS } from '../components/NoteModal';
+import { NoteModal, TYPE_LABELS } from '../components/NoteModal';
+import type { Note } from '../components/NoteModal';
 
 interface TestStudent {
   id: string;
