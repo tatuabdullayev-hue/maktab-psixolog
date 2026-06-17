@@ -136,11 +136,18 @@ export function GameTest() {
 
   if (submitting) {
     return (
-      <div className="page page--center">
-        <div className="transition-screen">
-          <div className="transition-screen__spinner" />
-          <p className="transition-screen__title">Natijalaringiz tahlil qilinmoqda…</p>
-          <p className="transition-screen__sub">Bir daqiqa, AI ishlamoqda 🤖</p>
+      <div className="transition-screen">
+        <div className="transition-screen__bg" />
+        <div className="transition-screen__content">
+          <div className="transition-screen__icon-wrap">
+            <span className="transition-screen__brain">🧠</span>
+            <div className="transition-screen__ring" />
+          </div>
+          <p className="transition-screen__title">Natijalaringiz tahlil qilinmoqda</p>
+          <p className="transition-screen__sub">AI psixolog javoblaringizni ko'rib chiqmoqda</p>
+          <div className="transition-screen__dots">
+            <span /><span /><span />
+          </div>
         </div>
       </div>
     );
