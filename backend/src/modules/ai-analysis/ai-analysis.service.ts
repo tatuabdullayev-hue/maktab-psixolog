@@ -3,11 +3,18 @@ import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { RiskLevel } from '../../database/entities';
 
+export interface StudentType {
+  emoji: string;
+  title: string;
+  desc: string;
+}
+
 export interface AiAnalysisResult {
   level: RiskLevel;
   insight: string;
   recommendation: string;
   studentMessage: string;
+  studentType: StudentType;
 }
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -46,7 +53,12 @@ Qaytariladigan format (faqat shu, hech narsa qo'shma):
   "level": "normal" | "attention" | "danger",
   "insight": "1 ta qisqa jumla — faqat ballar ko'rsatgan asosiy muammo",
   "recommendation": "1-2 jumla — O'zbekiston maktabi psixologi uchun aniq amaliy qadam",
-  "studentMessage": "1-2 iliq, rag'batlantiruvchi jumla — to'g'ridan-to'g'ri O'QUVCHIGA murojaat qilib, uning kuchli tomonini yoki o'sish yo'lini ko'rsat. Muammo yoki test haqida hech narsa aytma. Ijobiy, samimiy, bolaga mos tilda yoz."
+  "studentMessage": "",
+  "studentType": {
+    "emoji": "bitta emoji — bolaning xarakterini ifodalovchi",
+    "title": "2-3 so'z — bolaning ijobiy 'turi' (masalan: Kuchli ruh, Sezgir ijodkor, Do'stsevar)",
+    "desc": "1 ta gap — shu turning nima uchun kuch ekanligini bolaga tushuntir, ijobiy, hayajonli tarzda"
+  }
 }
 
 "normal" = past xavf, "attention" = o'rta xavf, "danger" = yuqori xavf.`;
@@ -112,6 +124,7 @@ export class AiAnalysisService {
       insight: parsed.insight,
       recommendation: parsed.recommendation,
       studentMessage: parsed.studentMessage ?? '',
+      studentType: parsed.studentType ?? { emoji: '🌟', title: 'Noyob', desc: 'Sen o\'zingcha noyob insonsan!' },
     };
   }
 
@@ -120,7 +133,6 @@ export class AiAnalysisService {
     const total = Object.values(domainScores).reduce((sum, v) => sum + v, 0);
     const maxSingle = Math.max(...Object.values(domainScores), 0);
 
-    // Birorta domain 8+ ball → danger; umumiy 25+ → danger; 14+ → attention
     let level: RiskLevel;
     if (total >= 25 || maxSingle >= 8) {
       level = RiskLevel.DANGER;
@@ -134,41 +146,50 @@ export class AiAnalysisService {
       (a, b) => b[1] - a[1],
     )[0] ?? ['', 0];
 
-    const STUDENT_MESSAGES_NORMAL: string[] = [
-      "Zo'r! Sendagi kuch va mehribonlik atrofingilarni quvontiradi. Shunday davom et!",
-      "Sen juda yaxshi insonsan — bu sifatlarni asrab qol va do'stlaringga ham ulash!",
-      "Hayotda muvaffaqiyat o'zingda — sen allaqachon to'g'ri yo'ldasan!",
+    // Har bir dominant domain → o'quvchi uchun ijobiy "tur"
+    const TYPE_MAP: Record<string, StudentType> = {
+      aggression: {
+        emoji: '🦁',
+        title: 'Kuchli ruh',
+        desc: 'Senda boshqalar yo\'qolsin degan iroda bor. Bu kuch — uni to\'g\'ri yo\'naltirsang, hamma seni kuzatadi!',
+      },
+      bullying: {
+        emoji: '💎',
+        title: 'Olmos',
+        desc: 'Bosim ostida ham sinmaysan. Bunday odamlardan haqiqiy yetakchilar chiqadi!',
+      },
+      emotional: {
+        emoji: '🎨',
+        title: 'Sezgir ijodkor',
+        desc: 'Sen narsalarni boshqalar ko\'rmaydigan tarzda his qilasiz. Bu — kamdan-kam uchraydigan sovg\'a!',
+      },
+      peer: {
+        emoji: '🚀',
+        title: 'Mustaqil',
+        desc: 'O\'z yo\'lingdan bormaysiz. Maqsadli odamlar esa doim olg\'a boradi!',
+      },
+      conduct: {
+        emoji: '⚡',
+        title: 'Erkin ruh',
+        desc: 'Qoliplarga sig\'maydigan odamlar tarixda iz qoldiradi. Sendagi energia — bu kuch!',
+      },
+      substance: {
+        emoji: '🏆',
+        title: 'Irodali',
+        desc: 'Qiyin vaziyatlarda ham o\'zing bo\'lib qolish — bu hamma ham uddalay olmaydigan narsa!',
+      },
+      prosocial: {
+        emoji: '🌟',
+        title: 'Yashirin yulduz',
+        desc: 'Sendagi potensial hali to\'liq ochilib kelmagan. Bir qadam tashlasang — hammani hayratda qoldirasiz!',
+      },
+    };
+
+    const NORMAL_TYPES: StudentType[] = [
+      { emoji: '🤝', title: 'Do\'stsevar', desc: 'Atrofingilar bilan munosabating zo\'r — bunday odamlar har joyda o\'zini topadi!' },
+      { emoji: '🧠', title: 'Aqlli', desc: 'Vaziyatlarni to\'g\'ri o\'qiy olasiz — bu katta ustunlik!' },
+      { emoji: '☀️', title: 'Ijobiy', desc: 'Sendagi energiya atrofingilarni ham quvontiradi. Shunday davom et!' },
     ];
-
-    const STUDENT_MESSAGES_ATTENTION: Record<string, string> = {
-      aggression: "Kuchli odamlar hissiyotlarini boshqara oladi — sen ham buni uddalay olasiz, shunda hamma senga hurmat ko'zi bilan qaraydi!",
-      bullying: "Atrofingilar bilan yaxshi munosabatda bo'lish — bu ham katta mahorat. Birinchi bo'lib tabassum qil, ko'rasiz natijani!",
-      emotional: "Sendagi his-tuyg'ular — bu sening boyliging. Ularni his qilgan odam hech qachon to'xtamaydi!",
-      peer: "Ko'p do'st bo'lishi shart emas — muhimi yon ingdagi odamlar seni quvontirsin. Bugun birovga birinchi bo'lib salom ber!",
-      conduct: "Har kun yangi tanlov, yangi imkoniyat. Sendagi irodani ko'r — bugun boshqacha qilsang bo'ladi!",
-      substance: "Eng zo'r trend — o'z aqlini, salomatligini asrash. Sen allaqachon zo'r, undan ham zo'rroq bo'l!",
-      prosocial: "Birovga bitta yaxshilik qil bugun — kichkina bo'lsa ham. Qaytib keladigan narsani ko'rasiz!",
-    };
-
-    const STUDENT_MESSAGES_DANGER: Record<string, string> = {
-      aggression: "Ichingdagi kuch zo'r — uni sport, musiqa yoki ijodga yo'naltirsang, hammani hayratda qoldirasiz!",
-      bullying: "Sen doim g'olib — faqat o'zingga ishon. Hech kim sening kelajagingni belgilay olmaydi, faqat sen!",
-      emotional: "Ba'zi kunlar og'ir bo'ladi — bu normal. Lekin sen bu testni ham o'tding, demak kuchlilikni allaqachon isbotladingiz!",
-      peer: "O'zingni qadrlagan odam atrofida ham qadrlanadi. Sen bugun shu testni o'tdingmi — demak kuchlisin!",
-      conduct: "Har kim xato qiladi — zo'rlar shundan o'rganadi. Ertangi sen bugungi sendan zo'rroq bo'ladi!",
-      substance: "Eng kuchli qaror — o'zing uchun to'g'risini tanlash. Senda shu kuch bor, ko'rmayapsanmi?",
-      prosocial: "Bitta tabassum, bitta yaxshi so'z — bu ham qahramonlik. Bugun sinab ko'r, natijasini ko'rasiz!",
-    };
-
-    if (level === RiskLevel.NORMAL) {
-      const msg = STUDENT_MESSAGES_NORMAL[Math.floor(Math.random() * STUDENT_MESSAGES_NORMAL.length)];
-      return {
-        level,
-        insight: "Umumiy ko'rsatkichlar normal darajada, alohida e'tibor talab etilmaydi",
-        recommendation: "Hozircha qo'shimcha chora ko'rishga ehtiyoj yo'q, kuzatuvda davom ettirilsin",
-        studentMessage: msg,
-      };
-    }
 
     const insight =
       DOMAIN_INSIGHTS[dominantDomain] ??
@@ -178,13 +199,21 @@ export class AiAnalysisService {
     const recommendation =
       level === RiskLevel.DANGER
         ? `"${domainLabel}" yo'nalishi bo'yicha o'quvchi bilan tezkor individual suhbat o'tkazish va ota-ona bilan bog'lanish tavsiya etiladi`
-        : `"${domainLabel}" yo'nalishi bo'yicha o'quvchini kuzatuvga olish va keyingi testlarda natijani qayta baholash tavsiya etiladi`;
+        : level === RiskLevel.ATTENTION
+        ? `"${domainLabel}" yo'nalishi bo'yicha o'quvchini kuzatuvga olish va keyingi testlarda natijani qayta baholash tavsiya etiladi`
+        : "Hozircha qo'shimcha chora ko'rishga ehtiyoj yo'q, kuzatuvda davom ettirilsin";
 
-    const msgMap = level === RiskLevel.DANGER ? STUDENT_MESSAGES_DANGER : STUDENT_MESSAGES_ATTENTION;
-    const studentMessage =
-      msgMap[dominantDomain] ??
-      "Sen kuchli insonsan — har qanday qiyinlikni yengib o'ta olasiz. Oldinga!";
+    const studentType =
+      level === RiskLevel.NORMAL
+        ? NORMAL_TYPES[Math.floor(Math.random() * NORMAL_TYPES.length)]
+        : (TYPE_MAP[dominantDomain] ?? { emoji: '🌟', title: 'Noyob', desc: 'Sen o\'zingcha noyob insonsan — boshqa hech kim sen kabi emas!' });
 
-    return { level, insight, recommendation, studentMessage };
+    return {
+      level,
+      insight: level === RiskLevel.NORMAL ? "Umumiy ko'rsatkichlar normal darajada" : insight,
+      recommendation,
+      studentMessage: '',
+      studentType,
+    };
   }
 }

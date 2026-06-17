@@ -1,66 +1,70 @@
 import { useEffect, useState } from 'react';
 
-const FALLBACK_MOTIVATIONS = [
-  { emoji: '💪', text: "Sendagi kuch har qanday to'siqni yengib o'tishga yetadi!" },
-  { emoji: '🌟', text: "Sen o'zingcha noyob insonsan — boshqa hech kim sen kabi emas!" },
-  { emoji: '🚀', text: "Har bir qiyin kun seni yanada kuchliroq qiladi. Davom et!" },
+interface StudentType {
+  emoji: string;
+  title: string;
+  desc: string;
+}
+
+const FALLBACK_TYPES: StudentType[] = [
+  { emoji: '🤝', title: "Do'stsevar", desc: "Atrofingilar bilan munosabating zo'r — bunday odamlar har joyda o'zini topadi!" },
+  { emoji: '🧠', title: 'Aqlli', desc: "Vaziyatlarni to'g'ri o'qiy olasiz — bu katta ustunlik!" },
+  { emoji: '☀️', title: 'Ijobiy', desc: 'Sendagi energiya atrofingilarni ham quvontiradi. Shunday davom et!' },
+  { emoji: '🦁', title: 'Kuchli ruh', desc: "Senda boshqalar yo'qolsin degan iroda bor — uni to'g'ri yo'naltirsang, hamma seni kuzatadi!" },
+  { emoji: '🎨', title: 'Sezgir ijodkor', desc: "Sen narsalarni boshqalar ko'rmaydigan tarzda his qilasiz — bu kamdan-kam uchraydigan sovg'a!" },
 ];
 
 export function Thanks() {
-  const [aiText, setAiText] = useState<string | null>(null);
-  const [fallbackIdx, setFallbackIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [type, setType] = useState<StudentType | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [counted, setCounted] = useState(false);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem('ai_recommendation');
+    const saved = sessionStorage.getItem('student_type');
     if (saved) {
-      setAiText(saved);
-      sessionStorage.removeItem('ai_recommendation');
+      try {
+        setType(JSON.parse(saved));
+        sessionStorage.removeItem('student_type');
+      } catch {
+        setType(FALLBACK_TYPES[Math.floor(Math.random() * FALLBACK_TYPES.length)]);
+      }
+    } else {
+      setType(FALLBACK_TYPES[Math.floor(Math.random() * FALLBACK_TYPES.length)]);
     }
   }, []);
 
-  // Faqat AI tavsiya yo'q bo'lsa fallback aylanadi
+  // Suspense: 1.5s kutib, keyin reveal
   useEffect(() => {
-    if (aiText) return;
-    const interval = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setFallbackIdx(i => (i + 1) % FALLBACK_MOTIVATIONS.length);
-        setVisible(true);
-      }, 400);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [aiText]);
-
-  const fallback = FALLBACK_MOTIVATIONS[fallbackIdx];
+    if (!type) return;
+    const t1 = setTimeout(() => setCounted(true), 400);
+    const t2 = setTimeout(() => setRevealed(true), 1500);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [type]);
 
   return (
     <div className="page page--center thanks-page">
-      <div className="card center thanks-card">
+      <div className="thanks-card">
         <div className="thanks-confetti">🎉</div>
-        <h2 className="thanks-title">Rahmat!</h2>
-        <p className="thanks-sub">
-          Sarguzashtni muvaffaqiyatli yakunladingiz. Javoblaringiz qabul qilindi.
-        </p>
+        <h2 className="thanks-title">Barakalla!</h2>
+        <p className="thanks-sub">Sarguzasht yakunlandi. Endi eng qiziq qism...</p>
 
-        {aiText ? (
-          <div className="thanks-motivation thanks-motivation--visible thanks-motivation--ai">
-            <span className="thanks-motivation__badge">🤖 AI tavsiya</span>
-            <p className="thanks-motivation__text">{aiText}</p>
-          </div>
-        ) : (
-          <>
-            <div className={`thanks-motivation${visible ? ' thanks-motivation--visible' : ''}`}>
-              <span className="thanks-motivation__emoji">{fallback.emoji}</span>
-              <p className="thanks-motivation__text">{fallback.text}</p>
+        <div className="thanks-reveal-label">
+          {counted ? '✨ Sening turning:' : 'Natijang tahlil qilindi...'}
+        </div>
+
+        <div className={`thanks-reveal${revealed ? ' thanks-reveal--open' : ''}`}>
+          {revealed && type ? (
+            <>
+              <div className="thanks-reveal__emoji">{type.emoji}</div>
+              <div className="thanks-reveal__title">{type.title}</div>
+              <p className="thanks-reveal__desc">{type.desc}</p>
+            </>
+          ) : (
+            <div className="thanks-reveal__dots">
+              <span /><span /><span />
             </div>
-            <div className="thanks-dots">
-              {FALLBACK_MOTIVATIONS.map((_, i) => (
-                <span key={i} className={`thanks-dot${i === fallbackIdx ? ' thanks-dot--active' : ''}`} />
-              ))}
-            </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
