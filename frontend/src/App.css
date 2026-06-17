@@ -1017,6 +1017,71 @@ input {
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* ── Impulse game extras ── */
+.impulse-rules {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 12px; padding: 12px 14px;
+  background: #f5f3ff; border-radius: 12px; border: 1px solid #ede9fe;
+}
+.impulse-rules span { font-size: 13px; color: #4b5563; }
+
+.impulse-lives {
+  display: flex; gap: 4px; align-items: center;
+}
+.impulse-life { font-size: 22px; transition: opacity 0.2s, transform 0.2s; }
+.impulse-life--lost { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+
+.impulse-combo {
+  position: absolute; top: 60px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px; font-weight: 800; color: #f59e0b;
+  text-shadow: 0 2px 8px rgba(245,158,11,0.4);
+  animation: impulse-combo-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  white-space: nowrap; pointer-events: none;
+}
+@keyframes impulse-combo-pop {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.5) translateY(10px); }
+  60%  { opacity: 1; transform: translateX(-50%) scale(1.15) translateY(-4px); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+}
+
+.impulse-rt-badge {
+  position: absolute; top: 16px; left: 20px;
+  font-size: 15px; font-weight: 700;
+  animation: impulse-combo-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  pointer-events: none;
+}
+
+.impulse-speed-badge {
+  margin-left: 10px; font-size: 12px; font-weight: 700;
+  color: #7c3aed; background: #ede9fe;
+  padding: 2px 8px; border-radius: 20px;
+}
+
+.impulse-result-card {
+  width: 100%; max-width: 340px; padding: 28px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.impulse-result-stars { display: flex; gap: 8px; }
+.impulse-result-star { font-size: 38px; filter: grayscale(1); opacity: 0.25; transition: all 0.3s; }
+.impulse-result-star--on { filter: none; opacity: 1; animation: impulse-star-pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes impulse-star-pop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.impulse-result-title { margin: 0; font-size: 24px; font-weight: 800; color: #1e1b3a; }
+.impulse-result-stats {
+  display: flex; gap: 12px; width: 100%;
+}
+.impulse-result-stat {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: #f5f3ff; border-radius: 12px; padding: 12px 8px;
+  border: 1px solid #ede9fe;
+}
+.impulse-result-stat__val { font-size: 20px; font-weight: 800; color: #6d4ce0; }
+.impulse-result-stat__label { font-size: 11px; color: #9ca3af; font-weight: 500; }
+
 .impulse-score {
   position: absolute;
   top: 16px;
