@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import Anthropic from '@anthropic-ai/sdk';
 import {
   Student,
   MoodEntry,
@@ -13,6 +15,9 @@ import { AlertsService } from '../alerts/alerts.service';
 
 @Injectable()
 export class DashboardService {
+  private readonly logger = new Logger(DashboardService.name);
+  private anthropic: Anthropic | null;
+
   constructor(
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
@@ -25,7 +30,11 @@ export class DashboardService {
     @InjectRepository(PsychologistNote)
     private readonly noteRepo: Repository<PsychologistNote>,
     private readonly alertsService: AlertsService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+    this.anthropic = apiKey ? new Anthropic({ apiKey }) : null;
+  }
 
   private levelOf(score: number): RiskLevel {
     if (score >= 70) return RiskLevel.DANGER;
@@ -431,5 +440,62 @@ export class DashboardService {
 
   async resolveAlert(id: string) {
     return this.alertsService.resolve(id);
+  }
+
+  async schoolAdvice(filters: { school?: string; district?: string }): Promise<{ advice: string }> {
+    const ov = await this.overviewFull(filters);
+
+    const dangerPct  = ov.total ? Math.round((ov.high / ov.total) * 100) : 0;
+    const topClasses = [...ov.classBreakdown]
+      .sort((a, b) => b.danger - a.danger)
+      .slice(0, 3)
+      .filter(c => c.danger > 0)
+      .map(c => `${c.className} (${c.danger} ta yuqori xavf)`)
+      .join(', ');
+
+    const prompt = `Maktab psixologik holati statistikasi:
+- Jami test topshirgan o'quvchi: ${ov.total} ta
+- Yuqori xavf (DANGER): ${ov.high} ta (${dangerPct}%)
+- O'rta xavf (ATTENTION): ${ov.medium} ta (${ov.mediumPct}%)
+- Past xavf (NORMAL): ${ov.low} ta (${ov.lowPct}%)
+- Eng ko'p yuqori xavfli sinflar: ${topClasses || 'yo\'q'}
+- Maktab: ${filters.school || '53-maktab'}, ${filters.district || 'Chortoq tumani'}
+
+Ushbu ma'lumotlar asosida maktab psixologi uchun 3-5 ta aniq, amaliy tavsiya ber.
+Tavsiyalar O'zbekiston maktabi sharoitiga mos, qisqa va aniq bo'lsin.
+Faqat tavsiyalar ro'yxatini qaytar (markdown bullet points), boshqa matn yozma.`;
+
+    if (this.anthropic) {
+      try {
+        const response = await this.anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 600,
+          messages: [{ role: 'user', content: prompt }],
+        });
+        const textBlock = response.content.find(b => b.type === 'text');
+        if (textBlock && 'text' in textBlock) {
+          return { advice: textBlock.text };
+        }
+      } catch (e) {
+        this.logger.warn(`AI tavsiya xatosi, fallback: ${e.message}`);
+      }
+    }
+
+    // Fallback — qoida asosida
+    const lines: string[] = [];
+    if (ov.high > 0) {
+      lines.push(`• Yuqori xavf guruhidagi ${ov.high} ta o'quvchi bilan tezkor individual suhbat o'tkazish tavsiya etiladi.`);
+    }
+    if (dangerPct >= 20) {
+      lines.push(`• Yuqori xavf ko'rsatkichi ${dangerPct}% ga yetgan — sinf rahbarlari bilan umumiy uchrashuv o'tkazish zarur.`);
+    }
+    if (topClasses) {
+      lines.push(`• ${topClasses} sinflarida guruhiy psixologik mashg'ulotlar tashkil etish maqsadga muvofiq.`);
+    }
+    if (ov.medium > 0) {
+      lines.push(`• O'rta xavf guruhidagi ${ov.medium} ta o'quvchini muntazam kuzatuvda ushlab turish lozim.`);
+    }
+    lines.push(`• Ota-onalar bilan hamkorlikni kuchaytirish uchun ota-onalar yig'ilishida psixologik ma'ruza o'tkazish tavsiya etiladi.`);
+    return { advice: lines.join('\n') };
   }
 }

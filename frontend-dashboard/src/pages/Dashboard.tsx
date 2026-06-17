@@ -544,10 +544,7 @@ export function Dashboard() {
           </div>
 
           <div className="bottom-cards">
-            <div className="card placeholder-card">
-              <h3>🤖 AI tavsiyalar</h3>
-              <p className="muted">Tez orada: AI asosida tavsiyalar generatori.</p>
-            </div>
+            <AiAdviceCard school={school} district={district} overview={overview} />
             <div className="card placeholder-card">
               <h3>📄 Hisobot yaratish</h3>
               <p className="muted">
@@ -604,6 +601,65 @@ export function Dashboard() {
           onClose={() => setNoteTarget(null)}
           onSaved={() => { loadNotes(); refreshBadge(); }}
         />
+      )}
+    </div>
+  );
+}
+
+function AiAdviceCard({ school, district, overview }: { school: string; district: string; overview: Overview }) {
+  const [expanded, setExpanded] = useState(false);
+  const [advice, setAdvice]     = useState<string | null>(null);
+  const [loading, setLoading]   = useState(false);
+
+  const dangerPct = overview.total ? Math.round((overview.high / overview.total) * 100) : 0;
+  const topClass  = [...overview.classBreakdown].sort((a, b) => b.danger - a.danger)[0];
+
+  const summary = overview.high === 0
+    ? "Hozircha yuqori xavfli o'quvchi yo'q — holat barqaror."
+    : `${overview.high} ta o'quvchi yuqori xavf guruhida (${dangerPct}%).${topClass?.danger > 0 ? ` Eng ko'p: ${topClass.className} sinfi.` : ''}`;
+
+  const handleExpand = async () => {
+    setExpanded(true);
+    if (advice) return;
+    setLoading(true);
+    try {
+      const { data } = await api.get('/dashboard/advice', { params: { school, district } });
+      setAdvice(data.advice);
+    } catch {
+      setAdvice("Tavsiya yuklanmadi. Qayta urinib ko'ring.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="card placeholder-card ai-advice-card">
+      <div className="ai-advice-card__header">
+        <h3>🤖 AI tavsiyalar</h3>
+        {!expanded && (
+          <button type="button" className="btn btn-sm" onClick={handleExpand}>
+            Batafsil →
+          </button>
+        )}
+        {expanded && (
+          <button type="button" className="btn btn-sm btn-sm--ghost" onClick={() => setExpanded(false)}>
+            Yopish
+          </button>
+        )}
+      </div>
+      <p className="ai-advice-card__summary">{summary}</p>
+      {expanded && (
+        <div className="ai-advice-card__body">
+          {loading ? (
+            <p className="muted" style={{ fontSize: 13 }}>AI tavsiya tayyorlanmoqda...</p>
+          ) : advice ? (
+            <div className="ai-advice-card__text">
+              {advice.split('\n').filter(Boolean).map((line, i) => (
+                <p key={i} className="ai-advice-card__line">{line.replace(/^[•\-*]\s*/, '')}</p>
+              ))}
+            </div>
+          ) : null}
+        </div>
       )}
     </div>
   );

@@ -74,6 +74,14 @@ export class DashboardController {
     return this.dashboardService.addToMonitor(body);
   }
 
+  @Get('advice')
+  advice(
+    @Query('school') school?: string,
+    @Query('district') district?: string,
+  ) {
+    return this.dashboardService.schoolAdvice({ school, district });
+  }
+
   @Get('released-count')
   releasedCount(
     @Query('school') school?: string,

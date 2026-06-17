@@ -908,6 +908,18 @@ input {
   margin-bottom: 12px;
 }
 
+.ai-advice-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.ai-advice-card__header h3 { margin: 0; }
+.ai-advice-card__summary { font-size: 13px; color: #6b7280; margin: 0 0 10px; line-height: 1.5; }
+.ai-advice-card__body { border-top: 1px solid #f0eeff; padding-top: 12px; margin-top: 4px; }
+.ai-advice-card__text { display: flex; flex-direction: column; gap: 8px; }
+.ai-advice-card__line { margin: 0; font-size: 13px; color: #374151; line-height: 1.6; padding-left: 14px; position: relative; }
+.ai-advice-card__line::before { content: '•'; position: absolute; left: 0; color: #6d4ce0; font-weight: 700; }
+.btn-sm { padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 8px; border: 1.5px solid #6d4ce0; background: #6d4ce0; color: #fff; cursor: pointer; transition: background .12s; white-space: nowrap; }
+.btn-sm:hover { background: #5b3fc0; }
+.btn-sm--ghost { background: transparent; color: #6d4ce0; }
+.btn-sm--ghost:hover { background: #ede9fe; }
+
 .btn-export {
   width: auto;
   border: 1.5px solid #6d4ce0;
