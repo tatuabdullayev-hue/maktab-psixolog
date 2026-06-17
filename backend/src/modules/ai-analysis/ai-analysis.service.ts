@@ -144,7 +144,7 @@ export class AiAnalysisService {
       aggression: "Kuchli odamlar hissiyotlarini boshqara oladi — sen ham buni uddalay olasiz, shunda hamma senga hurmat ko'zi bilan qaraydi!",
       bullying: "Atrofingilar bilan yaxshi munosabatda bo'lish — bu ham katta mahorat. Birinchi bo'lib tabassum qil, ko'rasiz natijani!",
       emotional: "Sendagi his-tuyg'ular — bu sening boyliging. Ularni his qilgan odam hech qachon to'xtamaydi!",
-      peer: "Bitta chin do'st — bu yuzta tanishdan qimmat. Birovga avval o'zing do'st bo'l, qaytib keladi!",
+      peer: "Ko'p do'st bo'lishi shart emas — muhimi yon ingdagi odamlar seni quvontirsin. Bugun birovga birinchi bo'lib salom ber!",
       conduct: "Har kun yangi tanlov, yangi imkoniyat. Sendagi irodani ko'r — bugun boshqacha qilsang bo'ladi!",
       substance: "Eng zo'r trend — o'z aqlini, salomatligini asrash. Sen allaqachon zo'r, undan ham zo'rroq bo'l!",
       prosocial: "Birovga bitta yaxshilik qil bugun — kichkina bo'lsa ham. Qaytib keladigan narsani ko'rasiz!",
@@ -153,7 +153,7 @@ export class AiAnalysisService {
     const STUDENT_MESSAGES_DANGER: Record<string, string> = {
       aggression: "Ichingdagi kuch zo'r — uni sport, musiqa yoki ijodga yo'naltirsang, hammani hayratda qoldirasiz!",
       bullying: "Sen doim g'olib — faqat o'zingga ishon. Hech kim sening kelajagingni belgilay olmaydi, faqat sen!",
-      emotional: "Qiyin kunlar ham o'tib ketadi — xuddi bulutlar quyoshni yashira olmaydi. Sen kuchli, esingda bo'lsin!",
+      emotional: "Ba'zi kunlar og'ir bo'ladi — bu normal. Lekin sen bu testni ham o'tding, demak kuchlilikni allaqachon isbotladingiz!",
       peer: "O'zingni qadrlagan odam atrofida ham qadrlanadi. Sen bugun shu testni o'tdingmi — demak kuchlisin!",
       conduct: "Har kim xato qiladi — zo'rlar shundan o'rganadi. Ertangi sen bugungi sendan zo'rroq bo'ladi!",
       substance: "Eng kuchli qaror — o'zing uchun to'g'risini tanlash. Senda shu kuch bor, ko'rmayapsanmi?",
