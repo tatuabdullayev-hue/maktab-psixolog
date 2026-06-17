@@ -259,6 +259,24 @@ input {
   font-size: 48px;
 }
 
+.transition-screen {
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  padding: 32px 24px; text-align: center;
+}
+.transition-screen__spinner {
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 5px solid #ede9fe;
+  border-top-color: #6d4ce0;
+  animation: ts-spin 0.8s linear infinite;
+}
+@keyframes ts-spin { to { transform: rotate(360deg); } }
+.transition-screen__title {
+  font-size: 18px; font-weight: 700; color: #1e1b3a; margin: 0;
+}
+.transition-screen__sub {
+  font-size: 14px; color: #9ca3af; margin: 0;
+}
+
 .result-percent {
   font-size: 36px;
   font-weight: 700;

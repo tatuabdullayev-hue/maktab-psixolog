@@ -134,6 +134,18 @@ export function GameTest() {
     return <div className="page page--center">Yuklanmoqda...</div>;
   }
 
+  if (submitting) {
+    return (
+      <div className="page page--center">
+        <div className="transition-screen">
+          <div className="transition-screen__spinner" />
+          <p className="transition-screen__title">Natijalaringiz tahlil qilinmoqda…</p>
+          <p className="transition-screen__sub">Bir daqiqa, AI ishlamoqda 🤖</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!started) {
     return (
       <div className="page game-page">
