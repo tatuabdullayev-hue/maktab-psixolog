@@ -137,27 +137,27 @@ export class AiAnalysisService {
     const STUDENT_MESSAGES_NORMAL: string[] = [
       "Zo'r! Sendagi kuch va mehribonlik atrofingilarni quvontiradi. Shunday davom et!",
       "Sen juda yaxshi insonsan — bu sifatlarni asrab qol va do'stlaringga ham ulash!",
-      "Hayotda muvaffaqiyat sening ichingda — sen allaqachon to'g'ri yo'ldasn!",
+      "Hayotda muvaffaqiyat o'zingda — sen allaqachon to'g'ri yo'ldasan!",
     ];
 
     const STUDENT_MESSAGES_ATTENTION: Record<string, string> = {
-      aggression: "G'azabingni his qilish odatiy narsa, lekin uni nazorat qila olsang — bu juda katta kuch! Har kuni bir marta chuqur nafas ol.",
-      bullying: "Sen ham, atrofingilar ham hurmatga loyiq. Birovga qo'l uzatsang, ikkalangiz ham yutasiz!",
-      emotional: "Hissiyotlaring sening kuchingling — ularni yashirma, ishonchli odamga ayt. Ichingdagi quyosh doim bor!",
-      peer: "Do'st topish ba'zan qiyin, lekin bitta chin do'st yuzta tanishdan qimmat. Avval o'zing birovga do'st bo'lishga harakat qil!",
-      conduct: "Har bir kun yangi boshlanish — kecha nima bo'lgan bo'lsa ham, bugun boshqacha tanlov qila olasiz!",
-      substance: "Sendagi irodani ko'r — qiyin paytlarda ham to'g'ri yo'l tanlash o'zingda!",
-      prosocial: "Birovga yordam berish — eng katta baxt. Bir kun bitta kichik yaxshilik qil, natijasini ko'rasan!",
+      aggression: "Kuchli odamlar hissiyotlarini boshqara oladi — sen ham buni uddalay olasiz, shunda hamma senga hurmat ko'zi bilan qaraydi!",
+      bullying: "Atrofingilar bilan yaxshi munosabatda bo'lish — bu ham katta mahorat. Birinchi bo'lib tabassum qil, ko'rasiz natijani!",
+      emotional: "Sendagi his-tuyg'ular — bu sening boyliging. Ularni his qilgan odam hech qachon to'xtamaydi!",
+      peer: "Bitta chin do'st — bu yuzta tanishdan qimmat. Birovga avval o'zing do'st bo'l, qaytib keladi!",
+      conduct: "Har kun yangi tanlov, yangi imkoniyat. Sendagi irodani ko'r — bugun boshqacha qilsang bo'ladi!",
+      substance: "Eng zo'r trend — o'z aqlini, salomatligini asrash. Sen allaqachon zo'r, undan ham zo'rroq bo'l!",
+      prosocial: "Birovga bitta yaxshilik qil bugun — kichkina bo'lsa ham. Qaytib keladigan narsani ko'rasiz!",
     };
 
     const STUDENT_MESSAGES_DANGER: Record<string, string> = {
-      aggression: "Ichingda juda katta his-tuyg'ular bor — bu sening kuchingling. Ularni to'g'ri yo'naltirsang, zo'r narsa qila olasiz!",
-      bullying: "Sen yolg'iz emassan. Qiyin his qilsang, ishonchli kattalarga ayt — ular yordam beradi!",
-      emotional: "Ba'zan hayot og'ir tuyuladi — lekin bu o'tkinchi. Sen kuchli va qimmatli insonsan, hech qachon unutma!",
-      peer: "Yolg'izlik vaqtinchalik. Seni tushunuvchi odamlar bor — faqat ularga o'zing ham ochilishga ruxsat ber!",
-      conduct: "Har kim xato qiladi — muhimi shundan o'rganish. Ertangi sen bugungi sendan yaxshiroq bo'la oladi!",
-      substance: "Sendagi irodani hech narsa yengolmaydi — to'g'ri odamlarni yon olsang, har qanday qiyinlikni yengasiz!",
-      prosocial: "Sendagi yaxshilik hali to'liq ochilmagan — faqat bitta qadam tashla, atrofingilar seni ko'radi!",
+      aggression: "Ichingdagi kuch zo'r — uni sport, musiqa yoki ijodga yo'naltirsang, hammani hayratda qoldirasiz!",
+      bullying: "Sen doim g'olib — faqat o'zingga ishon. Hech kim sening kelajagingni belgilay olmaydi, faqat sen!",
+      emotional: "Qiyin kunlar ham o'tib ketadi — xuddi bulutlar quyoshni yashira olmaydi. Sen kuchli, esingda bo'lsin!",
+      peer: "O'zingni qadrlagan odam atrofida ham qadrlanadi. Sen bugun shu testni o'tdingmi — demak kuchlisin!",
+      conduct: "Har kim xato qiladi — zo'rlar shundan o'rganadi. Ertangi sen bugungi sendan zo'rroq bo'ladi!",
+      substance: "Eng kuchli qaror — o'zing uchun to'g'risini tanlash. Senda shu kuch bor, ko'rmayapsanmi?",
+      prosocial: "Bitta tabassum, bitta yaxshi so'z — bu ham qahramonlik. Bugun sinab ko'r, natijasini ko'rasiz!",
     };
 
     if (level === RiskLevel.NORMAL) {
