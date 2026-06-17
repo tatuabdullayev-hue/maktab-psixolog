@@ -632,32 +632,47 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
     }
   };
 
+  const isGood = overview.high === 0;
+
   return (
-    <div className="card placeholder-card ai-advice-card">
-      <div className="ai-advice-card__header">
-        <h3>🤖 AI tavsiyalar</h3>
-        {!expanded && (
-          <button type="button" className="btn btn-sm" onClick={handleExpand}>
-            Batafsil →
-          </button>
-        )}
-        {expanded && (
-          <button type="button" className="btn btn-sm btn-sm--ghost" onClick={() => setExpanded(false)}>
-            Yopish
-          </button>
-        )}
+    <div className={`ai-advice-card${expanded ? ' ai-advice-card--expanded' : ''}`}>
+      {/* gradient top strip */}
+      <div className="ai-advice-card__strip" />
+
+      <div className="ai-advice-card__top">
+        <div className="ai-advice-card__icon-wrap">
+          <span className="ai-advice-card__robot">🤖</span>
+        </div>
+        <div className="ai-advice-card__title-block">
+          <span className="ai-advice-card__label">AI Tavsiyalar</span>
+          <span className={`ai-advice-card__badge ${isGood ? 'ai-advice-card__badge--good' : 'ai-advice-card__badge--warn'}`}>
+            {isGood ? '✓ Barqaror' : `⚠ ${overview.high} ta xavfli`}
+          </span>
+        </div>
+        <button
+          type="button"
+          className={`ai-advice-card__toggle${expanded ? ' ai-advice-card__toggle--open' : ''}`}
+          onClick={expanded ? () => setExpanded(false) : handleExpand}
+        >
+          {expanded ? '✕' : 'Batafsil'}
+        </button>
       </div>
+
       <p className="ai-advice-card__summary">{summary}</p>
+
       {expanded && (
         <div className="ai-advice-card__body">
           {loading ? (
-            <p className="muted" style={{ fontSize: 13 }}>AI tavsiya tayyorlanmoqda...</p>
-          ) : advice ? (
-            <div className="ai-advice-card__text">
-              {advice.split('\n').filter(Boolean).map((line, i) => (
-                <p key={i} className="ai-advice-card__line">{line.replace(/^[•\-*]\s*/, '')}</p>
-              ))}
+            <div className="ai-advice-card__loading">
+              <span className="ai-advice-card__spinner" />
+              <span>AI tavsiya tayyorlanmoqda…</span>
             </div>
+          ) : advice ? (
+            <ul className="ai-advice-card__list">
+              {advice.split('\n').filter(Boolean).map((line, i) => (
+                <li key={i}>{line.replace(/^[•\-*]\s*/, '')}</li>
+              ))}
+            </ul>
           ) : null}
         </div>
       )}
