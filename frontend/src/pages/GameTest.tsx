@@ -116,7 +116,10 @@ export function GameTest() {
     submittingRef.current = true;
     setSubmitting(true);
     try {
-      await api.post('/tests/submit', { testId: test!.id, answers, mood });
+      const { data } = await api.post('/tests/submit', { testId: test!.id, answers, mood });
+      if (data?.aiRecommendation) {
+        sessionStorage.setItem('ai_recommendation', data.aiRecommendation);
+      }
     } finally {
       sessionStorage.removeItem(PROGRESS_KEY);
       navigate('/impulse-game');
