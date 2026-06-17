@@ -789,17 +789,30 @@ input {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: border-color 0.15s, background-color 0.15s;
+  overflow: hidden;
+  transition: border-color 0.12s, background-color 0.12s;
 }
 
 .impulse-stage--hit {
   border-color: #22c55e;
-  background: #f0fdf4;
+  animation: impulse-flash-hit 0.35s ease-out;
 }
 
 .impulse-stage--miss {
   border-color: #ef4444;
-  background: #fef2f2;
+  animation: impulse-flash-miss 0.35s ease-out;
+}
+
+@keyframes impulse-flash-hit {
+  0%   { background: #fff; }
+  30%  { background: #bbf7d0; }
+  100% { background: #f0fdf4; }
+}
+
+@keyframes impulse-flash-miss {
+  0%   { background: #fff; }
+  30%  { background: #fecaca; }
+  100% { background: #fef2f2; }
 }
 
 .impulse-stage__item {
@@ -808,8 +821,8 @@ input {
   align-items: center;
   gap: 12px;
   opacity: 1;
-  transition: opacity 0.3s ease-out;
-  animation: impulse-pop 0.15s ease-out;
+  transition: opacity 0.25s ease-out;
+  animation: impulse-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Rang olami (Lyusher rang testi) */
@@ -997,23 +1010,37 @@ input {
   color: #333;
 }
 
+@keyframes impulse-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.18); opacity: 1; }
+  80%  { transform: scale(0.94); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.impulse-score {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #22c55e;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 20px;
+  padding: 4px 14px;
+  transition: transform 0.12s;
+}
+
+.impulse-score--bump {
+  transform: scale(1.35);
+}
+
 .impulse-stage__feedback {
   position: absolute;
   bottom: 28px;
   right: 32px;
   font-size: 52px;
-  animation: impulse-pop 0.15s ease-out;
-}
-
-@keyframes impulse-pop {
-  from {
-    transform: scale(0.7);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  animation: impulse-pop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .mood-badge {

@@ -88,6 +88,8 @@ export function ImpulseGame() {
   const [stimulusFading, setStimulusFading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [tapFeedback, setTapFeedback] = useState<'hit' | 'miss' | null>(null);
+  const [score, setScore] = useState(0);
+  const [scoreBump, setScoreBump] = useState(false);
 
   const sequenceRef = useRef<Trial[]>([]);
   const resultsRef = useRef<TrialResult[]>([]);
@@ -159,6 +161,7 @@ export function ImpulseGame() {
     sequenceRef.current = buildSequence();
     resultsRef.current = [];
     setTrialIndex(0);
+    setScore(0);
     setPhase('playing');
   };
 
@@ -172,7 +175,13 @@ export function ImpulseGame() {
       responded: true,
       reactionTimeMs: Date.now() - trialStartRef.current,
     };
-    setTapFeedback(trial.type === 'go' ? 'hit' : 'miss');
+    const isHit = trial.type === 'go';
+    setTapFeedback(isHit ? 'hit' : 'miss');
+    if (isHit) {
+      setScore(s => s + 1);
+      setScoreBump(true);
+      setTimeout(() => setScoreBump(false), 200);
+    }
   };
 
   const handleFinishAndNext = () => {
@@ -297,8 +306,12 @@ export function ImpulseGame() {
         className={`impulse-stage${tapFeedback ? ` impulse-stage--${tapFeedback}` : ''}`}
         onClick={handleStageClick}
       >
+        <span className={`impulse-score${scoreBump ? ' impulse-score--bump' : ''}`}>
+          ✓ {score}
+        </span>
         {trial && (
           <div
+            key={trialIndex}
             className={`impulse-stage__item${stimulusFading ? ' impulse-stage__item--fading' : ''}`}
           >
             <span className="impulse-stage__emoji">{trial.emoji}</span>
