@@ -214,7 +214,7 @@ export function ImpulseGame() {
 
         <div className="welcome-card">
           <div>
-            <div className="welcome-card__title">Tezkor maktabchi 🎒</div>
+            <div className="welcome-card__title">Tezkor o'quvchi 🎒</div>
             <div className="welcome-card__subtitle">
               Endi yana bitta qiziqarli o'yin bor — diqqatingizni sinab ko'ramiz!
             </div>
@@ -264,7 +264,7 @@ export function ImpulseGame() {
         <div className="card center register-card">
           <div className="result-star">🌟</div>
           <h2>Ajoyib!</h2>
-          <p className="muted">Siz "Tezkor maktabchi" o'yinini muvaffaqiyatli yakunladingiz!</p>
+          <p className="muted">Siz "Tezkor o'quvchi" o'yinini muvaffaqiyatli yakunladingiz!</p>
           <button
             className="btn btn-primary"
             disabled={submitting}
@@ -287,7 +287,7 @@ export function ImpulseGame() {
           <span className="game-brand__icon">🧠✨</span>
           <div>
             <div className="game-brand__title">AI PSIXOLOG</div>
-            <div className="game-brand__subtitle">Tezkor maktabchi</div>
+            <div className="game-brand__subtitle">Tezkor o'quvchi</div>
           </div>
         </div>
       </div>
