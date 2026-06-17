@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const FALLBACK_MOTIVATIONS = [
-  { emoji: '💪', text: "Seningdagi kuch har qanday to'siqni yengib o'tishga yetadi!" },
+  { emoji: '💪', text: "Sendagi kuch har qanday to'siqni yengib o'tishga yetadi!" },
   { emoji: '🌟', text: "Sen o'zingcha noyob insonsan — boshqa hech kim sen kabi emas!" },
   { emoji: '🚀', text: "Har bir qiyin kun seni yanada kuchliroq qiladi. Davom et!" },
 ];

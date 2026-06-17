@@ -117,8 +117,8 @@ export function GameTest() {
     setSubmitting(true);
     try {
       const { data } = await api.post('/tests/submit', { testId: test!.id, answers, mood });
-      if (data?.aiRecommendation) {
-        sessionStorage.setItem('ai_recommendation', data.aiRecommendation);
+      if (data?.studentMessage) {
+        sessionStorage.setItem('ai_recommendation', data.studentMessage);
       }
     } finally {
       sessionStorage.removeItem(PROGRESS_KEY);

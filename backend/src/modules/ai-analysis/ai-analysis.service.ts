@@ -7,6 +7,7 @@ export interface AiAnalysisResult {
   level: RiskLevel;
   insight: string;
   recommendation: string;
+  studentMessage: string;
 }
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -44,7 +45,8 @@ Qaytariladigan format (faqat shu, hech narsa qo'shma):
 {
   "level": "normal" | "attention" | "danger",
   "insight": "1 ta qisqa jumla — faqat ballar ko'rsatgan asosiy muammo",
-  "recommendation": "1-2 jumla — O'zbekiston maktabi psixologi uchun aniq amaliy qadam"
+  "recommendation": "1-2 jumla — O'zbekiston maktabi psixologi uchun aniq amaliy qadam",
+  "studentMessage": "1-2 iliq, rag'batlantiruvchi jumla — to'g'ridan-to'g'ri O'QUVCHIGA murojaat qilib, uning kuchli tomonini yoki o'sish yo'lini ko'rsat. Muammo yoki test haqida hech narsa aytma. Ijobiy, samimiy, bolaga mos tilda yoz."
 }
 
 "normal" = past xavf, "attention" = o'rta xavf, "danger" = yuqori xavf.`;
@@ -109,6 +111,7 @@ export class AiAnalysisService {
       level: parsed.level as RiskLevel,
       insight: parsed.insight,
       recommendation: parsed.recommendation,
+      studentMessage: parsed.studentMessage ?? '',
     };
   }
 
@@ -131,11 +134,39 @@ export class AiAnalysisService {
       (a, b) => b[1] - a[1],
     )[0] ?? ['', 0];
 
+    const STUDENT_MESSAGES_NORMAL: string[] = [
+      "Zo'r! Sendagi kuch va mehribonlik atrofingilarni quvontiradi. Shunday davom et!",
+      "Sen juda yaxshi insonsan — bu sifatlarni asrab qol va do'stlaringga ham ulash!",
+      "Hayotda muvaffaqiyat sening ichingda — sen allaqachon to'g'ri yo'ldasn!",
+    ];
+
+    const STUDENT_MESSAGES_ATTENTION: Record<string, string> = {
+      aggression: "G'azabingni his qilish odatiy narsa, lekin uni nazorat qila olsang — bu juda katta kuch! Har kuni bir marta chuqur nafas ol.",
+      bullying: "Sen ham, atrofingilar ham hurmatga loyiq. Birovga qo'l uzatsang, ikkalangiz ham yutasiz!",
+      emotional: "Hissiyotlaring sening kuchingling — ularni yashirma, ishonchli odamga ayt. Ichingdagi quyosh doim bor!",
+      peer: "Do'st topish ba'zan qiyin, lekin bitta chin do'st yuzta tanishdan qimmat. Avval o'zing birovga do'st bo'lishga harakat qil!",
+      conduct: "Har bir kun yangi boshlanish — kecha nima bo'lgan bo'lsa ham, bugun boshqacha tanlov qila olasiz!",
+      substance: "Sendagi irodani ko'r — qiyin paytlarda ham to'g'ri yo'l tanlash o'zingda!",
+      prosocial: "Birovga yordam berish — eng katta baxt. Bir kun bitta kichik yaxshilik qil, natijasini ko'rasan!",
+    };
+
+    const STUDENT_MESSAGES_DANGER: Record<string, string> = {
+      aggression: "Ichingda juda katta his-tuyg'ular bor — bu sening kuchingling. Ularni to'g'ri yo'naltirsang, zo'r narsa qila olasiz!",
+      bullying: "Sen yolg'iz emassan. Qiyin his qilsang, ishonchli kattalarga ayt — ular yordam beradi!",
+      emotional: "Ba'zan hayot og'ir tuyuladi — lekin bu o'tkinchi. Sen kuchli va qimmatli insonsan, hech qachon unutma!",
+      peer: "Yolg'izlik vaqtinchalik. Seni tushunuvchi odamlar bor — faqat ularga o'zing ham ochilishga ruxsat ber!",
+      conduct: "Har kim xato qiladi — muhimi shundan o'rganish. Ertangi sen bugungi sendan yaxshiroq bo'la oladi!",
+      substance: "Sendagi irodani hech narsa yengolmaydi — to'g'ri odamlarni yon olsang, har qanday qiyinlikni yengasiz!",
+      prosocial: "Sendagi yaxshilik hali to'liq ochilmagan — faqat bitta qadam tashla, atrofingilar seni ko'radi!",
+    };
+
     if (level === RiskLevel.NORMAL) {
+      const msg = STUDENT_MESSAGES_NORMAL[Math.floor(Math.random() * STUDENT_MESSAGES_NORMAL.length)];
       return {
         level,
         insight: "Umumiy ko'rsatkichlar normal darajada, alohida e'tibor talab etilmaydi",
         recommendation: "Hozircha qo'shimcha chora ko'rishga ehtiyoj yo'q, kuzatuvda davom ettirilsin",
+        studentMessage: msg,
       };
     }
 
@@ -149,6 +180,11 @@ export class AiAnalysisService {
         ? `"${domainLabel}" yo'nalishi bo'yicha o'quvchi bilan tezkor individual suhbat o'tkazish va ota-ona bilan bog'lanish tavsiya etiladi`
         : `"${domainLabel}" yo'nalishi bo'yicha o'quvchini kuzatuvga olish va keyingi testlarda natijani qayta baholash tavsiya etiladi`;
 
-    return { level, insight, recommendation };
+    const msgMap = level === RiskLevel.DANGER ? STUDENT_MESSAGES_DANGER : STUDENT_MESSAGES_ATTENTION;
+    const studentMessage =
+      msgMap[dominantDomain] ??
+      "Sen kuchli insonsan — har qanday qiyinlikni yengib o'ta olasiz. Oldinga!";
+
+    return { level, insight, recommendation, studentMessage };
   }
 }
