@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AccessGate } from './pages/AccessGate';
 import { Register } from './pages/Register';
 import { GameTest } from './pages/GameTest';
 import { ImpulseGame } from './pages/ImpulseGame';
@@ -47,11 +48,13 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <AppContent />
-      </HashRouter>
-    </AuthProvider>
+    <AccessGate>
+      <AuthProvider>
+        <HashRouter>
+          <AppContent />
+        </HashRouter>
+      </AuthProvider>
+    </AccessGate>
   );
 }
 
