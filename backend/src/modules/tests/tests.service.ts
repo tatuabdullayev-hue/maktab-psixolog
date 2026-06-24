@@ -108,7 +108,11 @@ export class TestsService implements OnModuleInit {
 
     await this.riskService.createTestResultAlertIfNeeded(studentId, riskPoints);
 
-    return { ...result, studentMessage: aiResult.studentMessage, studentType: aiResult.studentType };
+    return {
+      ...result,
+      studentMessage: aiResult.studentMessage,
+      studentType: aiResult.studentType,
+    } as TestResult & { studentMessage: string; studentType: typeof aiResult.studentType };
   }
 
   async getHistory(studentId: string): Promise<TestResult[]> {

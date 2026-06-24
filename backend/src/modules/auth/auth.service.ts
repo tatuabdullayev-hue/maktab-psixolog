@@ -1,26 +1,15 @@
 import {
-  BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import { Psychologist, UserRole } from '../../database/entities';
+import { UserRole } from '../../database/entities';
 import { StudentsService } from '../students/students.service';
 import { ClassAccessService } from '../class-access/class-access.service';
 import { validateTelegramInitData } from './telegram-init-data.util';
-import {
-  RegisterStudentDto,
-  RegisterPsychologistDto,
-  UpdateProfileDto,
-  ChangePasswordDto,
-} from './dto/auth.dto';
+import { RegisterStudentDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,8 +18,6 @@ export class AuthService {
     private readonly classAccessService: ClassAccessService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    @InjectRepository(Psychologist)
-    private readonly psychologistRepo: Repository<Psychologist>,
   ) {}
 
   async loginWithTelegram(initData: string) {
@@ -72,103 +59,32 @@ export class AuthService {
     return { accessToken: token, student };
   }
 
+  /** Faqat bitta qattiq belgilangan login/parol bilan kirish ruxsat etiladi. */
+  private static readonly FIXED_USERNAME = 'Chortoq2026';
+  private static readonly FIXED_PASSWORD = 'Chortoq2026';
+
   async loginPsychologist(username: string, password: string) {
-    const user = await this.psychologistRepo.findOne({ where: { username } });
-    if (!user || !user.passwordHash) {
+    if (
+      username !== AuthService.FIXED_USERNAME ||
+      password !== AuthService.FIXED_PASSWORD
+    ) {
       throw new UnauthorizedException('Login yoki parol noto\'g\'ri');
     }
 
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) {
-      throw new UnauthorizedException('Login yoki parol noto\'g\'ri');
-    }
-
-    const token = this.jwtService.sign({ sub: user.id, type: user.role });
+    const token = this.jwtService.sign({
+      sub: 'chortoq-2026',
+      type: UserRole.PSYCHOLOGIST,
+    });
     return {
       accessToken: token,
       user: {
-        id: user.id,
-        fullName: user.fullName,
-        role: user.role,
-        schoolName: user.schoolName,
-        district: user.district,
-      },
-    };
-  }
-
-  /** Psixolog o'zi uchun yangi kabinet ochadi (maktab/tuman bilan). */
-  async registerPsychologist(dto: RegisterPsychologistDto) {
-    const existing = await this.psychologistRepo.findOne({
-      where: { username: dto.username },
-    });
-    if (existing) {
-      throw new ConflictException('Bu login allaqachon band');
-    }
-
-    const user = await this.psychologistRepo.save(
-      this.psychologistRepo.create({
-        fullName: dto.fullName,
-        username: dto.username,
-        passwordHash: await bcrypt.hash(dto.password, 10),
+        id: 'chortoq-2026',
+        fullName: 'Chortoq tumani psixolog',
         role: UserRole.PSYCHOLOGIST,
-        schoolName: dto.schoolName,
-        district: dto.district,
-      }),
-    );
-
-    const token = this.jwtService.sign({ sub: user.id, type: user.role });
-    return {
-      accessToken: token,
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        role: user.role,
-        schoolName: user.schoolName,
-        district: user.district,
+        schoolName: '53-maktab',
+        district: 'Chortoq tumani',
       },
     };
   }
 
-  /** Profil ma'lumotlarini (ism, maktab, tuman) yangilash. */
-  async updateProfile(psychologistId: string, dto: UpdateProfileDto) {
-    const user = await this.psychologistRepo.findOne({
-      where: { id: psychologistId },
-    });
-    if (!user) {
-      throw new NotFoundException('Foydalanuvchi topilmadi');
-    }
-
-    user.fullName = dto.fullName;
-    user.schoolName = dto.schoolName;
-    user.district = dto.district;
-    await this.psychologistRepo.save(user);
-
-    return {
-      id: user.id,
-      fullName: user.fullName,
-      role: user.role,
-      schoolName: user.schoolName,
-      district: user.district,
-    };
-  }
-
-  /** Parolni almashtirish. */
-  async changePassword(psychologistId: string, dto: ChangePasswordDto) {
-    const user = await this.psychologistRepo.findOne({
-      where: { id: psychologistId },
-    });
-    if (!user || !user.passwordHash) {
-      throw new NotFoundException('Foydalanuvchi topilmadi');
-    }
-
-    const isValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!isValid) {
-      throw new BadRequestException("Joriy parol noto'g'ri");
-    }
-
-    user.passwordHash = await bcrypt.hash(dto.newPassword, 10);
-    await this.psychologistRepo.save(user);
-
-    return { success: true };
-  }
 }

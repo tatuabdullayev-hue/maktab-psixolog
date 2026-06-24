@@ -15,20 +15,11 @@ interface PsychologistUser {
   district?: string;
 }
 
-export interface RegisterPsychologistData {
-  fullName: string;
-  username: string;
-  password: string;
-  schoolName?: string;
-  district?: string;
-}
-
 interface AuthContextValue {
   user: PsychologistUser | null;
   loading: boolean;
   error: string | null;
   login: (username: string, password: string) => Promise<void>;
-  register: (data: RegisterPsychologistData) => Promise<void>;
   logout: () => void;
   updateUser: (user: PsychologistUser) => void;
 }
@@ -38,7 +29,6 @@ const AuthContext = createContext<AuthContextValue>({
   loading: true,
   error: null,
   login: async () => {},
-  register: async () => {},
   logout: () => {},
   updateUser: () => {},
 });
@@ -78,19 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (formData: RegisterPsychologistData) => {
-    setError(null);
-    try {
-      const { data } = await api.post('/auth/register-psychologist', formData);
-      setAuthToken(data.accessToken);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
-      setUser(data.user);
-    } catch (e: any) {
-      setError(e?.response?.data?.message || "Ro'yxatdan o'tishda xatolik");
-      throw e;
-    }
-  };
-
   const logout = () => {
     setAuthToken(null);
     localStorage.removeItem(STORAGE_KEY);
@@ -103,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
