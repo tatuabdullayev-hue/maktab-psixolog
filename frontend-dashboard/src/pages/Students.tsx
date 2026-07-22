@@ -12,6 +12,7 @@ interface TestStudent {
   aiInsight: string | null;
   aiRecommendation: string | null;
   completedAt: string;
+  photoBase64: string | null;
 }
 
 interface Overview {
@@ -109,6 +110,7 @@ export function Students() {
                   <thead>
                     <tr>
                       <th>№</th>
+                      <th>Rasm</th>
                       <th>O'quvchi</th>
                       <th>Sinf</th>
                       <th>Daraja</th>
@@ -121,6 +123,19 @@ export function Students() {
                     {paginated.map((s, i) => (
                       <tr key={`${s.id}-${s.completedAt}-${i}`}>
                         <td className="data-table__index">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
+                        <td>
+                          {s.photoBase64 ? (
+                            <img
+                              src={s.photoBase64}
+                              alt={s.fullName}
+                              style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-border)' }}
+                            />
+                          ) : (
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                              👤
+                            </div>
+                          )}
+                        </td>
                         <td>{s.fullName}</td>
                         <td>{s.className}</td>
                         <td>

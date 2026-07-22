@@ -40,6 +40,9 @@ export class Student {
   @Column({ nullable: true })
   district: string;
 
+  @Column({ type: 'text', nullable: true })
+  photoBase64: string | null;
+
   @Column({ default: 0 })
   currentRiskScore: number;
 

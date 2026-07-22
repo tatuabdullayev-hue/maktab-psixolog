@@ -540,6 +540,56 @@ input {
   text-align: left;
 }
 
+/* Camera */
+.camera-card {
+  max-width: 480px;
+}
+
+.camera-preview {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  margin: 8px 0;
+}
+
+.camera-video {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  transform: scaleX(-1);
+}
+
+.camera-captured {
+  width: 100%;
+  border-radius: 12px;
+  margin: 8px 0;
+  transform: scaleX(-1);
+}
+
+.camera-actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1.5px solid #6d4ce0;
+  color: #6d4ce0;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(109, 76, 224, 0.08);
+}
+
 /* Game page */
 .game-page {
   width: 100%;

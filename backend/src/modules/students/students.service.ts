@@ -42,6 +42,7 @@ export class StudentsService {
     age?: number;
     schoolName?: string;
     district?: string;
+    photoBase64?: string;
   }): Promise<Student> {
     const student = this.studentRepo.create({
       telegramId: null,
@@ -51,6 +52,7 @@ export class StudentsService {
       age: data.age ?? null,
       schoolName: data.schoolName,
       district: data.district,
+      photoBase64: data.photoBase64 ?? null,
     });
     return this.studentRepo.save(student);
   }

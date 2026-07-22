@@ -192,6 +192,7 @@ export class DashboardService {
       aiInsight: r.aiInsight,
       aiRecommendation: r.aiRecommendation,
       completedAt: r.completedAt,
+      photoBase64: r.student?.photoBase64 ?? null,
     }));
 
     const classBreakdown = Array.from(classMap.entries())
@@ -206,6 +207,7 @@ export class DashboardService {
       aiInsight: r.aiInsight,
       aiRecommendation: r.aiRecommendation,
       completedAt: r.completedAt,
+      photoBase64: r.student?.photoBase64 ?? null,
     }));
 
     return {

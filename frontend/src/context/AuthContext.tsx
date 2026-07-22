@@ -24,6 +24,7 @@ export interface RegisterStudentData {
   age?: number;
   schoolName?: string;
   district?: string;
+  photoBase64?: string;
 }
 
 interface AuthContextValue {

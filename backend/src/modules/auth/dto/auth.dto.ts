@@ -32,6 +32,10 @@ export class RegisterStudentDto {
   @IsString()
   @IsOptional()
   district?: string;
+
+  @IsString()
+  @IsOptional()
+  photoBase64?: string;
 }
 
 export class PsychologistLoginDto {
