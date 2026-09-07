@@ -49,7 +49,7 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
       onAdded();
       onClose();
     } catch {
-      setError("Xatolik yuz berdi. Qayta urinib ko'ring.");
+      setError("An error occurred. Please try again.");
       setSaving(false);
     }
   }
@@ -61,8 +61,8 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
         <div className="atm-header">
           <div className="atm-header__icon">➕</div>
           <div>
-            <div className="atm-header__title">Ichki nazoratga qo'shish</div>
-            <div className="atm-header__sub">Ma'lumotlarni kiriting</div>
+            <div className="atm-header__title">Add to Monitoring</div>
+            <div className="atm-header__sub">Enter student details</div>
           </div>
           <button className="atm-close" type="button" onClick={onClose}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -75,13 +75,13 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
 
           {/* Sinf */}
           <div className="atm-field">
-            <label className="atm-label">Sinf <span className="atm-req">*</span></label>
+            <label className="atm-label">Class <span className="atm-req">*</span></label>
             <select
               className="atm-select"
               value={grade}
               onChange={e => setGrade(e.target.value)}
             >
-              <option value="">Sinfni tanlang</option>
+              <option value="">Select a class</option>
               {classes.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -90,10 +90,10 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
 
           {/* Ism familiya */}
           <div className="atm-field">
-            <label className="atm-label">Ism va familiya <span className="atm-req">*</span></label>
+            <label className="atm-label">Full Name <span className="atm-req">*</span></label>
             <input
               className="atm-input"
-              placeholder="Masalan: Akbar Toshmatov"
+              placeholder="e.g. Akbar Toshmatov"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
             />
@@ -101,10 +101,10 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
 
           {/* Sabab */}
           <div className="atm-field">
-            <label className="atm-label">Sabab</label>
+            <label className="atm-label">Reason</label>
             <textarea
               className="atm-textarea"
-              placeholder="Nima uchun nazoratga olinayotganini yozing..."
+              placeholder="Describe why this student is being placed under monitoring..."
               value={reason}
               onChange={e => setReason(e.target.value)}
               rows={3}
@@ -115,10 +115,10 @@ export function AddToMonitorModal({ onClose, onAdded }: Props) {
 
           <div className="atm-actions">
             <button type="button" className="atm-btn atm-btn--cancel" onClick={onClose}>
-              Bekor qilish
+              Cancel
             </button>
             <button type="submit" className="atm-btn atm-btn--submit" disabled={!canSubmit}>
-              {saving ? "Qo'shilmoqda..." : "➕ Nazoratga qo'shish"}
+              {saving ? "Adding..." : "➕ Add to Monitoring"}
             </button>
           </div>
         </form>

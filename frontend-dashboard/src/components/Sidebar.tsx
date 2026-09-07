@@ -111,16 +111,16 @@ function IconLogout() {
 }
 
 const NAV_ITEMS = [
-  { to: '/',              Icon: IconDashboard,  label: 'Bosh sahifa' },
-  { to: '/students',      Icon: IconStudents,   label: "O'quvchilar" },
-  { to: '/risks',         Icon: IconRisk,       label: 'Risklar' },
-  { to: '/permissions',   Icon: IconAccess,     label: "Mashg'ulotga ruhsat" },
-  { to: '/reports',       Icon: IconReports,    label: 'Hisobotlar' },
-  { to: '/work-journal',  Icon: IconJournal,    label: 'Ish jurnali' },
-  { to: '/recommendations', Icon: IconRecommend, label: 'Tavsiyalar' },
-  { to: '/monitored',      Icon: IconMonitor,   label: 'Ichki nazorat' },
-  { to: '/settings',      Icon: IconSettings,   label: 'Sozlamalar' },
-  { to: '/help',          Icon: IconHelp,       label: 'Yordam' },
+  { to: '/',              Icon: IconDashboard,  label: 'Dashboard' },
+  { to: '/students',      Icon: IconStudents,   label: 'Students' },
+  { to: '/risks',         Icon: IconRisk,       label: 'Risks' },
+  { to: '/permissions',   Icon: IconAccess,     label: 'Class Access' },
+  { to: '/reports',       Icon: IconReports,    label: 'Reports' },
+  { to: '/work-journal',  Icon: IconJournal,    label: 'Work Journal' },
+  { to: '/recommendations', Icon: IconRecommend, label: 'Recommendations' },
+  { to: '/monitored',      Icon: IconMonitor,   label: 'Monitoring' },
+  { to: '/settings',      Icon: IconSettings,   label: 'Settings' },
+  { to: '/help',          Icon: IconHelp,       label: 'Help' },
 ];
 
 export function Sidebar() {
@@ -139,8 +139,8 @@ export function Sidebar() {
           </svg>
         </div>
         <div>
-          <div className="sidebar__brand-title">AI PSIXOLOG</div>
-          <div className="sidebar__brand-subtitle">Psixolog kabineti</div>
+          <div className="sidebar__brand-title">AI PSYCHOLOGIST</div>
+          <div className="sidebar__brand-subtitle">Psychologist Dashboard</div>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ export function Sidebar() {
       <div className="sidebar__footer">
         <button className="sidebar__theme-toggle" onClick={toggleTheme} type="button">
           {theme === 'dark' ? <IconSun /> : <IconMoon />}
-          <span>{theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}</span>
+          <span>{theme === 'dark' ? "Light Mode" : "Dark Mode"}</span>
         </button>
 
         <div className="sidebar__user-row">
@@ -179,10 +179,10 @@ export function Sidebar() {
             {(user?.fullName ?? 'P')[0].toUpperCase()}
           </div>
           <div className="sidebar__user-info">
-            <div className="sidebar__user-name">{user?.fullName ?? 'Psixolog'}</div>
-            <div className="sidebar__user-role">Psixolog</div>
+            <div className="sidebar__user-name">{user?.fullName ?? 'Psychologist'}</div>
+            <div className="sidebar__user-role">Psychologist</div>
           </div>
-          <button className="sidebar__logout-btn" onClick={logout} type="button" title="Chiqish">
+          <button className="sidebar__logout-btn" onClick={logout} type="button" title="Sign Out">
             <IconLogout />
           </button>
         </div>

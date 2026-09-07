@@ -29,7 +29,7 @@ export function Risks() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -51,7 +51,7 @@ export function Risks() {
   return (
     <div className="dashboard">
       <Topbar
-        title="Risklar"
+        title="Risks"
         school={school}
         district={district}
         date={date}
@@ -60,16 +60,16 @@ export function Risks() {
         onDateChange={setDate}
       />
 
-      {loading && <p className="muted">Yuklanmoqda...</p>}
+      {loading && <p className="muted">Loading...</p>}
       {error && <p className="error">{error}</p>}
 
       {overview && (
         <div className="card">
           <div className="card__header-row">
-            <h2>Xavf darajalari ({filtered.length})</h2>
+            <h2>Risk Levels ({filtered.length})</h2>
             <input
               className="topbar__input search-input"
-              placeholder="Ism bo'yicha qidirish..."
+              placeholder="Search by name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -84,24 +84,24 @@ export function Risks() {
                 style={level === lvl ? { background: 'var(--color-hover)', borderColor: 'var(--color-accent)' } : undefined}
                 onClick={() => setLevel(lvl)}
               >
-                {lvl === 'all' ? 'Hammasi' : LEVEL_LABELS[lvl]}
+                {lvl === 'all' ? 'All' : LEVEL_LABELS[lvl]}
               </button>
             ))}
           </div>
 
           {filtered.length === 0 ? (
-            <p className="muted">O'quvchilar topilmadi</p>
+            <p className="muted">No students found</p>
           ) : (
             <>
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>№</th>
-                    <th>O'quvchi</th>
-                    <th>Sinf</th>
-                    <th>Daraja</th>
-                    <th>AI tahlili</th>
-                    <th>Sana</th>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Level</th>
+                    <th>AI Analysis</th>
+                    <th>Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -128,10 +128,10 @@ export function Risks() {
                     disabled={currentPage === 1}
                     onClick={() => setPage(currentPage - 1)}
                   >
-                    ← Oldingi
+                    ← Previous
                   </button>
                   <span className="pagination__info">
-                    {currentPage} / {totalPages} ({filtered.length} ta)
+                    {currentPage} / {totalPages} ({filtered.length} total)
                   </span>
                   <button
                     type="button"
@@ -139,7 +139,7 @@ export function Risks() {
                     disabled={currentPage === totalPages}
                     onClick={() => setPage(currentPage + 1)}
                   >
-                    Keyingi →
+                    Next →
                   </button>
                 </div>
               )}

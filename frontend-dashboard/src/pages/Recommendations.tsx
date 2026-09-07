@@ -28,148 +28,142 @@ interface Section {
 const SECTIONS: Section[] = [
   {
     level: 'danger',
-    label: 'YUQORI XAVF GURUHI',
+    label: 'HIGH RISK GROUP',
     labelColor: '#dc2626',
     labelBg: '#fee2e2',
     borderColor: '#dc2626',
     headBg: 'linear-gradient(135deg,#fef2f2 0%,#fff5f5 100%)',
     intro:
-      'Jahon tadqiqotlari (WHO, APA, UNODC) ko\'rsatishicha, yuqori xavf guruhidagi o\'quvchilar tezkor, ko\'p qatlamli psixologik yordam olmasa, jinoyatchilik va deviant xulq-atvor ehtimoli 3–5 barobar yuqori bo\'ladi. Quyidagi aralashuvlar ilmiy jihatdan tasdiqlangan (evidence-based).',
-    warning: 'Bu guruhda faqat maslahatlashuv yetarli emas — har bir bolaga individual holda yondashish va muntazam kuzatuv majburiy.',
+      'Global research (WHO, APA, UNODC) shows that students in the high-risk group are 3–5 times more likely to engage in delinquent or deviant behavior without prompt, multi-layered psychological support. The following interventions are evidence-based.',
+    warning: 'Counseling alone is not sufficient for this group — individualized attention and regular monitoring are mandatory for every student.',
     actions: [
       {
         icon: '🧠',
-        title: 'Multisistemli terapiya (MST)',
+        title: 'Multisystemic Therapy (MST)',
         detail:
-          'Dunyo bo\'yicha jinoyatchilikni oldini olishda №1 sifatida tan olingan usul (Henggeler, 1998). Bola, oila, maktab va tengdoshlar bilan bir vaqtda ishlaydi. Haftalik 3–5 seans, 3–5 oy davomida. Recidivizmni 25–70% ga kamaytiradi.',
+          'Recognized globally as the #1 method for crime prevention (Henggeler, 1998). Works simultaneously with the child, family, school, and peers. 3–5 sessions per week over 3–5 months. Reduces recidivism by 25–70%.',
       },
       {
         icon: '👨‍👩‍👧',
-        title: 'Oila bilan majburiy suhbat',
+        title: 'Mandatory Family Meeting',
         detail:
-          'O\'quvchi xulq-atvorining 60–70% uy muhiti bilan bog\'liq (Farrington, 2003). Ota-onani chaqirib, xavf omillari, uy ichidagi munosabatlar, nazorat darajasi muhokama qilinadi. Ota-onaga ham psixologik yordam tavsiya etiladi.',
+          '60–70% of a student\'s behavior is linked to the home environment (Farrington, 2003). Parents are invited to discuss risk factors, family dynamics, and supervision levels. Psychological support is also recommended for parents.',
       },
       {
         icon: '📋',
-        title: 'Kognitiv-xulqiy terapiya (CBT)',
+        title: 'Cognitive Behavioral Therapy (CBT)',
         detail:
-          '40+ mamlakatda tasdiqlangan (Meta-analiz: Lipsey, 2009). Agressiya, impulsivlik va noto\'g\'ri fikrlash shakllarini o\'zgartiradi. Guruhda yoki individual 12–16 seans. Zo\'ravonlik va antisosial xulqni 30–50% kamaytiradi.',
+          'Validated in 40+ countries (Meta-analysis: Lipsey, 2009). Targets aggression, impulsivity, and distorted thinking patterns. 12–16 individual or group sessions. Reduces violence and antisocial behavior by 30–50%.',
       },
       {
         icon: '🎯',
-        title: 'Individual mentor (Big Brother/Big Sister modeli)',
+        title: 'Individual Mentor (Big Brother/Big Sister Model)',
         detail:
-          'BBBS dasturi (AQSh, Kanada) — har bir yuqori xavfli bolaga katta yoshli ijobiy namuna-mentor biriktiriladi. Haftalik 4 soat. Giyohvand modda ishlatish 46%, zo\'ravonlik 32% kamayadi (Tierney & Grossman, 1995).',
+          'The BBBS program (USA, Canada) pairs each high-risk student with a positive adult role model. 4 hours per week. Drug use down 46%, violence down 32% (Tierney & Grossman, 1995).',
       },
       {
         icon: '🚨',
-        title: 'Sinf rahbari va mahalla bilan koordinatsiya',
+        title: 'Coordination with Class Teacher and Community Inspector',
         detail:
-          'Bolaning maktab, uy va ko\'cha muhiti birgalikda nazorat qilinmasa, terapiya samara bermaydi. Psixolog, sinf rahbari va mahalla inspektori oyiga kamida 1 marta ma\'lumot almashishi shart.',
+          'Therapy is ineffective if the student\'s school, home, and community environments are not monitored together. The psychologist, class teacher, and community inspector must share information at least once a month.',
       },
       {
         icon: '📊',
-        title: 'Oylik dinamika kuzatuvi',
+        title: 'Monthly Progress Monitoring',
         detail:
-          'Har oy qayta baholash: SDQ, Buss-Perry yoki psixolog kuzatuvi orqali xulq-atvor o\'zgarishini o\'lchash. Yaxshilanmasa — intensivlikni oshirish yoki ixtisoslashtirilgan muassasaga yo\'naltirish.',
+          'Monthly re-assessment using SDQ, Buss-Perry, or psychologist observation to track behavioral change. If no improvement — increase intervention intensity or refer to a specialized institution.',
       },
     ],
     programs: [
       {
         name: 'Multisystemic Therapy (MST)',
         source: 'Henggeler et al., 1998 · APA Division 53',
-        desc: 'Jinoyat recidivizmini 25–70% kamaytiradi. 50+ mamlakatda qo\'llaniladi.',
+        desc: 'Reduces criminal recidivism by 25–70%. Applied in 50+ countries.',
       },
       {
         name: 'Functional Family Therapy (FFT)',
-        source: 'Alexander & Parsons, 1973 · OJJDP tasdiqlangan',
-        desc:
-          'Oiladagi munosabat modellarini tiklaydi. 60% bola keyingi jinoyatga qaytmaydi.',
+        source: 'Alexander & Parsons, 1973 · OJJDP Approved',
+        desc: 'Restores family relationship patterns. 60% of youth do not reoffend.',
       },
       {
         name: 'Aggression Replacement Training (ART)',
-        source: 'Goldstein, 1987 · 30 mamlakatda qo\'llaniladi',
-        desc:
-          'Agressiya, axloqiy muhokama va ijtimoiy ko\'nikmalar — 3 blokli kurs, 10 hafta.',
+        source: 'Goldstein, 1987 · Used in 30 countries',
+        desc: 'Aggression, moral reasoning, and social skills — 3-block course, 10 weeks.',
       },
       {
         name: 'Positive Behavioral Interventions (PBIS)',
-        source: 'OSEP Technical Assistance Center, AQSh',
-        desc:
-          'Maktab muhitini butunlay restrukturizatsiya qilish. Intizom muammolarini 60% kamaytiradi.',
+        source: 'OSEP Technical Assistance Center, USA',
+        desc: 'Full restructuring of the school environment. Reduces discipline problems by 60%.',
       },
     ],
   },
   {
     level: 'attention',
-    label: 'O\'RTA XAVF GURUHI',
+    label: 'MEDIUM RISK GROUP',
     labelColor: '#d97706',
     labelBg: '#fef3c7',
     borderColor: '#f59e0b',
     headBg: 'linear-gradient(135deg,#fffbeb 0%,#fefce8 100%)',
     intro:
-      'O\'rta xavf guruhidagi o\'quvchilar hali yuqori xavfga o\'tib ketmagan — bu eng samarali aralashuv oynasi. Tadqiqotlar (Catalano & Hawkins, 1996) ko\'rsatadiki, bu bosqichda to\'g\'ri yondashuv yuqori xavfga o\'tish ehtimolini 70% gacha kamaytiradi.',
+      'Students in the medium-risk group have not yet escalated to high risk — this is the most effective window for intervention. Research (Catalano & Hawkins, 1996) shows that the right approach at this stage can reduce the probability of escalation by up to 70%.',
     actions: [
       {
         icon: '💬',
-        title: 'Guruhli ijtimoiy ko\'nikmalar treningi',
+        title: 'Group Social Skills Training',
         detail:
-          'Tengdoshlar bilan munosabat, nizolarni tinch hal qilish, his-tuyg\'ularni boshqarish. Haftada 1 marta, 45 daqiqa, 8–12 hafta. PATHS, Second Step kabi dasturlar asosida (Durlak, 2011).',
+          'Peer relationships, peaceful conflict resolution, emotional regulation. Once a week, 45 minutes, for 8–12 weeks. Based on programs such as PATHS and Second Step (Durlak, 2011).',
       },
       {
         icon: '📚',
-        title: 'Dars jarayonida qo\'shimcha qo\'llab-quvvatlash',
+        title: 'Additional Academic Support',
         detail:
-          'O\'quv qiyinchiliklari ko\'pincha deviant xulqning asl sababi (Maguin & Loeber, 1996). Riyoziyot, ona tili bo\'yicha qo\'shimcha darslar yoki tutor ajratish. Natija: o\'qish ko\'rsatkichi + xulq yaxshilanadi.',
+          'Academic difficulties are often the root cause of deviant behavior (Maguin & Loeber, 1996). Extra math and language classes or a tutor. Result: improved academic performance and behavior.',
       },
       {
         icon: '🌱',
-        title: 'Ijobiy faoliyatga jalb etish',
+        title: 'Engagement in Positive Activities',
         detail:
-          'Sport seksiyasi, san\'at, musiqa, ixtiyoriy mehnat — bo\'sh vaqtni tuzilmalashtirish. Bo\'sh vaqt deviant guruhlar bilan aloqaning asosiy sababi (Osgood, 1999). Har bir bola haftasiga kamida 1 to\'garakda bo\'lishi maqsadga muvofiq.',
+          'Sports, art, music, volunteering — structuring free time. Unstructured free time is the primary driver of connection with deviant peer groups (Osgood, 1999). Each student should participate in at least one extracurricular activity per week.',
       },
       {
         icon: '👀',
-        title: 'Tengdoshlar guruhini kuzatish',
+        title: 'Peer Group Monitoring',
         detail:
-          'Kimlar bilan do\'stlashayotgani — eng muhim xavf omili (Dishion & Dodge, 2005). Antisosial tengdosh guruhiga kirsa, o\'rtacha xavf 6 oyda yuqori xavfga o\'tishi mumkin. Sinf rahbari bilan muntazam ma\'lumot almashuvi kerak.',
+          'Who a student associates with is the most critical risk factor (Dishion & Dodge, 2005). If a student joins an antisocial peer group, medium risk can escalate to high risk within 6 months. Regular information exchange with the class teacher is essential.',
       },
       {
         icon: '🤝',
-        title: 'Ota-onani mustahkamlash (Parenting Programs)',
+        title: 'Parent Strengthening (Parenting Programs)',
         detail:
-          'Incredible Years, Triple P kabi dasturlar asosida ota-onaga ijobiy intizom usullarini o\'rgatish. Ota-onani o\'qitish bolaning xulqini 40% yaxshilaydi (Webster-Stratton, 2001).',
+          'Teaching parents positive discipline techniques based on Incredible Years, Triple P, etc. Parenting training improves children\'s behavior by 40% (Webster-Stratton, 2001).',
       },
       {
         icon: '📅',
-        title: 'Chorakda bir marta psixologik baholash',
+        title: 'Quarterly Psychological Assessment',
         detail:
-          'SDQ yoki o\'xshash asbob bilan har 3 oyda holat tekshiriladi. Yaxshilanmasa — yuqori xavfga o\'tkazib, intensiv aralashuvga yo\'naltirish. Yaxshilansa — nazorat davom ettiriladi.',
+          'Status is reviewed every 3 months using the SDQ or a similar tool. If no improvement — escalate to high-risk intervention. If improved — monitoring continues.',
       },
     ],
     programs: [
       {
         name: 'Second Step (Social-Emotional Learning)',
-        source: 'Committee for Children · 70+ mamlakatda',
-        desc: 'Ijtimoiy-emotional ko\'nikmalar. Agressiv xulqni 46% kamaytiradi.',
+        source: 'Committee for Children · 70+ countries',
+        desc: 'Social-emotional skills. Reduces aggressive behavior by 46%.',
       },
       {
         name: 'PATHS (Promoting Alternative Thinking Strategies)',
         source: 'Greenberg & Kusche, 1993 · Blueprints Model',
-        desc:
-          'Maktabda his-tuyg\'ularni tartibga solish va muammolarni hal qilish ko\'nikmalari.',
+        desc: 'Emotional regulation and problem-solving skills in school settings.',
       },
       {
         name: 'Life Skills Training (LST)',
-        source: 'Botvin, 1984 · NIDA tasdiqlangan',
-        desc:
-          'Giyohvand moddalar, zo\'ravonlik va ijtimoiy bosimga qarshilik. 75% samaradorlik.',
+        source: 'Botvin, 1984 · NIDA Approved',
+        desc: 'Resistance to drugs, violence, and peer pressure. 75% effectiveness rate.',
       },
       {
         name: 'Triple P (Positive Parenting Program)',
-        source: 'Sanders, 1999 · 25 mamlakatda',
-        desc:
-          'Ota-onalar uchun. Bolalar xulq muammolarini 30–40% kamaytiradi.',
+        source: 'Sanders, 1999 · 25 countries',
+        desc: 'For parents. Reduces children\'s behavioral problems by 30–40%.',
       },
     ],
   },
@@ -179,9 +173,9 @@ export function Recommendations() {
   return (
     <div className="dashboard">
       <div className="topbar">
-        <h1 className="topbar__title">Tavsiyalar</h1>
+        <h1 className="topbar__title">Recommendations</h1>
         <p className="rec-subtitle">
-          Jinoyatchilik va deviant xulqni barvaqt oldini olish — ilmiy asoslangan amaliyotlar
+          Early prevention of delinquency and deviant behavior — evidence-based practices
         </p>
       </div>
 
@@ -189,11 +183,11 @@ export function Recommendations() {
       <div className="rec-intro-card">
         <div className="rec-intro-icon">🌍</div>
         <div>
-          <h3 className="rec-intro-title">Dunyo tajribasiga asoslangan yondashuv</h3>
+          <h3 className="rec-intro-title">An Approach Based on Global Evidence</h3>
           <p className="rec-intro-text">
-            Quyidagi tavsiyalar WHO, UNODC, APA va Blueprints for Healthy Youth Development
-            ma'lumotlar bazasida tasdiqlangan dasturlar asosida tuzilgan. Har bir tavsiya kamida
-            bitta nazorat tadqiqoti (RCT) bilan isbotlangan.
+            The following recommendations are based on programs validated by WHO, UNODC, APA,
+            and the Blueprints for Healthy Youth Development database. Each recommendation is
+            supported by at least one randomized controlled trial (RCT).
           </p>
           <div className="rec-intro-sources">
             <span className="rec-source-chip">WHO 2023</span>
@@ -229,7 +223,7 @@ export function Recommendations() {
 
           {/* Amaliy tavsiyalar */}
           <div className="rec-section__body">
-            <h3 className="rec-group-title">Amaliy aralashuvlar</h3>
+            <h3 className="rec-group-title">Practical Interventions</h3>
             <div className="rec-actions-grid">
               {sec.actions.map((a, i) => (
                 <div
@@ -246,7 +240,7 @@ export function Recommendations() {
 
             {/* Dasturlar */}
             <h3 className="rec-group-title" style={{ marginTop: 28 }}>
-              Ilmiy asoslangan dasturlar (Evidence-Based Programs)
+              Evidence-Based Programs
             </h3>
             <div className="rec-programs-list">
               {sec.programs.map((p, i) => (
@@ -268,12 +262,12 @@ export function Recommendations() {
       <div className="rec-conclusion">
         <div className="rec-conclusion__icon">📌</div>
         <div>
-          <h3>Eslatma</h3>
+          <h3>Note</h3>
           <p>
-            Hech qanday dastur yoki tavsiya bir marta qo'llanilganda to'liq natija bermaydi.
-            Muntazamlik, oila ishtirok etishi va maktab-psixolog-mahalla hamkorligi — muvaffaqiyatning
-            asosiy shartidir. Og'ir hollarda ixtisoslashtirilgan klinik psixolog yoki psixiatristga
-            yo'naltirish zarur.
+            No program or recommendation delivers full results when applied only once.
+            Consistency, family involvement, and school-psychologist-community collaboration
+            are the key conditions for success. In severe cases, referral to a specialized
+            clinical psychologist or psychiatrist is necessary.
           </p>
         </div>
       </div>

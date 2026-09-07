@@ -17,7 +17,7 @@ export function Settings() {
   return (
     <div className="dashboard">
       <div className="topbar">
-        <h1 className="topbar__title">Sozlamalar</h1>
+        <h1 className="topbar__title">Settings</h1>
       </div>
 
       <div className="settings-profile-banner">
@@ -25,7 +25,7 @@ export function Settings() {
         <div>
           <div className="settings-profile-name">{user?.fullName}</div>
           <div className="settings-profile-meta">
-            {user?.schoolName || 'Maktab kiritilmagan'} · {user?.district || 'Tuman kiritilmagan'}
+            {user?.schoolName || 'School not set'} · {user?.district || 'District not set'}
           </div>
         </div>
       </div>
@@ -35,8 +35,8 @@ export function Settings() {
           <div className="settings-card__header">
             <span className="settings-card__icon">🎨</span>
             <div>
-              <h2>Ko'rinish</h2>
-              <p className="settings-card__subtitle">Sayt ko'rinishini tanlang</p>
+              <h2>Appearance</h2>
+              <p className="settings-card__subtitle">Choose the site theme</p>
             </div>
           </div>
           <div className="settings-theme-options">
@@ -46,7 +46,7 @@ export function Settings() {
               onClick={() => theme === 'dark' && toggleTheme()}
             >
               <span className="settings-theme-option__icon">☀️</span>
-              <span>Yorug' rejim</span>
+              <span>Light Mode</span>
             </button>
             <button
               type="button"
@@ -54,7 +54,7 @@ export function Settings() {
               onClick={() => theme === 'light' && toggleTheme()}
             >
               <span className="settings-theme-option__icon">🌙</span>
-              <span>Qorong'u rejim</span>
+              <span>Dark Mode</span>
             </button>
           </div>
         </div>

@@ -18,7 +18,7 @@ export function Reports() {
     api
       .get('/dashboard/overview', { params: { school, district, date } })
       .then(({ data }) => setOverview(data))
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
   }, [school, district, date]);
 
@@ -31,7 +31,7 @@ export function Reports() {
       });
 
       const today = new Date().toISOString().slice(0, 10);
-      const filename = `Hisobot_${school}_${today}.docx`;
+      const filename = `Report_${school}_${today}.docx`;
 
       const url = URL.createObjectURL(new Blob([response.data], {
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -42,7 +42,7 @@ export function Reports() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      alert("Word hujjat yaratishda xatolik yuz berdi. Qaytadan urinib ko'ring.");
+      alert("Failed to generate Word document. Please try again.");
     } finally {
       setWordLoading(false);
     }
@@ -51,7 +51,7 @@ export function Reports() {
   return (
     <div className="dashboard">
       <Topbar
-        title="Hisobotlar"
+        title="Reports"
         school={school}
         district={district}
         date={date}
@@ -60,16 +60,15 @@ export function Reports() {
         onDateChange={setDate}
       />
 
-      {loading && <p className="muted">Yuklanmoqda...</p>}
+      {loading && <p className="muted">Loading...</p>}
       {error && <p className="error">{error}</p>}
 
       {overview && (
         <>
           <div className="card placeholder-card">
-            <h3>📊 Excel hisoboti</h3>
+            <h3>📊 Excel Report</h3>
             <p className="muted">
-              {date ? `${formatDate(date)} sanasi` : 'Barcha sanalar'} bo'yicha natijalarni Excel
-              formatida yuklab oling.
+              Download results {date ? `for ${formatDate(date)}` : 'for all dates'} in Excel format.
             </p>
             <button
               type="button"
@@ -77,16 +76,15 @@ export function Reports() {
               disabled={overview.students.length === 0}
               onClick={() => exportOverviewToExcel(overview, date)}
             >
-              ⬇️ Excel formatda yuklab olish
+              ⬇️ Download Excel
             </button>
           </div>
 
           <div className="card placeholder-card" style={{ marginTop: 16 }}>
-            <h3>📄 Rasmiy Word hisoboti</h3>
+            <h3>📄 Official Word Report</h3>
             <p className="muted" style={{ marginBottom: 12 }}>
-              So'nggi 6 oy davomida <strong>{school}</strong>da olib borilgan ishlar bo'yicha
-              rasmiy hisobot — AI tahlili, yuqori xavf guruhi, psixolog ish jurnali va
-              tavsiyalar bilan. Word (.docx) formatda yuklab olinadi.
+              Official report for the last 6 months at <strong>{school}</strong> — includes AI analysis,
+              high-risk group, psychologist work journal, and recommendations. Downloaded as Word (.docx).
             </p>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
               <button
@@ -96,15 +94,15 @@ export function Reports() {
                 disabled={wordLoading || overview.students.length === 0}
                 onClick={handleWordDownload}
               >
-                {wordLoading ? '⏳ Yaratilmoqda...' : '📝 Word hujjat yuklab olish'}
+                {wordLoading ? '⏳ Generating...' : '📝 Download Word Document'}
               </button>
               <span className="muted" style={{ fontSize: 13 }}>
-                Hisobot: {district}, {school} • Oxirgi 6 oy
+                Report: {district}, {school} • Last 6 months
               </span>
             </div>
             {overview.students.length === 0 && (
               <p className="muted" style={{ marginTop: 8, fontSize: 13, color: 'var(--color-danger)' }}>
-                Ma'lumot yo'q — avval test natijalarini kiriting.
+                No data — please enter test results first.
               </p>
             )}
           </div>

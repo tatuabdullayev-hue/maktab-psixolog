@@ -7,11 +7,11 @@ interface StudentType {
 }
 
 const FALLBACK_TYPES: StudentType[] = [
-  { emoji: '🤝', title: "Do'stsevar", desc: "Atrofingilar bilan munosabating zo'r — bunday odamlar har joyda o'zini topadi!" },
-  { emoji: '🧠', title: 'Aqlli', desc: "Vaziyatlarni to'g'ri o'qiy olasiz — bu katta ustunlik!" },
-  { emoji: '☀️', title: 'Ijobiy', desc: 'Sendagi energiya atrofingilarni ham quvontiradi. Shunday davom et!' },
-  { emoji: '🦁', title: 'Kuchli ruh', desc: "Senda boshqalar yo'qolsin degan iroda bor — uni to'g'ri yo'naltirsang, hamma seni kuzatadi!" },
-  { emoji: '🎨', title: 'Sezgir ijodkor', desc: "Sen narsalarni boshqalar ko'rmaydigan tarzda his qilasiz — bu kamdan-kam uchraydigan sovg'a!" },
+  { emoji: '🤝', title: 'Social', desc: "You connect well with others — people like you find their place everywhere!" },
+  { emoji: '🧠', title: 'Analytical', desc: "You read situations accurately — that's a huge advantage!" },
+  { emoji: '☀️', title: 'Positive', desc: 'Your energy lifts everyone around you. Keep it up!' },
+  { emoji: '🦁', title: 'Strong Spirit', desc: "You have determination that others lack — channel it right and everyone will notice!" },
+  { emoji: '🎨', title: 'Creative Soul', desc: "You feel things others don't see — that's a rare gift!" },
 ];
 
 export function Thanks() {
@@ -45,11 +45,11 @@ export function Thanks() {
     <div className="page page--center thanks-page">
       <div className="thanks-card">
         <div className="thanks-confetti">🎉</div>
-        <h2 className="thanks-title">Barakalla!</h2>
-        <p className="thanks-sub">Sarguzasht yakunlandi. Endi eng qiziq qism...</p>
+        <h2 className="thanks-title">Well Done!</h2>
+        <p className="thanks-sub">The adventure is over. Now for the most exciting part...</p>
 
         <div className="thanks-reveal-label">
-          {counted ? '✨ Sening turning:' : 'Natijang tahlil qilindi...'}
+          {counted ? '✨ Your type:' : 'Analyzing your results...'}
         </div>
 
         <div className={`thanks-reveal${revealed ? ' thanks-reveal--open' : ''}`}>

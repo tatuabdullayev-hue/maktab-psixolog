@@ -1,6 +1,5 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { AccessGate } from './pages/AccessGate';
 import { Register } from './pages/Register';
 import { GameTest } from './pages/GameTest';
 import { ImpulseGame } from './pages/ImpulseGame';
@@ -13,13 +12,13 @@ function AppContent() {
   const { student, loading, error } = useAuth();
 
   if (loading) {
-    return <div className="page page--center">Yuklanmoqda...</div>;
+    return <div className="page page--center">Loading...</div>;
   }
 
   if (error) {
     return (
       <div className="page page--center">
-        <p>Avtorizatsiyada xatolik: {error}</p>
+        <p>Authorization error: {error}</p>
       </div>
     );
   }
@@ -48,13 +47,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AccessGate>
-      <AuthProvider>
-        <HashRouter>
-          <AppContent />
-        </HashRouter>
-      </AuthProvider>
-    </AccessGate>
+    <AuthProvider>
+      <HashRouter>
+        <AppContent />
+      </HashRouter>
+    </AuthProvider>
   );
 }
 

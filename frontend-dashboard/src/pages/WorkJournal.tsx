@@ -6,10 +6,10 @@ import type { Note } from "../components/NoteModal";
 import { useNotifications } from "../context/NotificationContext";
 
 const TYPE_LABELS: Record<string, string> = {
-  student_talk: "O'quvchi bilan suhbat",
-  parent_talk: "Ota-ona bilan suhbat",
-  teacher_talk: "Sinf rahbari bilan suhbat",
-  other: "Boshqa kuzatuv",
+  student_talk: 'Conversation with student',
+  parent_talk: 'Conversation with parents',
+  teacher_talk: 'Conversation with class teacher',
+  other: 'Other observation',
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -36,11 +36,11 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { key: "unattended", icon: "⚠️",  ghost: "⚠️",  label: "Kiritilmagan ishlar",       color: "#dc2626", bg: "#fee2e2" },
-  { key: "inspector",  icon: "📤",  ghost: "📤",  label: "Inspektora yuborildi",       color: "#0369a1", bg: "#e0f2fe" },
-  { key: "student_talk", icon: "💬", ghost: "💬", label: "O'quvchi bilan suhbat",     color: "#6d4ce0", bg: "#ede9fe" },
-  { key: "parent_talk",  icon: "👨‍👩‍👧", ghost: "👥", label: "Ota-ona bilan suhbat",     color: "#d97706", bg: "#fef3c7" },
-  { key: "teacher_talk", icon: "🏫", ghost: "🏫", label: "Sinf rahbari bilan suhbat", color: "#16a34a", bg: "#dcfce7" },
+  { key: "unattended", icon: "⚠️",  ghost: "⚠️",  label: "Unlogged Actions",             color: "#dc2626", bg: "#fee2e2" },
+  { key: "inspector",  icon: "📤",  ghost: "📤",  label: "Referred to Inspector",         color: "#0369a1", bg: "#e0f2fe" },
+  { key: "student_talk", icon: "💬", ghost: "💬", label: "Conversations with Students",   color: "#6d4ce0", bg: "#ede9fe" },
+  { key: "parent_talk",  icon: "👨‍👩‍👧", ghost: "👥", label: "Conversations with Parents",   color: "#d97706", bg: "#fef3c7" },
+  { key: "teacher_talk", icon: "🏫", ghost: "🏫", label: "Conversations with Teachers",   color: "#16a34a", bg: "#dcfce7" },
 ];
 
 interface UnattendedStudent {
@@ -95,7 +95,7 @@ export function WorkJournal() {
     setError(null);
     api.get("/notes", { params: { school, district } })
       .then(({ data }) => setNotes(data))
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
   };
 
@@ -112,7 +112,7 @@ export function WorkJournal() {
   const handleSaved = () => { load(); loadUnattended(); refreshBadge(); };
 
   /* inspector students */
-  const inspectorNotes = notes.filter(n => n.note.includes("Inspektor-psixologga yuborildi"));
+  const inspectorNotes = notes.filter(n => n.note.includes("Referred to inspector-psychologist"));
   const inspectorMap   = new Map<string, Note>();
   for (const n of [...inspectorNotes].reverse()) inspectorMap.set(n.studentId, n);
   const inspectorStudents = Array.from(inspectorMap.values());
@@ -159,17 +159,17 @@ export function WorkJournal() {
       {/* ── header ── */}
       <div className="wj-header">
         <div className="wj-header__left">
-          <h1 className="wj-header__title">Psixolog ish jurnali</h1>
-          <p className="wj-header__sub">Umumiy holat va faoliyat statistikasi</p>
+          <h1 className="wj-header__title">Psychologist Work Journal</h1>
+          <p className="wj-header__sub">Overall status and activity statistics</p>
         </div>
         <div className="wj-topbar">
           <div className="wj-topbar__item">
-            <span className="wj-topbar__label">Maktab</span>
+            <span className="wj-topbar__label">School</span>
             <span className="wj-topbar__val">{school}</span>
           </div>
           <div className="wj-topbar__sep" />
           <div className="wj-topbar__item">
-            <span className="wj-topbar__label">Tuman</span>
+            <span className="wj-topbar__label">District</span>
             <span className="wj-topbar__val">{district}</span>
           </div>
         </div>
@@ -209,14 +209,14 @@ export function WorkJournal() {
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              Ish kiritilmagan o'quvchilar
-              <span className="wj-unattended-badge">{unattended.length} ta</span>
+              Students Without Logged Actions
+              <span className="wj-unattended-badge">{unattended.length}</span>
             </h2>
           </div>
           {unattended.length === 0 ? (
             <div className="wj-unattended-empty">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <p>Barcha yuqori xavfli o'quvchilar uchun ish kiritilgan!</p>
+              <p>All high-risk students have logged actions!</p>
             </div>
           ) : (
             <div className="wj-unattended-list">
@@ -232,27 +232,27 @@ export function WorkJournal() {
                     <span className="wj-unattended-item__name">{s.fullName}</span>
                     {s.className && <span className="wj-unattended-item__class">{s.className}</span>}
                   </button>
-                  <span className="wj-unattended-item__risk">Yuqori xavf</span>
+                  <span className="wj-unattended-item__risk">High Risk</span>
                   <button
                     type="button"
                     className="wj-unattended-item__btn"
                     onClick={() => setNoteTarget({ id: s.studentId, name: s.fullName, className: s.className })}
-                  >+ Ish qo'shish</button>
+                  >+ Add Action</button>
                   <button
                     type="button"
                     className="wj-unattended-item__btn wj-unattended-item__btn--finish"
                     onClick={async () => {
-                      if (!window.confirm(`${s.fullName} bilan ish yakunlandimi?`)) return;
+                      if (!window.confirm(`Mark work with ${s.fullName} as complete?`)) return;
                       await api.post('/notes', {
                         studentId: s.studentId,
                         type: 'other',
-                        note: "[NAZORAT_CHIQISH] Psixolog tomonidan ish yakunlandi",
-                        nextStep: "Kuzatuv yakunlandi",
+                        note: "Work completed by psychologist",
+                        nextStep: "Monitoring concluded",
                       });
                       loadUnattended();
                       refreshBadge();
                     }}
-                  >✅ Yakunlash</button>
+                  >✅ Complete</button>
                 </div>
               ))}
             </div>
@@ -268,13 +268,13 @@ export function WorkJournal() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
-              Inspektor-psixologga yuborilganlar
-              <span className="wj-unattended-badge" style={{ background: "#0369a1" }}>{inspectorStudents.length} ta</span>
+              Referred to Inspector-Psychologist
+              <span className="wj-unattended-badge" style={{ background: "#0369a1" }}>{inspectorStudents.length}</span>
             </h2>
           </div>
           {inspectorStudents.length === 0 ? (
             <div className="wj-unattended-empty" style={{ color: "#6b7280" }}>
-              <p>Hali hech kim inspektora yuborilmagan.</p>
+              <p>No students have been referred to the inspector yet.</p>
             </div>
           ) : (
             <div className="wj-unattended-list">
@@ -290,13 +290,13 @@ export function WorkJournal() {
                       {cls && <span className="wj-unattended-item__class">{cls}</span>}
                     </div>
                     <span style={{ fontSize: 12, color: "#64748b" }}>{fmtDate(n.createdAt)}</span>
-                    <span className="wj-unattended-item__risk" style={{ background: "#e0f2fe", color: "#0369a1", border: "1px solid #bae6fd" }}>📤 Yuborildi</span>
+                    <span className="wj-unattended-item__risk" style={{ background: "#e0f2fe", color: "#0369a1", border: "1px solid #bae6fd" }}>📤 Referred</span>
                     <button
                       type="button"
                       className="wj-unattended-item__btn"
                       style={{ background: "#0369a1" }}
                       onClick={() => setNoteTarget({ id: n.studentId, name, className: cls })}
-                    >Ish jurnali</button>
+                    >Work Journal</button>
                   </div>
                 );
               })}
@@ -310,12 +310,12 @@ export function WorkJournal() {
         <div className="wj-section">
           <div className="wj-section__header">
             <h2 className="wj-section__title">
-              {filterType === "all" ? "Barcha ishlar" : TYPE_LABELS[filterType]}
-              <span className="wj-count-badge">{filtered.length} ta</span>
+              {filterType === "all" ? "All Actions" : TYPE_LABELS[filterType]}
+              <span className="wj-count-badge">{filtered.length}</span>
             </h2>
             <input
               className="wj-search"
-              placeholder="Ism yoki matn bo'yicha..."
+              placeholder="Search by name or text..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -329,7 +329,7 @@ export function WorkJournal() {
                 <line x1="16" y1="13" x2="8" y2="13"/>
                 <line x1="16" y1="17" x2="8" y2="17"/>
               </svg>
-              <p>Hali hech qanday ish kiritilmagan</p>
+              <p>No actions logged yet</p>
             </div>
           ) : (
             <>
@@ -374,9 +374,9 @@ export function WorkJournal() {
 
               {totalPages > 1 && (
                 <div className="wj-pagination">
-                  <button type="button" className="wj-pagination__btn" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>← Oldingi</button>
-                  <span className="wj-pagination__info">{currentPage} / {totalPages} ({filtered.length} ta)</span>
-                  <button type="button" className="wj-pagination__btn" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>Keyingi →</button>
+                  <button type="button" className="wj-pagination__btn" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>← Previous</button>
+                  <span className="wj-pagination__info">{currentPage} / {totalPages} ({filtered.length} total)</span>
+                  <button type="button" className="wj-pagination__btn" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>Next →</button>
                 </div>
               )}
             </>
@@ -402,7 +402,7 @@ export function WorkJournal() {
               <div className="wj-drawer__avatar">{getInitials(viewStudent.name)}</div>
               <div>
                 <div className="wj-drawer__name">{viewStudent.name}</div>
-                {viewStudent.className && <div className="wj-drawer__class">{viewStudent.className}-sinf</div>}
+                {viewStudent.className && <div className="wj-drawer__class">Grade {viewStudent.className}</div>}
               </div>
               <button type="button" className="wj-drawer__close" onClick={() => setViewStudent(null)}>✕</button>
             </div>
@@ -412,15 +412,15 @@ export function WorkJournal() {
                 className="wj-unattended-item__btn"
                 style={{ fontSize: 13 }}
                 onClick={() => { setViewStudent(null); setNoteTarget({ id: viewStudent.id, name: viewStudent.name, className: viewStudent.className }); }}
-              >+ Ish qo'shish</button>
+              >+ Add Action</button>
             </div>
             <div className="wj-drawer__body">
               {viewLoading ? (
-                <p className="wj-drawer__empty">Yuklanmoqda...</p>
+                <p className="wj-drawer__empty">Loading...</p>
               ) : viewNotes.length === 0 ? (
                 <div className="wj-drawer__empty">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  <p>Bu o'quvchi uchun hali hech qanday ish kiritilmagan</p>
+                  <p>No actions logged for this student yet</p>
                 </div>
               ) : (
                 <div className="wj-drawer__timeline">

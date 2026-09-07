@@ -35,6 +35,7 @@ export function Register() {
 
   const canSubmit = firstName.trim() && lastName.trim() && className;
 
+
   const startCamera = async () => {
     setCameraError(null);
     setStep('camera');
@@ -48,7 +49,7 @@ export function Register() {
         videoRef.current.srcObject = stream;
       }
     } catch {
-      setCameraError('Kameraga ruxsat berilmadi.');
+      setCameraError('Camera access was denied.');
     }
   };
 
@@ -77,12 +78,6 @@ export function Register() {
     startCamera();
   };
 
-  const skipPhoto = () => {
-    stopCamera();
-    setPhotoBase64(null);
-    submitForm(null);
-  };
-
   const confirmAndSubmit = () => {
     submitForm(photoBase64);
   };
@@ -104,9 +99,9 @@ export function Register() {
       navigate('/test');
     } catch (e: any) {
       if (e?.response?.status === 403) {
-        setFormError('Hozircha mashg\'ulot faol emas. Iltimos, keyinroq urinib ko\'ring.');
+        setFormError('Session is not active for your class. Please try again later.');
       } else {
-        setFormError("Ro'yxatdan o'tishda xatolik yuz berdi. Qaytadan urinib ko'ring.");
+        setFormError("Registration failed. Please try again.");
       }
       setStep('form');
     } finally {
@@ -119,8 +114,8 @@ export function Register() {
       <div className="page page--center">
         <div className="card register-card camera-card">
           <div className="register-hero">📷</div>
-          <h1>Rasmga olish</h1>
-          <p className="muted">Yuzingiz ramkada to'liq ko'rinib tursin</p>
+          <h1>Take a Photo</h1>
+          <p className="muted">Make sure your face is fully visible in the frame</p>
 
           {cameraError ? (
             <p className="error">{cameraError}</p>
@@ -133,14 +128,15 @@ export function Register() {
           <canvas ref={canvasRef} style={{ display: 'none' }} />
 
           <div className="camera-actions">
-            {!cameraError && (
+            {cameraError ? (
+              <button className="btn btn-primary" onClick={startCamera}>
+                🔄 Try Again
+              </button>
+            ) : (
               <button className="btn btn-primary" onClick={takePhoto}>
-                📸 Rasm olish
+                📸 Capture
               </button>
             )}
-            <button className="btn btn-secondary" onClick={skipPhoto} disabled={submitting}>
-              O'tkazib yuborish
-            </button>
           </div>
         </div>
       </div>
@@ -152,19 +148,19 @@ export function Register() {
       <div className="page page--center">
         <div className="card register-card camera-card">
           <div className="register-hero">✅</div>
-          <h1>Rasm tayyor</h1>
-          <p className="muted">Shu rasm psixologga yuboriladi</p>
+          <h1>Photo Ready</h1>
+          <p className="muted">This photo will be sent to the psychologist</p>
 
           {photoBase64 && (
-            <img src={photoBase64} alt="Rasm" className="camera-captured" />
+            <img src={photoBase64} alt="Photo" className="camera-captured" />
           )}
 
           <div className="camera-actions">
             <button className="btn btn-primary" onClick={confirmAndSubmit} disabled={submitting}>
-              {submitting ? 'Yuborilmoqda...' : '✅ Tasdiqlash'}
+              {submitting ? 'Submitting...' : '✅ Confirm'}
             </button>
             <button className="btn btn-secondary" onClick={retake} disabled={submitting}>
-              🔄 Qayta olish
+              🔄 Retake
             </button>
           </div>
         </div>
@@ -176,34 +172,33 @@ export function Register() {
     <div className="page page--center">
       <div className="card register-card">
         <div className="register-hero">🧠✨</div>
-        <h1>AI Psixolog</h1>
+        <h1>AI Psychologist</h1>
         <p className="muted">
-          Sizni tushunamiz, sizga yordam beramiz. Boshlashdan oldin o'zingiz haqingizda
-          ma'lumot kiriting.
+          We understand you, we are here to help. Please fill in your details before starting.
         </p>
 
         <label className="field">
-          <span>Ismingiz</span>
+          <span>First Name</span>
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            placeholder="Masalan: Diyorbek"
+            placeholder="e.g. John"
           />
         </label>
 
         <label className="field">
-          <span>Familiyangiz</span>
+          <span>Last Name</span>
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            placeholder="Masalan: Aliyev"
+            placeholder="e.g. Smith"
           />
         </label>
 
         <label className="field">
-          <span>Sinfingiz</span>
+          <span>Class</span>
           <select value={className} onChange={(e) => setClassName(e.target.value)}>
-            <option value="">Sinfni tanlang</option>
+            <option value="">Select your class</option>
             {activeClasses.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -211,19 +206,19 @@ export function Register() {
             ))}
           </select>
           {!classesLoading && activeClasses.length === 0 && (
-            <span className="error">Hozircha hech bir sinf uchun mashg'ulot faol emas</span>
+            <span className="error">No active sessions for any class at this time</span>
           )}
         </label>
 
         <label className="field">
-          <span>Yoshingiz</span>
+          <span>Age</span>
           <input
             type="number"
             min={10}
             max={20}
             value={age}
             onChange={(e) => setAge(e.target.value)}
-            placeholder="Masalan: 15"
+            placeholder="e.g. 15"
           />
         </label>
 
@@ -234,7 +229,7 @@ export function Register() {
           disabled={!canSubmit || submitting}
           onClick={startCamera}
         >
-          Davom etish 📷
+          Continue 📷
         </button>
       </div>
     </div>

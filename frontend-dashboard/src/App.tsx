@@ -20,7 +20,7 @@ function AppContent() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="login-page">Yuklanmoqda...</div>;
+    return <div className="login-page">Loading...</div>;
   }
 
   if (!user) {

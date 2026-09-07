@@ -13,10 +13,10 @@ export interface Note {
 }
 
 export const TYPE_LABELS: Record<string, string> = {
-  student_talk: "O'quvchi bilan suhbat",
-  parent_talk: 'Ota-ona bilan suhbat',
-  teacher_talk: 'Sinf rahbari bilan suhbat',
-  other: 'Boshqa kuzatuv',
+  student_talk: 'Conversation with student',
+  parent_talk: 'Conversation with parents',
+  teacher_talk: 'Conversation with class teacher',
+  other: 'Other observation',
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -66,8 +66,8 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
     await api.post('/notes', {
       studentId,
       type: 'other',
-      note: "Inspektor-psixologga yuborildi — holat nazorat ostiga olindi.",
-      nextStep: 'Inspektor xulosasini kutish',
+      note: "Referred to inspector-psychologist — case placed under monitoring.",
+      nextStep: 'Awaiting inspector assessment',
     });
     load();
     onSaved();
@@ -99,7 +99,7 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
   };
 
   const handleDel = async (id: string) => {
-    if (!window.confirm("O'chirishni tasdiqlaysizmi?")) return;
+    if (!window.confirm("Are you sure you want to delete this?")) return;
     setDelId(id);
     await api.delete(`/notes/${id}`);
     setDelId(null);
@@ -121,21 +121,21 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
           <div className="nm2-avatar">{getInitials(studentName)}</div>
           <div className="nm2-hinfo">
             <div className="nm2-hname">{studentName}</div>
-            {studentClass && <div className="nm2-hclass">{studentClass}-sinf o'quvchisi</div>}
+            {studentClass && <div className="nm2-hclass">Grade {studentClass} student</div>}
           </div>
           <div className="nm2-htag">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-            Ish jurnali
+            Work Journal
           </div>
           {sent ? (
             <div className="nm2-sent-badge">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Yuborildi
+              Sent
             </div>
           ) : (
-            <button className="nm2-send-btn" type="button" onClick={handleSendToInspector} title="Inspektora yuborish">
+            <button className="nm2-send-btn" type="button" onClick={handleSendToInspector} title="Refer to Inspector">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              Inspektora yuborish
+              Refer to Inspector
             </button>
           )}
           <button className="nm2-xbtn" onClick={onClose} type="button">
@@ -174,7 +174,7 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
               <div className="nm2-textarea-box">
                 <textarea
                   className="nm2-textarea"
-                  placeholder="Qilgan ish, kuzatuvlar..."
+                  placeholder="Work done, observations..."
                   value={noteText}
                   onChange={e => setNoteText(e.target.value)}
                   rows={4}
@@ -190,7 +190,7 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
                 <svg className="nm2-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <input
                   className="nm2-input"
-                  placeholder="Keyingi qadam (ixtiyoriy)"
+                  placeholder="Next step (optional)"
                   value={nextStep}
                   onChange={e => setNextStep(e.target.value)}
                 />
@@ -201,18 +201,18 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <button type="submit" className="nm2-savebtn" disabled={saving || !noteText.trim()}>
                 {saving ? (
-                  'Saqlanmoqda...'
+                  'Saving...'
                 ) : (
                   <>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    Saqlash
+                    Save
                   </>
                 )}
               </button>
               {savedMsg && (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#16a34a', fontSize: 13, fontWeight: 600 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Saqlandi! Yana ish qo'shishingiz mumkin.
+                  Saved! You can add another action.
                 </span>
               )}
             </div>
@@ -252,15 +252,15 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
           <div className="nm2-hist-header">
             <div className="nm2-hist-title">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              ISH TARIXI
+              WORK HISTORY
             </div>
-            <div className="nm2-hist-count">{notes.length} ta yozuv</div>
+            <div className="nm2-hist-count">{notes.length} record(s)</div>
           </div>
 
           {notes.length === 0 ? (
             <div className="nm2-empty">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity=".3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              <p>Hali hech qanday ish kiritilmagan</p>
+              <p>No actions logged yet</p>
             </div>
           ) : (
             <div className="nm2-timeline">
@@ -310,7 +310,7 @@ export function NoteModal({ studentId, studentName, studentClass, onClose, onSav
         {/* ── FOOTER ── */}
         <div className="nm2-footer">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Barcha suhbatlar va kuzatuvlar maxfiy saqlanadi.
+          All conversations and observations are stored confidentially.
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft:'auto'}}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
 

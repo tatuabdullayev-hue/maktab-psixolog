@@ -71,16 +71,16 @@ export interface Overview {
 type LevelFilter = 'all' | 'normal' | 'attention' | 'danger';
 
 const FILTER_TITLES: Record<LevelFilter, string> = {
-  all: "Test topshirgan o'quvchilar",
-  normal: 'Past xavf guruhi',
-  attention: "O'rta xavf guruhi",
-  danger: 'Yuqori xavf guruhi',
+  all: "Students who completed the test",
+  normal: 'Low Risk Group',
+  attention: 'Medium Risk Group',
+  danger: 'High Risk Group',
 };
 
 export const LEVEL_LABELS: Record<string, string> = {
-  normal: 'Past xavf',
-  attention: "O'rta xavf",
-  danger: 'Yuqori xavf',
+  normal: 'Low Risk',
+  attention: 'Medium Risk',
+  danger: 'High Risk',
 };
 
 const LEVEL_COLORS: Record<string, string> = {
@@ -99,13 +99,13 @@ function formatShortDate(iso: string) {
 
 export function exportOverviewToExcel(overview: Overview, date: string) {
   const rows = overview.students.map((s, i) => ({
-    '№': i + 1,
-    "O'quvchi": s.fullName,
-    Sinf: s.className,
-    Daraja: LEVEL_LABELS[s.level],
-    "AI tahlili": s.aiInsight ?? '',
-    "AI tavsiyasi": s.aiRecommendation ?? '',
-    Sana: formatDate(s.completedAt),
+    '#': i + 1,
+    'Student': s.fullName,
+    Class: s.className,
+    Level: LEVEL_LABELS[s.level],
+    'AI Analysis': s.aiInsight ?? '',
+    'AI Recommendation': s.aiRecommendation ?? '',
+    Date: formatDate(s.completedAt),
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(rows);
@@ -120,9 +120,9 @@ export function exportOverviewToExcel(overview: Overview, date: string) {
   ];
 
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Hisobot');
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
 
-  const fileName = date ? `hisobot_${date}.xlsx` : 'hisobot_barcha_sanalar.xlsx';
+  const fileName = date ? `report_${date}.xlsx` : 'report_all_dates.xlsx';
   XLSX.writeFile(workbook, fileName);
 }
 
@@ -171,7 +171,7 @@ export function Dashboard() {
     api
       .get('/dashboard/overview', { params })
       .then(({ data }) => setOverview(data))
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
   };
 
@@ -209,7 +209,7 @@ export function Dashboard() {
   return (
     <div className="dashboard">
       <Topbar
-        title="Bosh sahifa"
+        title="Dashboard"
         school={school}
         district={district}
         date={date}
@@ -218,7 +218,7 @@ export function Dashboard() {
         onDateChange={setDate}
       />
 
-      {loading && <p className="muted">Yuklanmoqda...</p>}
+      {loading && <p className="muted">Loading...</p>}
       {error && <p className="error">{error}</p>}
 
       {overview && (
@@ -232,7 +232,7 @@ export function Dashboard() {
               <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--total">👥</div>
               <div className="stat-card__body">
-                <div className="stat-card__label">Jami o'quvchilar</div>
+                <div className="stat-card__label">Total Students</div>
                 <div className="stat-card__value">{overview.total}</div>
               </div>
               <MiniTrend data={trends} dataKey="total" color="#6d4ce0" />
@@ -245,9 +245,9 @@ export function Dashboard() {
               <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--normal">🟢</div>
               <div className="stat-card__body">
-                <div className="stat-card__label">Past xavf</div>
+                <div className="stat-card__label">Low Risk</div>
                 <div className="stat-card__value">{overview.low}</div>
-                <div className="stat-card__pct">jami o'quvchilarning {overview.lowPct}%i</div>
+                <div className="stat-card__pct">{overview.lowPct}% of all students</div>
               </div>
               <MiniTrend data={trends} dataKey="normal" color={LEVEL_COLORS.normal} />
             </button>
@@ -259,9 +259,9 @@ export function Dashboard() {
               <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--attention">🟡</div>
               <div className="stat-card__body">
-                <div className="stat-card__label">O'rta xavf</div>
+                <div className="stat-card__label">Medium Risk</div>
                 <div className="stat-card__value">{overview.medium}</div>
-                <div className="stat-card__pct">jami o'quvchilarning {overview.mediumPct}%i</div>
+                <div className="stat-card__pct">{overview.mediumPct}% of all students</div>
               </div>
               <MiniTrend data={trends} dataKey="attention" color={LEVEL_COLORS.attention} />
             </button>
@@ -273,9 +273,9 @@ export function Dashboard() {
               <span className="stat-card__menu">⋮</span>
               <div className="stat-card__icon stat-card__icon--danger">🔴</div>
               <div className="stat-card__body">
-                <div className="stat-card__label">Yuqori xavf</div>
+                <div className="stat-card__label">High Risk</div>
                 <div className="stat-card__value">{overview.high}</div>
-                <div className="stat-card__pct">jami o'quvchilarning {overview.highPct}%i</div>
+                <div className="stat-card__pct">{overview.highPct}% of all students</div>
               </div>
               <MiniTrend data={trends} dataKey="danger" color={LEVEL_COLORS.danger} />
             </button>
@@ -290,16 +290,16 @@ export function Dashboard() {
                     ? overview.students
                     : overview.students.filter((s) => s.level === selectedLevel);
                 return list.length === 0 ? (
-                  <p className="muted">Bu guruhda o'quvchi yo'q</p>
+                  <p className="muted">No students in this group</p>
                 ) : (
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>O'quvchi</th>
-                        <th>Sinf</th>
-                        <th>Daraja</th>
-                        <th>AI tahlili</th>
-                        <th>Sana</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Level</th>
+                        <th>AI Analysis</th>
+                        <th>Date</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -326,11 +326,11 @@ export function Dashboard() {
           <div className="charts-row">
             <div className="chart-card">
               <div className="chart-card__header">
-                <h2>Risk taqsimoti</h2>
-                <p className="chart-card__subtitle">Barcha o'quvchilar bo'yicha xavf darajalari</p>
+                <h2>Risk Distribution</h2>
+                <p className="chart-card__subtitle">Risk levels across all students</p>
               </div>
               {overview.total === 0 ? (
-                <p className="muted">Ma'lumot yo'q</p>
+                <p className="muted">No data available</p>
               ) : (
                 <div className="risk-distribution">
                   <div className="donut-wrap">
@@ -359,7 +359,7 @@ export function Dashboard() {
                     </ResponsiveContainer>
                     <div className="donut-center">
                       <div className="donut-center__value">{overview.total}</div>
-                      <div className="donut-center__label">jami</div>
+                      <div className="donut-center__label">total</div>
                     </div>
                   </div>
                   <div className="risk-legend-table">
@@ -385,11 +385,11 @@ export function Dashboard() {
 
             <div className="chart-card">
               <div className="chart-card__header">
-                <h2>Sinflar kesimida</h2>
-                <p className="chart-card__subtitle">Har bir sinfdagi xavf darajalari taqsimoti</p>
+                <h2>By Class</h2>
+                <p className="chart-card__subtitle">Risk level distribution per class</p>
               </div>
               {overview.classBreakdown.length === 0 ? (
-                <p className="muted">Ma'lumot yo'q</p>
+                <p className="muted">No data available</p>
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={overview.classBreakdown} barCategoryGap="28%">
@@ -410,43 +410,43 @@ export function Dashboard() {
                       cursor={{ fill: 'rgba(109, 76, 224, 0.06)' }}
                       contentStyle={{ borderRadius: 10, border: '1px solid #ececf3', fontSize: 13 }}
                     />
-                    <Bar dataKey="normal" name="Past" fill={LEVEL_COLORS.normal} stackId="a" radius={[0, 0, 0, 0]} maxBarSize={36} isAnimationActive={false} />
-                    <Bar dataKey="attention" name="O'rta" fill={LEVEL_COLORS.attention} stackId="a" maxBarSize={36} isAnimationActive={false} />
-                    <Bar dataKey="danger" name="Yuqori" fill={LEVEL_COLORS.danger} stackId="a" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false} />
+                    <Bar dataKey="normal" name="Low" fill={LEVEL_COLORS.normal} stackId="a" radius={[0, 0, 0, 0]} maxBarSize={36} isAnimationActive={false} />
+                    <Bar dataKey="attention" name="Medium" fill={LEVEL_COLORS.attention} stackId="a" maxBarSize={36} isAnimationActive={false} />
+                    <Bar dataKey="danger" name="High" fill={LEVEL_COLORS.danger} stackId="a" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
               <div className="chart-legend">
                 <div className="chart-legend__item">
                   <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.normal }} />
-                  <span className="chart-legend__name">Past xavf</span>
+                  <span className="chart-legend__name">Low Risk</span>
                 </div>
                 <div className="chart-legend__item">
                   <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.attention }} />
-                  <span className="chart-legend__name">O'rta xavf</span>
+                  <span className="chart-legend__name">Medium Risk</span>
                 </div>
                 <div className="chart-legend__item">
                   <span className="chart-legend__dot" style={{ background: LEVEL_COLORS.danger }} />
-                  <span className="chart-legend__name">Yuqori xavf</span>
+                  <span className="chart-legend__name">High Risk</span>
                 </div>
               </div>
             </div>
           </div>
 
           {!selectedLevel && <div className="card">
-            <h2>Yuqori xavf guruhi</h2>
+            <h2>High Risk Group</h2>
             {overview.highRiskStudents.length === 0 ? (
-              <p className="muted">Hozircha e'tibor talab qiladigan o'quvchi yo'q</p>
+              <p className="muted">No students requiring attention at this time</p>
             ) : (
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>O'quvchi</th>
-                    <th>Sinf</th>
-                    <th>Daraja</th>
-                    <th>AI tahlili</th>
-                    <th>Oxirgi ish</th>
-                    <th>Sana</th>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Level</th>
+                    <th>AI Analysis</th>
+                    <th>Last Action</th>
+                    <th>Date</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -468,7 +468,7 @@ export function Dashboard() {
                             <span className="note-inline__text">{lastNote.note}</span>
                           </span>
                         ) : (
-                          <span className="muted" style={{ fontSize: 12 }}>Ish kiritilmagan</span>
+                          <span className="muted" style={{ fontSize: 12 }}>No actions logged</span>
                         )}
                       </td>
                       <td>{formatDate(s.completedAt)}</td>
@@ -478,24 +478,24 @@ export function Dashboard() {
                           className="btn-note"
                           onClick={() => setNoteTarget({ id: s.id, name: s.fullName, className: s.className })}
                         >
-                          📝 Ish qo'shish
+                          📝 Add Action
                         </button>
                         <button
                           type="button"
                           className="btn-note btn-note--finish"
                           onClick={async () => {
-                            if (!window.confirm(`${s.fullName} bilan ish yakunlandimi?`)) return;
+                            if (!window.confirm(`Mark work with ${s.fullName} as complete?`)) return;
                             await api.post('/notes', {
                               studentId: s.id,
                               type: 'other',
-                              note: "[NAZORAT_CHIQISH] Psixolog tomonidan ish yakunlandi",
-                              nextStep: "Kuzatuv yakunlandi",
+                              note: "[NAZORAT_CHIQISH] Work completed by psychologist",
+                              nextStep: "Monitoring concluded",
                             });
                             loadOverview();
                             loadNotes();
                           }}
                         >
-                          ✅ Yakunlash
+                          ✅ Complete
                         </button>
                       </td>
                     </tr>
@@ -507,20 +507,20 @@ export function Dashboard() {
           </div>}
 
           <div className="card">
-            <h2>Psixolog ishi jurnali</h2>
-            <p className="chart-card__subtitle">Barcha sanalar bo'yicha qilingan ishlar</p>
+            <h2>Psychologist Work Journal</h2>
+            <p className="chart-card__subtitle">All logged actions across all dates</p>
             {allNotes.length === 0 ? (
-              <p className="muted">Hali hech qanday ish kiritilmagan</p>
+              <p className="muted">No actions logged yet</p>
             ) : (
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Sana</th>
-                    <th>O'quvchi</th>
-                    <th>Sinf</th>
-                    <th>Ish turi</th>
-                    <th>Tavsif</th>
-                    <th>Keyingi qadam</th>
+                    <th>Date</th>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Next Step</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -546,10 +546,9 @@ export function Dashboard() {
           <div className="bottom-cards">
             <AiAdviceCard school={school} district={district} overview={overview} />
             <div className="card placeholder-card">
-              <h3>📄 Hisobot yaratish</h3>
+              <h3>📄 Generate Report</h3>
               <p className="muted">
-                {date ? `${formatDate(date)} sanasi` : 'Barcha sanalar'} bo'yicha
-                natijalarni Excel formatida yuklab oling.
+                Download results {date ? `for ${formatDate(date)}` : 'for all dates'} in Excel format.
               </p>
               <button
                 type="button"
@@ -557,14 +556,14 @@ export function Dashboard() {
                 disabled={overview.students.length === 0}
                 onClick={() => exportOverviewToExcel(overview, date)}
               >
-                ⬇️ Excel formatda yuklab olish
+                ⬇️ Download Excel
               </button>
             </div>
             <div className="card placeholder-card trend-card">
-              <h3>📈 Trendlar</h3>
-              <p className="muted">Oxirgi 14 kunlik dinamika.</p>
+              <h3>📈 Trends</h3>
+              <p className="muted">Last 14 days dynamics.</p>
               {trends.every((t) => t.total === 0) ? (
-                <p className="muted">Ma'lumot yo'q</p>
+                <p className="muted">No data available</p>
               ) : (
                 <ResponsiveContainer width="100%" height={160}>
                   <AreaChart data={trends}>
@@ -615,8 +614,8 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
   const topClass  = [...overview.classBreakdown].sort((a, b) => b.danger - a.danger)[0];
 
   const summary = overview.high === 0
-    ? "Hozircha yuqori xavfli o'quvchi yo'q — holat barqaror."
-    : `${overview.high} ta o'quvchi yuqori xavf guruhida (${dangerPct}%).${topClass?.danger > 0 ? ` Eng ko'p: ${topClass.className} sinfi.` : ''}`;
+    ? "No high-risk students at this time — situation is stable."
+    : `${overview.high} student(s) in the high-risk group (${dangerPct}%).${topClass?.danger > 0 ? ` Highest: Class ${topClass.className}.` : ''}`;
 
   const handleExpand = async () => {
     setExpanded(true);
@@ -626,7 +625,7 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
       const { data } = await api.get('/dashboard/advice', { params: { school, district } });
       setAdvice(data.advice);
     } catch {
-      setAdvice("Tavsiya yuklanmadi. Qayta urinib ko'ring.");
+      setAdvice("Failed to load recommendations. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -644,9 +643,9 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
           <span className="ai-advice-card__robot">🤖</span>
         </div>
         <div className="ai-advice-card__title-block">
-          <span className="ai-advice-card__label">AI Tavsiyalar</span>
+          <span className="ai-advice-card__label">AI Recommendations</span>
           <span className={`ai-advice-card__badge ${isGood ? 'ai-advice-card__badge--good' : 'ai-advice-card__badge--warn'}`}>
-            {isGood ? '✓ Barqaror' : `⚠ ${overview.high} ta xavfli`}
+            {isGood ? '✓ Stable' : `⚠ ${overview.high} at risk`}
           </span>
         </div>
         <button
@@ -654,7 +653,7 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
           className={`ai-advice-card__toggle${expanded ? ' ai-advice-card__toggle--open' : ''}`}
           onClick={expanded ? () => setExpanded(false) : handleExpand}
         >
-          {expanded ? '✕' : 'Batafsil'}
+          {expanded ? '✕' : 'Details'}
         </button>
       </div>
 
@@ -665,7 +664,7 @@ function AiAdviceCard({ school, district, overview }: { school: string; district
           {loading ? (
             <div className="ai-advice-card__loading">
               <span className="ai-advice-card__spinner" />
-              <span>AI tavsiya tayyorlanmoqda…</span>
+              <span>Preparing AI recommendations…</span>
             </div>
           ) : advice ? (
             <ul className="ai-advice-card__list">

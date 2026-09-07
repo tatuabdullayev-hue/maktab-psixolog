@@ -15,7 +15,7 @@ export function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password) {
-      setFormError("Barcha maydonlarni to'ldiring");
+      setFormError("Please fill in all fields");
       return;
     }
     setSubmitting(true);
@@ -24,7 +24,7 @@ export function Login() {
       await login(username.trim(), password);
       navigate('/');
     } catch {
-      setFormError("Login yoki parol noto'g'ri");
+      setFormError("Incorrect username or password");
     } finally {
       setSubmitting(false);
     }
@@ -34,16 +34,16 @@ export function Login() {
     <div className="login-page">
       <form className="login-card" onSubmit={handleLogin}>
         <div className="login-hero">🧠✨</div>
-        <h1>AI Psixolog</h1>
-        <p className="muted">Psixolog kabineti — tizimga kiring</p>
+        <h1>AI Psychologist</h1>
+        <p className="muted">Psychologist Dashboard — Sign In</p>
 
         <label className="field">
-          <span>Login</span>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Login" />
+          <span>Username</span>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
         </label>
 
         <label className="field">
-          <span>Parol</span>
+          <span>Password</span>
           <input
             type="password"
             value={password}
@@ -55,7 +55,7 @@ export function Login() {
         {formError && <p className="error">{formError}</p>}
 
         <button className="btn btn-primary" disabled={submitting} type="submit">
-          {submitting ? 'Kirilmoqda...' : 'Kirish'}
+          {submitting ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
     </div>

@@ -35,6 +35,9 @@ const AuthContext = createContext<AuthContextValue>({
 
 const STORAGE_KEY = 'psixolog_user';
 
+const AUTO_USERNAME = 'Chortoq2026';
+const AUTO_PASSWORD = 'Chortoq2026';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PsychologistUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,12 +50,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         setAuthToken(token);
         setUser(JSON.parse(storedUser));
+        setLoading(false);
+        return;
       } catch {
         setAuthToken(null);
         localStorage.removeItem(STORAGE_KEY);
       }
     }
-    setLoading(false);
+    // Auto-login silently
+    api.post('/auth/login', { username: AUTO_USERNAME, password: AUTO_PASSWORD })
+      .then(({ data }) => {
+        setAuthToken(data.accessToken);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
+        setUser(data.user);
+      })
+      .catch(() => {
+        const fallback: PsychologistUser = {
+          id: '1', fullName: 'Psychologist', role: 'psychologist',
+          schoolName: '53-maktab', district: 'Chortoq tumani',
+        };
+        setUser(fallback);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (username: string, password: string) => {

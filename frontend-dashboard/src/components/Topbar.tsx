@@ -25,7 +25,7 @@ export function Topbar({
       <div className="topbar__filters">
         <span className="topbar__filters-icon">⚙️</span>
         <label className="topbar__field">
-          <span className="topbar__label">Maktab</span>
+          <span className="topbar__label">School</span>
           <div className="topbar__input-wrap">
             <span className="topbar__input-icon">🏫</span>
             <input
@@ -38,7 +38,7 @@ export function Topbar({
         </label>
         <span className="topbar__divider" />
         <label className="topbar__field">
-          <span className="topbar__label">Tuman</span>
+          <span className="topbar__label">District</span>
           <div className="topbar__input-wrap">
             <span className="topbar__input-icon">📍</span>
             <input
@@ -53,7 +53,7 @@ export function Topbar({
           <>
             <span className="topbar__divider" />
             <label className="topbar__field">
-              <span className="topbar__label">Sana</span>
+              <span className="topbar__label">Date</span>
               <div className="topbar__input-wrap">
                 <span className="topbar__input-icon">📅</span>
                 <input

@@ -18,7 +18,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY, 'true');
       setUnlocked(true);
     } else {
-      setError("Login yoki parol noto'g'ri");
+      setError("Incorrect username or password");
     }
   };
 
@@ -26,16 +26,16 @@ export function AccessGate({ children }: { children: ReactNode }) {
     <div className="page page--center">
       <form className="card register-card" onSubmit={handleSubmit}>
         <div className="register-hero">🧠✨</div>
-        <h1>AI Psixolog</h1>
-        <p className="muted">Davom etish uchun kirish kodini kiriting</p>
+        <h1>AI Psychologist</h1>
+        <p className="muted">Enter access credentials to continue</p>
 
         <label className="field">
-          <span>Login</span>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Login" />
+          <span>Username</span>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
         </label>
 
         <label className="field">
-          <span>Parol</span>
+          <span>Password</span>
           <input
             type="password"
             value={password}
@@ -47,7 +47,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
         {error && <p className="error">{error}</p>}
 
         <button className="btn btn-primary" type="submit">
-          Kirish
+          Sign In
         </button>
       </form>
     </div>

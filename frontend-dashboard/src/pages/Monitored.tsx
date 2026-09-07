@@ -35,10 +35,10 @@ function initials(name: string) {
 }
 
 function riskMeta(count: number, manual?: boolean): { label: string; cls: string } {
-  if (manual && count === 0) return { label: "QO'SHILDI", cls: 'manual' };
-  if (count >= 3) return { label: 'YUQORI XAVF', cls: 'high' };
-  if (count >= 2) return { label: "O'RTA XAVF", cls: 'mid' };
-  return { label: 'PAST XAVF', cls: 'low' };
+  if (manual && count === 0) return { label: 'ADDED', cls: 'manual' };
+  if (count >= 3) return { label: 'HIGH RISK', cls: 'high' };
+  if (count >= 2) return { label: 'MEDIUM RISK', cls: 'mid' };
+  return { label: 'LOW RISK', cls: 'low' };
 }
 
 const AVATAR_COLORS = ['#6d4ce0','#e05c4c','#e0a84c','#4cae6d','#4c8ae0','#c04ce0'];
@@ -73,7 +73,7 @@ export function Monitored() {
     setError(null);
     api.get('/dashboard/monitored', { params: { school, district } })
       .then(({ data }) => setStudents(data))
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik yuz berdi"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
     api.get('/dashboard/released-count', { params: { school, district } })
       .then(({ data }) => setReleasedCount(data.count ?? 0))
@@ -108,14 +108,14 @@ export function Monitored() {
         ? s.allInsights[s.allInsights.length - 1].date
         : s.lastDetected);
       return {
-        '№': idx + 1,
-        "F.I.Sh": s.fullName,
-        'Sinf': s.className,
-        'Xavf darajasi': risk.label,
-        'Aniqlangan marta': s.dangerCount,
-        'Oxirgi aniqlangan': fmtDate(s.lastDetected),
-        'Nazoratda (kun)': daysIn,
-        'AI tavsiyasi': s.lastRecommendation || s.lastInsight || '—',
+        '#': idx + 1,
+        'Full Name': s.fullName,
+        'Class': s.className,
+        'Risk Level': risk.label,
+        'Times Detected': s.dangerCount,
+        'Last Detected': fmtDate(s.lastDetected),
+        'Days Monitored': daysIn,
+        'AI Recommendation': s.lastRecommendation || s.lastInsight || '—',
       };
     });
 
@@ -125,9 +125,9 @@ export function Monitored() {
       { wch: 14 }, { wch: 22 }, { wch: 14 }, { wch: 50 },
     ];
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Ichki nazorat');
+    XLSX.utils.book_append_sheet(wb, ws, 'Monitoring');
     const date = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `Ichki_nazorat_53-maktab_${date}.xlsx`);
+    XLSX.writeFile(wb, `monitoring_53-maktab_${date}.xlsx`);
   }
 
   const now = new Date();
@@ -136,7 +136,7 @@ export function Monitored() {
   return (
     <div className="dashboard">
       <Topbar
-        title="Ichki nazorat"
+        title="Monitoring"
         school={school}
         district={district}
         date=""
@@ -150,10 +150,10 @@ export function Monitored() {
         <div className="mon2-banner__left">
           <div className="mon2-banner__icon">👁</div>
           <div>
-            <div className="mon2-banner__title">Ichki nazoratdagi o'quvchilar</div>
+            <div className="mon2-banner__title">Students Under Internal Monitoring</div>
             <div className="mon2-banner__sub">
-              Quyida <strong>{students.length} nafar</strong> o'quvchi yuqori xavf (DANGER) darajasida aniqlangan.<br />
-              Bu o'quvchilar doimiy psixologik yordam va monitoringni talab qiladi.
+              <strong>{students.length} students</strong> have been identified at the High Risk (DANGER) level.<br />
+              These students require ongoing psychological support and monitoring.
             </div>
           </div>
         </div>
@@ -162,21 +162,21 @@ export function Monitored() {
             <span className="mon2-chip__icon">🧠</span>
             <div>
               <div className="mon2-chip__label">AI Monitoring</div>
-              <div className="mon2-chip__val mon2-chip__val--green">Faol</div>
+              <div className="mon2-chip__val mon2-chip__val--green">Active</div>
             </div>
           </div>
           <div className="mon2-chip">
             <span className="mon2-chip__icon">📅</span>
             <div>
-              <div className="mon2-chip__label">Oxirgi yangilanish</div>
+              <div className="mon2-chip__label">Last Updated</div>
               <div className="mon2-chip__val">{nowStr}</div>
             </div>
           </div>
           <div className="mon2-chip">
             <span className="mon2-chip__icon">🛡</span>
             <div>
-              <div className="mon2-chip__label">Ma'lumotlar xavfsiz</div>
-              <div className="mon2-chip__val">To'liq himoyalangan</div>
+              <div className="mon2-chip__label">Data Secure</div>
+              <div className="mon2-chip__val">Fully Protected</div>
             </div>
           </div>
         </div>
@@ -187,19 +187,19 @@ export function Monitored() {
         <div className="mon2-stat">
           <div className="mon2-stat__icon mon2-stat__icon--blue">👥</div>
           <div className="mon2-stat__num">{students.length}</div>
-          <div className="mon2-stat__lbl">Nazoratdagi o'quvchilar</div>
+          <div className="mon2-stat__lbl">Students Monitored</div>
           <div className="mon2-stat__bar mon2-stat__bar--blue" />
         </div>
         <div className="mon2-stat">
           <div className="mon2-stat__icon mon2-stat__icon--red">⚠</div>
           <div className="mon2-stat__num">{highCount}+</div>
-          <div className="mon2-stat__lbl">Takrorlangan yuqori xavf</div>
+          <div className="mon2-stat__lbl">Repeated High Risk</div>
           <div className="mon2-stat__bar mon2-stat__bar--red" />
         </div>
         <div className="mon2-stat">
           <div className="mon2-stat__icon mon2-stat__icon--green">✅</div>
           <div className="mon2-stat__num mon2-stat__num--green">{releasedCount}</div>
-          <div className="mon2-stat__lbl">Nazoratdan chiqarilganlar</div>
+          <div className="mon2-stat__lbl">Released from Monitoring</div>
           <div className="mon2-stat__bar mon2-stat__bar--green" />
         </div>
       </div>
@@ -209,40 +209,40 @@ export function Monitored() {
         <div className="mon2-search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input
-            placeholder="Ism bo'yicha qidirish..."
+            placeholder="Search by name..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
         <select className="mon2-select" value={filterClass} onChange={e => { setFilterClass(e.target.value); setPage(1); }}>
-          <option value="">Sinf bo'yicha</option>
-          {classes.map(c => <option key={c} value={c}>{c} sinf</option>)}
+          <option value="">By Class</option>
+          {classes.map(c => <option key={c} value={c}>Grade {c}</option>)}
         </select>
         <select className="mon2-select" value={filterRisk} onChange={e => { setFilterRisk(e.target.value); setPage(1); }}>
-          <option value="">Xavf darajasi</option>
-          <option value="high">Yuqori xavf (3X+)</option>
-          <option value="mid">O'rta xavf (2X)</option>
-          <option value="low">Past xavf (1X)</option>
+          <option value="">Risk Level</option>
+          <option value="high">High Risk (3X+)</option>
+          <option value="mid">Medium Risk (2X)</option>
+          <option value="low">Low Risk (1X)</option>
         </select>
         <div style={{ flex: 1 }} />
         <button className="mon2-add-btn" onClick={() => setShowAddModal(true)}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Qo'shish
+          Add
         </button>
         <button className="mon2-export-btn" onClick={handleExport}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Eksport
+          Export
         </button>
       </div>
 
-      {loading && <p className="muted" style={{ padding: '24px' }}>Yuklanmoqda...</p>}
+      {loading && <p className="muted" style={{ padding: '24px' }}>Loading...</p>}
       {error && <p style={{ padding: '24px', color: '#e53e3e' }}>{error}</p>}
 
       {!loading && !error && students.length === 0 && (
         <div className="mon2-empty">
           <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
-          <p style={{ fontWeight: 600, marginBottom: 6 }}>Ichki nazorat bo'sh</p>
-          <p style={{ color: 'var(--color-text-muted)' }}>Hozircha yuqori xavf aniqlangan o'quvchi yo'q.</p>
+          <p style={{ fontWeight: 600, marginBottom: 6 }}>Monitoring is clear</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>No high-risk students detected at this time.</p>
         </div>
       )}
 
@@ -277,28 +277,28 @@ export function Monitored() {
                 <div className="mon2-info">
                   <div className="mon2-info__name">{s.fullName}</div>
                   <div className="mon2-info__meta">
-                    {s.className} sinf &nbsp;•&nbsp; ID: {shortId}
+                    Grade {s.className} &nbsp;•&nbsp; ID: {shortId}
                   </div>
-                  <div className="mon2-info__tag">O'quvchi</div>
+                  <div className="mon2-info__tag">Student</div>
                 </div>
 
                 {/* Date */}
                 <div className="mon2-date">
-                  <div className="mon2-date__label">Oxirgi aniqlangan</div>
+                  <div className="mon2-date__label">Last Detected</div>
                   <div className="mon2-date__val">{fmtDate(s.lastDetected)}</div>
-                  <div className={`mon2-days mon2-days--${risk.cls}`}>Ichki nazoratda: {daysIn} kun</div>
+                  <div className={`mon2-days mon2-days--${risk.cls}`}>Monitored: {daysIn} days</div>
                 </div>
 
                 {/* AI */}
                 <div className="mon2-ai">
                   <div className="mon2-ai__label">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-                    AI tavsiyasi
+                    AI Recommendation
                   </div>
                   <div className="mon2-ai__text">
                     {s.manuallyAdded && !s.lastInsight
-                      ? "Psixolog tomonidan qo'lda nazoratga olingan. Hali test topshirilmagan."
-                      : (s.lastRecommendation || s.lastInsight || 'AI tahlili mavjud emas')}
+                      ? "Manually added to monitoring by psychologist. No test submitted yet."
+                      : (s.lastRecommendation || s.lastInsight || 'No AI analysis available')}
                   </div>
                 </div>
 
@@ -308,13 +308,13 @@ export function Monitored() {
                     className="mon2-btn mon2-btn--note"
                     onClick={e => { e.stopPropagation(); setNoteTarget({ id: s.id, name: s.fullName, className: s.className }); }}
                   >
-                    Ish qo'shish
+                    Add Action
                   </button>
                   <button
                     className="mon2-btn mon2-btn--release"
                     onClick={e => { e.stopPropagation(); setReleaseTarget(s); }}
                   >
-                    Nazoratdan chiqarish
+                    Release from Monitoring
                   </button>
                 </div>
 
@@ -328,7 +328,7 @@ export function Monitored() {
               {isOpen && (
                 <div className="mon2-history">
                   <div className="mon2-history__title">
-                    📊 Barcha DANGER natijalari — {s.dangerCount} ta holat
+                    📊 All DANGER results — {s.dangerCount} case(s)
                   </div>
                   <div className="mon2-history__list">
                     {s.allInsights.map((item, i) => (
@@ -350,7 +350,7 @@ export function Monitored() {
       {/* Pagination */}
       {!loading && filtered.length > 0 && (
         <div className="mon2-pagination">
-          <span className="mon2-pagination__total">Jami {filtered.length} nafar o'quvchi</span>
+          <span className="mon2-pagination__total">Total {filtered.length} students</span>
           <div className="mon2-pagination__pages">
             <button
               className="mon2-pagination__arrow"
@@ -371,7 +371,7 @@ export function Monitored() {
             >›</button>
           </div>
           <div className="mon2-pagination__size">
-            {PAGE_SIZE} / sahifada
+            {PAGE_SIZE} / page
           </div>
         </div>
       )}
